@@ -1,0 +1,22 @@
+{
+  "loop_id": "default",
+  "target": "<one-sentence target description>",
+  "metric": "<scalar or vector metric>",
+  "predicate": null,
+  "status": "ACTIVE",
+  "step": 0,
+  "stopped_at_step": null,
+  "resume_pointer": {
+    "front": "orient",
+    "axis": "baseline",
+    "step_index": 0
+  },
+  "incumbent": {
+    "id": "baseline",
+    "metric_value": null,
+    "receipt": null
+  },
+  "sub_targets": [],
+  "do_not_repeat": [],
+  "updated_at": "2026-10-13T00:00:00Z"
+}

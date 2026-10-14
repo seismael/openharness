@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-tools.org/schemas/oalp/v1/profile.schema.json",
+  "title": "OpenAgent Loop Protocol - Profile Schema",
+  "description": "Defines the declarative seam contract between an OALP-compliant cognitive engine and a target repository.",
+  "type": "object",
+  "required": [
+    "schema",
+    "project",
+    "target",
+    "metric",
+    "predicate",
+    "pipeline",
+    "gates"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["loop.profile.v1"]
+    },
+    "project": {
+      "type": "string",
+      "description": "Unique identifier of the project being optimized."
+    },
+    "target": {
+      "type": "string",
+      "description": "Human-readable teleological objective statement."
+    },
+    "metric": {
+      "type": "string",
+      "description": "Address of the evaluation receipt and scalar JSON pointer (e.g. 'results.json:summary.p99_latency_ms')."
+    },
+    "predicate": {
+      "type": "string",
+      "description": "Boolean termination expression evaluated against extracted metric values."
+    },
+    "paths": {
+      "type": "object",
+      "properties": {
+        "loop": {
+          "type": "string",
+          "default": ".agents/loop"
+        },
+        "agents": {
+          "type": "string",
+          "default": ".agents"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Non-negotiable architectural boundaries and safety limits."
+    },
+    "pipeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "command"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["evaluate", "test", "lint", "build", "diagnose"]
+          },
+          "command": {
+            "type": "string"
+          },
+          "artifact": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gates": {
+      "type": "object",
+      "required": ["objective", "invariants"],
+      "properties": {
+        "objective": {
+          "type": "string",
+          "description": "Rule defining improvement in primary objective metric."
+        },
+        "invariants": {
+          "type": "string",
+          "description": "Rule defining passage of all safety and regression invariant test suites."
+        }
+      },
+      "additionalProperties": false
+    },
+    "completion": {
+      "type": "object",
+      "properties": {
+        "rule": {
+          "type": "string"
+        },
+        "require_coverage": {
+          "type": "boolean",
+          "default": true
+        },
+        "require_delivery": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+{
+  "name": "agentic-tools-marketplace",
+  "description": "Official marketplace for Agentic Tools and the OpenAgent Loop Protocol (OALP).",
+  "plugins": [
+    {
+      "name": "agentic-tools",
+      "description": "Deterministic, dual-gated autonomous loop protocol (OALP) and portable skills for continuous AI engineering.",
+      "version": "1.0.0",
+      "source": "./"
+    }
+  ]
+}

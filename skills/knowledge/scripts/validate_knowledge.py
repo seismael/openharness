@@ -76,6 +76,8 @@ def validate_loop_artifacts(kb_dir: Path) -> list[str]:
     errors: list[str] = []
 
     coverage = kb_dir / "coverage.json"
+    if not coverage.is_file() and (kb_dir.parent / "coverage.json").is_file():
+        coverage = kb_dir.parent / "coverage.json"
     if coverage.is_file():
         payload = _load_json_object(coverage, "coverage.json", errors)
         if payload is not None:

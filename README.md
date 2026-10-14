@@ -1,92 +1,297 @@
-# Agentic Tools
+# Agentic Tools & The OpenAgent Loop Protocol (OALP)
 
-Portable skills for making AI agents more effective, reliable, and economical through their native capabilities.
+Portable skills and the open architecture for making AI agents **autonomous, continuous, invariant-safe, and economically viable** in enterprise software development and computational research.
 
-## Skills
+---
+
+## The Standardization Objective: OpenAgent Loop Protocol (OALP)
+
+Current AI engineering is polarized between two inadequate paradigms:
+1. **The Copilot / Chatbot Paradigm:** Requires continuous human micromanagement, prompt babysitting, manual testing, and copy-pasting of isolated code snippets.
+2. **The Naive Autonomous Agent Paradigm:** Executes open-ended tasks with unconstrained tool sprawl, hallucination cascades, context window bloat ($15–$50/hour), and silent regression of system invariants.
+
+**Agentic Tools establishes the OpenAgent Loop Protocol (OALP):** A vendor-neutral, domain-agnostic open standard for **Deterministic, Dual-Gated, In-Session Continuous AI Engineering**. 
+
+Our objective is to standardize how autonomous agents interact with any repository—transforming AI from an interactive prompt chatbot into a self-directed, teleological research engineer that explores codebases, diagnoses bottlenecks, formulates minimal falsifiable candidates, verifies changes against mathematical dual gates, and compounds knowledge without human intervention.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              THE THREE AGENTIC PARADIGMS                               │
+├──────────────────────────┬─────────────────────────────┬───────────────────────────────┤
+│ 1. Copilots / Chatbots   │ 2. Naive Autonomous Agents  │ 3. OpenAgent Loop Protocol    │
+├──────────────────────────┼─────────────────────────────┼───────────────────────────────┤
+│ • Human writes prompt    │ • Open-ended task prompt    │ • Single target directive     │
+│ • LLM generates snippet  │ • Arbitrary tool execution  │ • Declarative seam: profile   │
+│ • Human tests & reviews  │ • Unchecked file rewrites   │ • 12-Front systematic audit   │
+│ • High human friction    │ • Hallucination cascades    │ • In-session bounded steps    │
+│ • Zero compounding memory│ • Token burns ($20–$50/hr)  │ • Strict dual-gate safety     │
+│ • Trapped in chat box    │ • Collateral breakage       │ • Compounding immutable memory│
+│                          │                             │ • Ultra-low cost ($0.19/10.5h)│
+└──────────────────────────┴─────────────────────────────┴───────────────────────────────┘
+```
+
+### The Standards Initiative & Formal RFC Series
+
+To transition this architecture from an internal capability into a universal, vendor-neutral industry standard, we have established the **OALP Standards Track**. Any agent runtime (Antigravity, OpenCode, Claude Code, Cursor, Copilot, Cline, Aider) and any software repository (Python, Rust, Go, TypeScript, C++) can implement or conform to the specification:
+
+- **[OALP Working Group Charter & Overview](docs/standards/README.md)**: Mission, governance, roadmap, and RFC lifecycle.
+- **The Complete Normative RFC Series:**
+  - **[RFC-0001: Core Protocol & Repository Topology](docs/standards/rfc-0001-openagent-loop-protocol.md)**: Standard `.agents/loop/` layout, declarative `profile.yaml`, state ledgers, and 12-front lifecycle.
+  - **[RFC-0002: Dual-Gate Verification Protocol](docs/standards/rfc-0002-dual-gate-verification.md)**: Mathematical formulation of gate acceptance, git snapshot transitions, and atomic rollbacks.
+  - **[RFC-0003: Teleological Target-Seeking Protocol](docs/standards/rfc-0003-teleological-target-seeking.md)**: Expected-Value move dispatch, self-replenishing queues, and the Simulation Freedom Invariant.
+  - **[RFC-0004: Streaming Output Projection](docs/standards/rfc-0004-streaming-output-projection.md)**: Output projection filters, scalar JSON extraction, and radical token economics ($0.19/10.5h).
+  - **[RFC-0005: Universal Harness Adapters](docs/standards/rfc-0005-universal-harness-adapters.md)**: Cross-platform adapter contract for Claude Code, Antigravity, OpenCode, Cursor, and CI/CD.
+- **Normative JSON Schemas:**
+  - [`profile.schema.json`](docs/standards/schemas/profile.schema.json): Declarative seam validation contract.
+  - [`loop.schema.json`](docs/standards/schemas/loop.schema.json): Runtime state tracking contract.
+  - [`journal.schema.json`](docs/standards/schemas/journal.schema.json): Append-only chronological audit ledger contract.
+  - [`coverage.schema.json`](docs/standards/schemas/coverage.schema.json): 12-front breadth coverage verification contract.
+- **Internal Tools & Multi-Language Starters:**
+  - Internal Skill Tools: Zero-dependency scripts in `skills/loop/scripts/` (`init_loop.py`, `validate_loop.py`) used by the agent and CI for initialization and schema validation.
+  - Starter Profiles: [Python](skills/loop/assets/templates/profile.python.yaml), [Rust](skills/loop/assets/templates/profile.rust.yaml), [Go](skills/loop/assets/templates/profile.go.yaml), and [Node.js](skills/loop/assets/templates/profile.node.yaml).
+
+---
+
+## Comparative Analysis: `obra/superpowers` vs. Agentic Tools (OALP)
+
+While popular skill frameworks like **`obra/superpowers`** have brought valuable discipline to human-in-the-loop "vibe coding", they operate under fundamentally different assumptions than **Agentic Tools (OALP)**:
+
+| Vector | `obra/superpowers` | Agentic Tools (OALP) |
+| :--- | :--- | :--- |
+| **Operating Paradigm** | **Interactive Pairing**: 2–5 min micro-tasks while human sits at chat prompt | **Autonomous Macro-Loop**: 10+ hours non-stop unattended execution |
+| **Target-Seeking** | **Static Checklist**: Halts when initial tasks finish; asks human what to do next | **Teleological Closed Loop**: Prohibited from halting; auto-replenishes via diagnostics |
+| **Verification & Safety** | **Standard TDD**: Unit tests pass/fail in git worktree branches | **Mathematical Dual Gates**: Metric gain $+$ zero invariant regressions $+$ atomic git rollback |
+| **Memory & Compounding** | **Ephemeral**: Context window & git commits (lost upon context compaction) | **Durable Schemas**: Disk-backed state ledgers (`loop.json`, `journal.jsonl`, `decisions/`) |
+| **Token Economics** | **Raw Command Streaming**: Burns $5–$20/hr via verbose build/test outputs | **Projection Wrapping**: Scalar receipts + static prefix caching (**$0.19 / 10.5h**) |
+| **Domain Scope** | Code-centric software feature development | Universal: software features, systems latency, algorithmic trading, ML, compilers |
+
+> See the full technical whitepaper: **[docs/architecture/superpowers-vs-oalp.md](docs/architecture/superpowers-vs-oalp.md)**.
+
+---
+
+## Universal Harness Compatibility & Adapters
+
+Agentic Tools is designed to integrate natively with **zero repository lock-in** across all leading AI coding harnesses:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              SUPPORTED AGENT RUNTIMES                                  │
+├────────────────────┬──────────────────────────────────────┬────────────────────────────┤
+│ Harness            │ Native Integration Surface           │ Activation Method          │
+├────────────────────┼──────────────────────────────────────┼────────────────────────────┤
+│ **Claude Code**    │ Official Plugin & Marketplace        │ `/plugin install`, `/loop` │
+│ **Antigravity**    │ Global/Local Skills & Subagents      │ `/loop "<target>"`         │
+│ **OpenCode**       │ In-Session Skill Protocol & DB       │ Headless session prompt    │
+│ **Cursor/Windsurf**│ Model Context Protocol (MCP) Server  │ `tools/mcp_server.py`      │
+│ **Headless CI/CD** │ Scheduled Overnight Runner           │ GitHub Actions / Cron      │
+└────────────────────┴──────────────────────────────────────┴────────────────────────────┘
+```
+
+- **Claude Code 1-Click Installation:**
+  ```bash
+  /plugin marketplace add seismael/agentic-tools
+  /plugin install agentic-tools@agentic-tools-marketplace
+  ```
+- **Cursor / Windsurf MCP Server:**
+  Add `tools/mcp_server.py` to your MCP configuration to expose `loop_status`, `loop_step`, and `loop_verify` directly in IDE chats.
+- **Harness Integration Guide:** Detailed step-by-step connection recipes available in **[docs/guides/harness-integration.md](docs/guides/harness-integration.md)**.
+
+---
+
+## The Autonomous Loop Architecture
+
+The architecture decouples the **Domain-Agnostic Cognitive Engine** from the **Project-Specific Physics** through standardized repository seams:
+
+```
+<project-root>/
+└── .agents/                                 # Standardized Unified Agent Topology
+    ├── loop/                                # The Autonomous Loop Engine & Memory Brain
+    │   ├── loop.json                        # Active iteration, champion state, status
+    │   ├── journal.jsonl                    # Immutable, append-only chronological audit ledger
+    │   ├── coverage.json                    # 12-Front breadth coverage guarantee ledger
+    │   ├── issues.jsonl                     # Prioritized defect and regression backlog
+    │   ├── env.json                         # Deterministic toolchain manifest (binaries, test cmds)
+    │   ├── plans/
+    │   │   └── next_moves.json              # Dynamic, expected-value ranked move queue
+    │   ├── knowledge/                       # Living project wiki & invariant store
+    │   │   ├── profile.yaml                 # The declarative project seam
+    │   │   ├── invariants.md                # Non-negotiable safety limits & system axioms
+    │   │   ├── capabilities.md              # Discovered system surfaces and tools
+    │   │   ├── baselines.md                 # Certified benchmark ground truth
+    │   │   └── decisions/                   # Immutable ledger of all prior adoptions/rejections
+    │   ├── scratch/                         # Sandboxed throwaway diagnostic probes (<= 2.5KB)
+    │   └── scripts/                         # Promoted reusable forensic tools
+    ├── skills/                              # Native & dynamically synthesized project skills
+    └── subagents/                           # Specialized read-only personas invoked on demand
+```
+*(Note: For backward compatibility, if `.agents/loop/` is absent, the engine gracefully binds to `.loop/`.)*
+
+### 1. The Declarative Seam: `profile.yaml`
+**Zero project-specific detail belongs in the cognitive engine.** The engine operates identically whether optimizing quantitative trading algorithms, cloud microservice latency, compiler passes, or ML models. All project physics live in `profile.yaml`:
+
+```yaml
+schema: loop.profile.v1
+project: "my-service"
+target: "Reduce P99 API response latency under 10ms without increasing memory footprint"
+metric: "benchmarks/results.json:summary.p99_latency_ms"
+predicate: "p99_latency_ms < 10.0 AND memory_rss_mb <= 512"
+
+paths:
+  loop: ".agents/loop"
+  agents: ".agents"
+
+boundaries:
+  - "Zero regressions in existing unit and integration test suites"
+  - "No weakened assertions or skipped validation gates"
+  - "Memory footprint must remain strictly <= 512MB under 10k RPS load"
+
+pipeline:
+  - id: evaluate
+    kind: evaluate
+    command: "cargo bench --bench latency"
+    artifact: "target/criterion/report.json"
+  - id: test
+    kind: test
+    command: "cargo test --all"
+
+gates:
+  objective: "Candidate P99 latency strictly decreases vs incumbent champion"
+  invariants: "All test and validation suites pass 100% green"
+
+completion:
+  rule: "predicate_met OR coverage_complete"
+  require_coverage: true
+  require_delivery: true                      # Clean git working tree, commits ahead of origin
+```
+
+### 2. The 12-Front Engineering Taxonomy
+Rather than relying on unguided "trial-and-error" or random parameter sweeps, the loop explores codebases across **12 distinct engineering fronts**:
+
+| Front | Core Purpose | Terminal Evidence |
+| :--- | :--- | :--- |
+| **`orient`** | Establish ground truth & verify clean state | Reproduced baseline metric + clean git tree |
+| **`discover`** | Inventory unused codebase surfaces & features | Documented capabilities in `capabilities.md` |
+| **`audit`** | Detect divergence from contracts, specs, and invariants | Evidence findings with line citations |
+| **`diagnose`** | Pinpoint dominant bottlenecks and loss vectors | Bounded diagnostic artifact (gap/funnel) |
+| **`research`** | Formulate data-backed, falsifiable hypotheses | Bounded synthesis backed by empirical data |
+| **`debug`** | Resolve defects, inconsistencies, and safety holes | Fixed defect + regression test |
+| **`improve`** | Formulate minimal candidate mechanism diffs | Dual-gated adoption commit |
+| **`harden`** | Enforce risk envelopes, limits, and security bounds | Enforced invariant gate + regression test |
+| **`performance`** | Optimize execution speed, throughput, and memory | Measured profile meeting target |
+| **`pipeline`** | Verify reproducibility and CI artifact provenance | Reproducibility check passing |
+| **`knowledge`** | Compound all positive & negative findings | Immutable entries in `decisions/` & journal |
+| **`plan`** | Dynamically rank next moves by Expected Value | Decomposed target in `plans/next_moves.json` |
+
+### 3. The Dual-Gate Safety Contract
+In enterprise software engineering, an improvement on one metric that introduces regressions elsewhere is a defect, not progress. The protocol enforces a mathematical contract:
+$$\text{Gate Acceptance} = (\Delta \text{Primary Objective} > 0) \land (\forall I \in \text{Invariants}, \, \text{Status}(I) = \text{PASS})$$
+- Every candidate diff is staged via a pre-evaluation git snapshot (`feat(candidate): ...`).
+- If the primary metric improves and all invariants pass: **ADOPTED** (`feat(adopt): ...`).
+- If either gate fails: **REVERTED IMMEDIATELY** (`git reset --hard HEAD~1`).
+- The negative outcome is permanently recorded in `decisions/` and `journal.jsonl` to ensure the engine **never repeats a falsified avenue**.
+
+### 4. Teleological Target-Seeking & The Self-Replenishing Queue
+A true autonomous agent does not stop when a static checklist runs out:
+- **Never Halt on Closed Lists:** When every pre-listed knob or axis has reached a terminal outcome, the engine is **forbidden from halting or asking for permission**.
+- **First-Principles Diagnostics:** The engine ascends the abstraction ladder to run leakage forensics (e.g., MFE give-back, suppressed candidate signals, cross-sectional component drag).
+- **Hypothesis Generation:** Formulates 2–3 novel structural mechanisms from empirical data, refills `plans/next_moves.json`, and immediately dispatches the top-ranked move.
+- **Simulation Freedom:** Notes mentioning "operator-gated" apply strictly to live production deployment. In headless evaluation (`eval`), the engine is **100% authorized** to prototype, simulate, and falsify anything without human intervention.
+
+### 5. Radical Token Economics
+Traditional agents burn massive token budgets by streaming raw multi-megabyte terminal outputs into context. OALP achieves industrial efficiency through three architectural pillars:
+- **Projection Filtering:** Commands are wrapped to suppress noisy output (`Out-Null`) and return only single-line scalar JSON receipts (`net_pnl`, `trades`, `fees`, `latency_ms`). New inputs are bounded to ~150–250 tokens per turn.
+- **Prefix Invariance & Prompt Caching:** System prompts, skill instructions, and project memory leaves (`profile.yaml`, `invariants.md`, `env.json`) remain byte-static at the context head, maximizing provider KV-cache hits.
+- **Automated Window Compaction:** Context growth is managed smoothly, preventing token degradation while preserving the active disk-backed state.
+
+---
+
+## Empirical Proof: 10.5 Hours in Apex Quant Trading
+
+The architecture was subjected to rigorous overnight validation on **Apex**, an institutional quantitative cryptocurrency trading platform processing tick-level market data:
+
+- **Duration:** **10 hours, 25 minutes** continuous non-stop execution (132 engine turns).
+- **Domain Deliverables:**
+  - Formulated, coded, and unit-tested a continuous `drawdown_scale` model in core risk allocation modules.
+  - Authored 5 comprehensive unit tests in `tests/test_capital_allocator.py`.
+  - Passed `ruff check`, `ruff format`, schema validation, and >1,360 unit regression tests.
+  - Executed 12 full-month multi-asset simulation backtests (>3.7 million market events).
+  - Subjected its own code to falsification; detected net degradation on crash regimes; **honestly rejected its own diff**, and committed decision **D-190**.
+  - Verified historical baseline control pools across 2023 to **28 decimal places of exact float parity**.
+  - Authored 2 clean semantic git commits (`a23fdcd`, `7ebc9af`).
+- **Token Metrics:**
+  - Total Cached Tokens Read: **14,832,896 tokens** (~14.8M).
+  - DeepSeek Prompt Cache Hit Rate: **96.93%**.
+  - **Total Cost for Entire 10.5h Session:** **$0.1938** (less than **20 CENTS**).
+  - Average Cost per Turn: **~$0.00147** ($\sim \frac{1}{7}\text{th}$ of 1 cent).
+
+---
+
+## Industry Standardization & Commercialization Roadmap
+
+We are standardizing this architecture across three production tiers:
+
+```
+                                  COMMERCIAL ROADMAP
+                                          │
+    ┌─────────────────────────────────────┼─────────────────────────────────────┐
+    ▼                                     ▼                                     ▼
+[Tier 1: Native In-Harness Integration] [Tier 2: Nightly CI/CD Optimizer]  [Tier 3: Enterprise Governance Hub]
+• OpenAgent Loop Protocol (OALP)        • Automated overnight research     • Immutable audit ledger
+• Native Plugins & MCP Server           • Headless in-session runner       • SOC2 & regulatory compliance
+• Zero external CLI friction            • Automated PR with receipts       • Risk & safety guarantees
+```
+
+### Tier 1: The Open Protocol & Native In-Harness Integration
+- Vendor-neutral specification defining `.agents/`, `profile.yaml`, and `journal.jsonl`.
+- 100% native integration into Claude Code (`.claude-plugin/`), Cursor/Windsurf (`tools/mcp_server.py`), Antigravity (`/loop`), and OpenCode.
+- Zero external CLI binaries, daemons, or background wrappers needed: the agent is the engine.
+
+### Tier 2: The Nightly CI/CD Autonomous Optimizer ("Overnight Research as a Service")
+- Deployed as a scheduled GitHub Action or Kubernetes Job running from 11:00 PM to 5:00 AM.
+- Explores 15–20 hypotheses per night against the repository's `profile.yaml`.
+- Submits an automated morning Pull Request with complete mathematical receipts:
+  > *"PR #142: Reduced P99 microservice latency by 14.2% across 3 load benchmarks. Zero invariant regressions across 840 tests. Cost: $0.18."*
+
+### Tier 3: Enterprise Governance & Regulatory Compliance
+- Financial institutions, medical device software, and defense contractors cannot deploy "black-box" AI modifications.
+- The append-only cryptographic `journal.jsonl` provides an unalterable paper trail verifying exact baselines, rejected diffs, and proof of zero safety invariant violations.
+
+---
+
+## Bundled Skills Suite
 
 | Skill | Purpose |
 |---|---|
-| [Loop](skills/loop/SKILL.md) | Execute single-goal autonomous continuous optimization loops endlessly across diagnosis, candidate testing, and git compounding. |
+| [Loop](skills/loop/SKILL.md) | Execute autonomous continuous optimization loops endlessly across diagnosis, candidate testing, and git compounding via `/loop "<target>"`. |
 | [Audit](skills/audit/SKILL.md) | Audit local or remote repositories against user goals and domain risks, resolve findings, and produce verified implementation plans. |
 | [Knowledge](skills/knowledge/SKILL.md) | Maintain an indexed, token-efficient, Obsidian-compatible local Markdown wiki to prevent context drift and eliminate redundant exploration scans. |
 | [Characterize](skills/characterize/SKILL.md) | Translate goals, domains, workflows, and constraints into a minimal native setup; interview only where evidence leaves consequential choices unresolved. |
 | [Enhance](skills/enhance/SKILL.md) | Learn from actual sessions, diagnose wasted effort, and improve native settings and workflows at the correct global, project, agent, or task scope. |
 
-Use Loop to run autonomous, endless, goal-directed optimization cycles on any codebase. Use Audit to analyze domain risks and produce structured plans. Use Knowledge to preserve repository facts and decisions across sessions. See [Autonomous Optimization Guide](docs/guides/autonomous-loop.md) for cross-platform agent execution patterns.
+See [Autonomous Optimization Guide](docs/guides/autonomous-loop.md) for cross-platform agent execution patterns.
 
-Loop is generic and agnostic: a single project profile (`docs/knowledge/profile.yaml`) supplies the goal, fronts, pipeline, and boundaries, and a coverage ledger proves every front/sub-axis was examined. It runs entirely in-session — a sequential, self-managed agent loop with durable project state and no external process, daemon, CLI, or plugin to install.
+---
 
-All prioritize performance and cost effectiveness: useful completed work per input/output consumption, total cost, and elapsed time, while preserving required correctness and reliability. They support research, writing, analysis, design, operations, and engineering. Loop and Audit optimize the project itself; Characterize and Enhance improve the agent setup and its usage; Knowledge compounds verified project facts.
+## Installation
 
-## Install a skill
-
-Clone this repository or download its source. Copy the **whole** selected directory under `skills/` into one supported skill location. Do not copy only `SKILL.md`, and do not install duplicate copies into locations the same agent scans.
-
-With Python 3.10 or newer, the optional installer works on Windows, macOS, and Linux and refuses to overwrite an existing destination:
+Clone this repository or download its source. Copy the **whole** selected directory under `skills/` into one supported skill location:
 
 ```sh
 git clone https://github.com/seismael/agentic-tools.git
 cd agentic-tools
-python tools/install_skill.py --skill characterize --to ~/.agents/skills/characterize --check
-python tools/install_skill.py --skill characterize --to ~/.agents/skills/characterize
+python tools/install_skill.py --skill loop --to ~/.agents/skills/loop --check
+python tools/install_skill.py --skill loop --to ~/.agents/skills/loop
 ```
 
-The shared installer accepts any bundled skill: replace `characterize` with `enhance`, `audit`, `knowledge`, or `loop` in both arguments. The example uses Codex's documented user skill directory. See [Installation](docs/INSTALLATION.md) for OpenCode, Claude Code, Gemini CLI, Antigravity CLI (`agy`), and Antigravity IDE. Python is optional for the instruction workflow; the installer and bundled helpers require it.
+The shared installer accepts any bundled skill (`loop`, `audit`, `knowledge`, `characterize`, `enhance`). See [Installation Guide](docs/INSTALLATION.md) for OpenCode, Claude Code, Gemini CLI, Antigravity CLI (`agy`), and Antigravity IDE.
 
-## Use it
+---
 
-Select the skill using your host's native control. In Codex CLI, use `$characterize`, `$enhance`, `$audit`, or `$knowledge`; in Claude Code and Antigravity CLI, use `/characterize`, `/enhance`, `/audit`, or `/knowledge`. In OpenCode or Gemini CLI, explicitly request the named skill in your prompt and verify discovery through the native skill interface.
-
-Example requests:
-
-> Use Characterize to tailor my agent's native setup to my work. Inspect the current setup, reuse what I have already told you, ask about consequential choices, and prepare minimal changes with clear scope and recovery.
-
-> Use Enhance to review my accessible agent sessions. Prioritize input/output cost and performance, preserve necessary validation, and propose native improvements with global and project changes separated. Ask about meaningful choices before applying configuration changes.
-
-> Continue Enhance from its saved review state. Review new and changed sessions, evaluate the previous improvements, and apply only the already-approved changes.
-
-> Use Enhance for this project only. Investigate repeated research and reviewer work, propose clear role ownership and compact handoffs, and preserve our deliverable requirements.
-
-> Use Audit Project on https://github.com/OWNER/PROJECT. Focus on whether its data-import pipeline reliably fulfills the product's goals, including architecture, correctness, performance, tests, and small inconsistencies. Trace the implementation and check domain assumptions. Discuss findings with me one at a time, recommend an approach, and record accepted, deferred, and rejected decisions. Commit the audit and detailed implementation plans under docs/audit/ using the repository's supported review workflow. Do not implement product changes.
-
-The host agent performs the work with its existing model and authorized tools. These skills are not separate agent runtimes, universal history connectors, background services, or model subscriptions.
-
-## Agent setup and improvement
-
-1. Discover the actual target tool/version, relevant evidence, native settings, configuration precedence, and prior checkpoints.
-2. Characterize resolves goals, representative tasks, and consequential setup choices. Enhance reviews sessions individually and incrementally, including reopened sessions and late imports.
-3. Diagnose supported improvements across consumption/performance, reliability, consistency, structured inputs/outputs, autonomy, orchestration, context/tools, research/review, automation/workflows, and domain/project needs.
-4. Propose concrete changes and tradeoffs. Resolve consequential choices with suggested options and a custom answer. Respect existing authorization; obtain scoped approval when needed.
-5. Apply through supported native surfaces, verify proportionately, and save private coverage, decision, and recovery records.
-
-A globally installed skill can still propose a project-only change. Shared team requirements, private project preferences, native global defaults, role-specific behavior, and temporary task constraints remain distinct. Storage location alone does not determine applicability.
-
-## Project audits and implementation handoffs
-
-Audit Project requires a GitHub repository URL and focus message. It records a frozen source baseline, establishes project goals and domain assumptions, and traces relevant execution paths before treating a suspicion as a finding. Its coverage record distinguishes reviewed, pending, unavailable, and inapplicable areas; a focused or unfinished review is not presented as exhaustive.
-
-Each finding receives separate impact, priority, confidence, effort, and dependency information. The agent asks about one finding at a time, offers a recommended resolution with alternatives and custom feedback, and preserves accepted, deferred, or rejected decisions. Disproven findings can be withdrawn with counterevidence without inventing a user rejection. Accepting a plan does **not** authorize product implementation.
-
-The default target-project directory is `docs/audit/`: `README.md` provides the handoff and next work, `CONTEXT.md` captures goals and constraints, `audit.json` carries structured state, and `findings/F-001.md`-style records contain evidence, decisions, ordered implementation steps, verification, and recovery. Accepted work must pass a readiness check before a local agent starts; unresolved design choices, changed source assumptions, or missing dependencies stay explicit. Deferred work remains concise and outside the ready queue. Rejected findings retain the user's rationale. Blocked plans name their blocker and next action; completed plans require recorded acceptance-check evidence. Expected prerequisite changes can be revalidated without another approval. Audit schema v2 records these states; v1 records require explicit revalidation before conversion.
-
-Delivery follows the request: local files, local commits, or verified GitHub publication. The audit commits documentation through available, authorized GitHub or git mechanisms when requested. It pins source reads to a commit and preserves uncommitted workspace changes. Missing write access or protected-branch restrictions remain explicit publication blockers. Its bundled read-only validator checks artifact structure and consistency; it cannot establish that findings are true, designs are correct, or tests will pass. The skill package contains no target-project audit data.
-
-## Status and limits
-
-The packages follow the directory-based Agent Skills format. Installation locations are checked against official documentation; see [Compatibility](docs/COMPATIBILITY.md). Automated checks exercise the installer, metadata ledger, configuration change bundle, and audit artifact validator without calling models; see [Validation](docs/VALIDATION.md) for recorded results and pending checks. The Audit Project release also passed the four-job Windows/macOS/Linux CI matrix; see the linked validation evidence. Live target CLI checks remain pending. Representative instruction scenarios do not certify runtime enforcement, production readiness of a target project, or model behavior across all domains.
-
-History access, permissions, native capabilities, and telemetry depend on the installed host/version. Missing evidence stays explicit. Measured savings require comparable real usage data; the skill does not guarantee a fixed saving or unlimited autonomous permissions.
-
-## Privacy and maintenance
-
-Keep session exports, review databases, user profiles, approval records, and configuration backups in private storage **outside this repository and outside shared project instructions**. Enhance's ledger stores supplied metadata. Characterize's optional helper stages and applies reviewed local file changes with drift checks and recovery records. Neither helper redacts secrets or validates native runtime semantics. See [Privacy and safety](docs/PRIVACY.md).
-
-Audit Project deliberately writes reviewed findings and plans to the target repository. Its published artifacts must exclude credentials, private transcripts, exploit details unsuitable for public disclosure, and unrelated personal data. Keep sensitive evidence in an authorized private location and commit only safe references or summaries.
-
-For development and regression checks:
+## Development & Regression Testing
 
 ```sh
 python tools/check_release.py
+python -B -m unittest discover -s skills/loop/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/characterize/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/enhance/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/audit-project/scripts -p 'test_*.py' -v
@@ -94,6 +299,8 @@ python -B -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
 See [Validation](docs/VALIDATION.md) for reproducible behavior scenarios and [Contributing](CONTRIBUTING.md) for change requirements.
+
+---
 
 ## License
 

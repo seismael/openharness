@@ -2,16 +2,17 @@
 # Everything project-specific lives here; the loop engine stays identical for every repo.
 schema: loop.profile.v1
 project: "<project-name>"
-goal: "<one-sentence objective the loop optimizes>"
+target: "<one-sentence target description the loop is working on / optimizing>"
 metric: "<the objective scalar/vector and how to read it>"
-target: null            # optional success predicate; enables goal-completion when met
+predicate: null         # optional success predicate; enables loop-completion when met
 
 modes: [eval]           # allowed run modes; never list a forbidden/production mode
 
 paths:
-  loop: ".<project>/reports/research/loop"   # journal root
-  coverage: "docs/knowledge/coverage.json"
-  knowledge: "docs/knowledge"
+  loop: ".loop"                                # loop runtime state, plans, knowledge, scratch
+  agents: ".agents"                            # native skills and on-demand subagent personas
+  coverage: ".loop/coverage.json"
+  knowledge: ".loop/knowledge"
 
 boundaries:             # the fixed safety envelope the loop never weakens
   - "deterministic, reproducible execution"
@@ -38,10 +39,10 @@ pipeline:               # canonical ordered stages (see references/pipeline-cont
   # ... acquire / evidence / experiment / record / view
 
 gates:
-  objective: "<how a candidate is shown to improve the goal>"
+  objective: "<how a candidate is shown to advance the target>"
   invariants: "<test/lint/type commands that must remain green>"
 
 completion:
-  rule: "<goal met | coverage complete | budget>"
+  rule: "<target criteria met | coverage complete | budget>"
   require_coverage: true
   require_delivery: true

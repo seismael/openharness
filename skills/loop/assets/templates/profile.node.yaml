@@ -1,0 +1,39 @@
+# OALP Profile Template: Node.js / TypeScript Ecosystem
+schema: loop.profile.v1
+project: "node-service"
+target: "Optimize server response latency and bundle execution speed"
+metric: "coverage/benchmark-receipt.json:summary.duration_ms"
+predicate: "duration_ms < 15.0"
+
+paths:
+  loop: ".agents/loop"
+  agents: ".agents"
+
+boundaries:
+  - "All vitest / jest unit and integration tests must pass 100% green"
+  - "TypeScript typecheck (tsc --noEmit) passes with zero errors"
+  - "ESLint passes with zero warnings"
+
+pipeline:
+  - id: evaluate
+    kind: evaluate
+    command: "npm run bench -- --json --outputFile=coverage/benchmark-receipt.json"
+    artifact: "coverage/benchmark-receipt.json"
+  - id: test
+    kind: test
+    command: "npm test"
+  - id: typecheck
+    kind: test
+    command: "npx tsc --noEmit"
+  - id: lint
+    kind: lint
+    command: "npm run lint"
+
+gates:
+  objective: "Candidate duration_ms strictly decreases vs incumbent champion"
+  invariants: "All test suites, TypeScript type checks, and ESLint pass 100% green"
+
+completion:
+  rule: "predicate_met OR coverage_complete"
+  require_coverage: true
+  require_delivery: true

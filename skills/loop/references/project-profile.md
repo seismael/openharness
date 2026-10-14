@@ -11,14 +11,15 @@ Shape and semantics:
 ```yaml
 schema: loop.profile.v1
 project: <name>
-goal: "<one-sentence objective the loop optimizes>"
+target: "<one-sentence target description the loop is working on / optimizing>"
 metric: "<the objective scalar/vector and how to read it>"
-target: "<the success predicate, if any>"        # optional; enables goal-completion
+predicate: "<the success predicate, if any>"        # optional; enables loop-completion
 modes: [eval]                                     # allowed run modes; never a forbidden one
 paths:
-  loop: .<project>/reports/research/loop         # journal root
-  coverage: docs/knowledge/coverage.json
-  knowledge: docs/knowledge
+  loop: .loop                                  # loop runtime, state, plans, scratch, and wiki root
+  agents: .agents                              # native skills and on-demand subagent personas
+  coverage: .loop/coverage.json
+  knowledge: .loop/knowledge
 boundaries:                                       # the fixed safety envelope
   - "<invariant the loop must never weaken>"
 fronts:                                           # coverage surface (see front-taxonomy)
@@ -31,18 +32,23 @@ fronts:                                           # coverage surface (see front-
 pipeline:                                         # see pipeline-contract
   - {id: evaluate, kind: evaluate, command: "<cli>", artifact: "<path>"}
 gates:                                            # see below
-  objective: "<how a candidate improves the goal>"
+  objective: "<how a candidate improves the target>"
   invariants: "<the test/lint commands that must stay green>"
 completion:
-  rule: "<goal met | coverage complete | budget>"
+  rule: "<target criteria met | coverage complete | budget>"
   require_coverage: true
   require_delivery: true                          # clean tree, HEAD == origin
 ```
 
 ## Field semantics
 
-- **`goal` / `metric` / `target`** — the loop optimizes `metric`; if `target` is present
+- **`target` / `metric` / `predicate`** — the loop optimizes `metric` toward `target`; if `predicate` is present
   the host may declare `completed` when it is met *and* coverage is complete.
+- **`paths`** — canonical paths for loop operation:
+  - `loop`: standard `.loop` directory holding state (`loop.json`), plans, knowledge wiki, scratch, and scripts.
+  - `agents`: standard `.agents` directory holding installed skills and on-demand specialized personas (`subagents/`).
+  - `coverage`: breadth guarantee ledger (default `.loop/coverage.json`).
+  - `knowledge`: indexed project wiki (default `.loop/knowledge`).
 - **`modes`** — the allowed run modes. The engine must refuse anything outside them; a
   profile never lists a forbidden mode.
 - **`boundaries`** — the fixed envelope (determinism, safety, correctness). The loop may
@@ -51,7 +57,7 @@ completion:
   completion gate with a reason. Sub-axis names are the project's own.
 - **`pipeline` / `gates`** — how work is executed and verified (see
   [pipeline-contract.md](pipeline-contract.md)).
-- **`completion`** — when the loop may stop: goal met, coverage complete, or budget.
+- **`completion`** — when the loop may stop: target criteria met, coverage complete, or budget.
 
 ## Rules
 
@@ -61,3 +67,69 @@ completion:
   back to `discover`).
 - **Validated.** The knowledge validator checks the profile's shape and that every front
   sub-axis and pipeline id is non-empty and unique.
+
+---
+
+## Multi-Ecosystem Examples (True Domain Agnosticism)
+
+### 1. Rust Systems Service (`Cargo.toml`)
+```yaml
+schema: loop.profile.v1
+project: "hyper-cache"
+target: "Reduce P99 cache lookup latency under 100 microseconds"
+metric: "cargo bench latency in us"
+predicate: "P99 < 100.0 AND throughput > 1_000_000"
+modes: [dev]
+paths:
+  loop: ".loop"
+  agents: ".agents"
+  coverage: ".loop/coverage.json"
+  knowledge: ".loop/knowledge"
+boundaries:
+  - "zero unsafe code without explicit audit"
+  - "no memory leaks"
+fronts:
+  orient: {required: true}
+  diagnose: {required: true, sub_axes: [lock_contention, cache_misses]}
+  improve: {required: true, sub_axes: [data_layout, lock_free_queue, inlining]}
+  harden: {required: true}
+pipeline:
+  - {id: evaluate, kind: evaluate, command: "cargo bench --bench lookup", artifact: "target/criterion/report.json"}
+  - {id: diagnose, kind: diagnose, command: "cargo flamegraph --bench lookup", artifact: "flamegraph.svg"}
+gates:
+  objective: "cargo bench P99 latency strictly decreases"
+  invariants: "cargo test && cargo clippy -- -D warnings"
+completion:
+  rule: "target criteria met OR budget"
+```
+
+### 2. Go Distributed Microservice (`go.mod`)
+```yaml
+schema: loop.profile.v1
+project: "order-router"
+target: "Eliminate memory allocation overhead in message dispatch"
+metric: "allocs/op and B/op in dispatch benchmark"
+predicate: "allocs/op == 0"
+modes: [dev]
+paths:
+  loop: ".loop"
+  agents: ".agents"
+  coverage: ".loop/coverage.json"
+  knowledge: ".loop/knowledge"
+boundaries:
+  - "goroutine leak free"
+  - "race detector clean"
+fronts:
+  orient: {required: true}
+  diagnose: {required: true, sub_axes: [heap_escapes, buffer_realloc]}
+  improve: {required: true, sub_axes: [sync_pool, slice_prealloc, zero_copy]}
+  harden: {required: true}
+pipeline:
+  - {id: evaluate, kind: evaluate, command: "go test -bench=BenchmarkDispatch -benchmem", artifact: "bench.txt"}
+  - {id: diagnose, kind: diagnose, command: "go test -gcflags='-m' ./pkg/dispatch", artifact: "escapes.txt"}
+gates:
+  objective: "allocs/op strictly decreases"
+  invariants: "go test -race ./... && golangci-lint run"
+completion:
+  rule: "target criteria met OR budget"
+```

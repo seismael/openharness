@@ -1,0 +1,36 @@
+# OALP Profile Template: Rust Ecosystem
+schema: loop.profile.v1
+project: "rust-service"
+target: "Optimize throughput and reduce P99 latency without increasing heap allocation"
+metric: "target/criterion/report.json:summary.p99_latency_ns"
+predicate: "p99_latency_ns < 10000.0"
+
+paths:
+  loop: ".agents/loop"
+  agents: ".agents"
+
+boundaries:
+  - "Zero regressions in cargo test test suites"
+  - "Clippy lints must pass with zero warnings (cargo clippy --all-targets -- -D warnings)"
+  - "Memory footprint must remain strictly within configured bounds"
+
+pipeline:
+  - id: evaluate
+    kind: evaluate
+    command: "cargo bench --bench core_throughput -- --output-format criterion"
+    artifact: "target/criterion/report.json"
+  - id: test
+    kind: test
+    command: "cargo test --all"
+  - id: lint
+    kind: lint
+    command: "cargo clippy --all-targets -- -D warnings"
+
+gates:
+  objective: "Candidate P99 latency strictly decreases vs incumbent champion"
+  invariants: "All cargo tests and clippy checks pass 100% green"
+
+completion:
+  rule: "predicate_met OR coverage_complete"
+  require_coverage: true
+  require_delivery: true

@@ -1,0 +1,36 @@
+# OALP Profile Template: Python Ecosystem
+schema: loop.profile.v1
+project: "python-service"
+target: "Optimize performance and reduce execution latency while maintaining 100% test pass rate"
+metric: "benchmarks/results.json:summary.mean_duration_ms"
+predicate: "mean_duration_ms < 50.0"
+
+paths:
+  loop: ".agents/loop"
+  agents: ".agents"
+
+boundaries:
+  - "All pytest unit and regression tests must pass 100% green"
+  - "Ruff linting and formatting checks must pass with zero errors"
+  - "No regressions in memory footprint or CPU efficiency"
+
+pipeline:
+  - id: evaluate
+    kind: evaluate
+    command: "python -m pytest tests/benchmarks/ --benchmark-json=benchmarks/results.json"
+    artifact: "benchmarks/results.json"
+  - id: test
+    kind: test
+    command: "python -m pytest tests/ -v"
+  - id: lint
+    kind: lint
+    command: "ruff check ."
+
+gates:
+  objective: "Candidate mean_duration_ms strictly decreases vs incumbent champion"
+  invariants: "All pytest tests and ruff linting pass 100% green"
+
+completion:
+  rule: "predicate_met OR coverage_complete"
+  require_coverage: true
+  require_delivery: true

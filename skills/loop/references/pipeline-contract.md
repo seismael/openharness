@@ -40,5 +40,9 @@ pipeline:
 - **Gates are mechanical.** A stage passes only when its `gate` command/test passes; the
   objective and invariant gates of the [loop protocol](loop-protocol.md) are evaluated
   only over pipeline-produced evidence.
+- **Standard Toolchain Compatibility**: The pipeline command can be ANY standard shell invocation
+  available in the target environment (e.g. `cargo bench`, `go test -bench=.`, `pytest --benchmark-only`,
+  `npm test`, `make`). A repository does NOT need custom diagnostic CLI commands; standard tools
+  redirecting bounded output to an artifact file fulfill the contract completely.
 - **Traceability.** Every adopted change cites the pipeline artifact (run id / path) that
   justified it.

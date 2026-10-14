@@ -1,0 +1,33 @@
+{
+  "name": "agentic-tools",
+  "version": "1.0.0",
+  "description": "Deterministic, dual-gated autonomous optimization loop (OALP) and portable engineering skills for AI coding agents.",
+  "author": {
+    "name": "seismael"
+  },
+  "repository": "https://github.com/seismael/agentic-tools",
+  "license": "MIT",
+  "skills": [
+    "./skills/loop",
+    "./skills/audit",
+    "./skills/knowledge",
+    "./skills/characterize",
+    "./skills/enhance"
+  ],
+  "commands": [
+    {
+      "name": "loop",
+      "description": "Launch the autonomous continuous optimization loop to achieve an objective target",
+      "argument": "<target>"
+    },
+    {
+      "name": "audit",
+      "description": "Audit codebase against goals, domain risks, and produce verified implementation plans",
+      "argument": "<focus>"
+    },
+    {
+      "name": "knowledge",
+      "description": "Query or update the indexed local markdown wiki to eliminate redundant context scans"
+    }
+  ]
+}

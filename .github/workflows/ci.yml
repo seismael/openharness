@@ -46,5 +46,7 @@ jobs:
         run: python -B -m unittest discover -s skills/audit/scripts -p "test_*.py" -v
       - name: Test knowledge base validator
         run: python -B -m unittest discover -s skills/knowledge/scripts -p "test_*.py" -v
-      - name: Test explicit installation
+      - name: Test explicit installation and OALP conformance
         run: python -B -m unittest discover -s tests -p "test_*.py" -v
+      - name: Test autonomous loop engine scripts
+        run: python -B -m unittest discover -s skills/loop/scripts -p "test_*.py" -v

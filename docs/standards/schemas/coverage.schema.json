@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-tools.org/schemas/oalp/v1/coverage.schema.json",
+  "title": "OpenAgent Loop Protocol - Coverage Ledger Schema",
+  "description": "Schema for coverage.json tracking breadth across all 12 engineering fronts.",
+  "type": "object",
+  "required": [
+    "schema",
+    "fronts"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["coverage.v1"]
+    },
+    "fronts": {
+      "type": "object",
+      "description": "Map of front identifiers to their current coverage state.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["unstarted", "active", "covered", "exhausted"]
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "last_iteration": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

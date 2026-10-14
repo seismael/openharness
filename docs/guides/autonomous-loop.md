@@ -22,24 +22,29 @@ The Autonomous Optimization Loop is a structured, 5-stage engineering pipeline d
 ### 1.1 Generic, agnostic, and front-driven
 
 The loop engine is identical for every repository; a single declarative **project profile**
-(`docs/knowledge/profile.yaml`) supplies what to optimize, what to examine, how to run it,
+(`.loop/knowledge/profile.yaml` or `docs/knowledge/profile.yaml`) supplies what to optimize, what to examine, how to run it,
 and when to stop. The loop explores the project across **all fronts** — audit, discover,
 research, diagnose, debug, improve, harden, performance, pipeline, knowledge, plan,
 orientation — choosing the next move from accumulated evidence (defect > uncovered front >
 largest diagnosed gap > structural candidate > parameter last), never a groundless sweep.
-A **coverage ledger** (`docs/knowledge/coverage.json`) proves every required front/sub-axis
+A **coverage ledger** (`.loop/coverage.json`) proves every required front/sub-axis
 reached a terminal status before the loop may finish. See
 [front taxonomy](../../skills/loop/references/front-taxonomy.md),
 [dispatch policy](../../skills/loop/references/dispatch-policy.md),
 [coverage ledger](../../skills/loop/references/coverage-ledger.md),
 [pipeline contract](../../skills/loop/references/pipeline-contract.md),
-[project profile](../../skills/loop/references/project-profile.md), and the
+[project profile](../../skills/loop/references/project-profile.md),
+[graceful control](../../skills/loop/references/graceful-control.md),
+[agent ecosystem](../../skills/loop/references/agent-ecosystem.md),
+[token economy](../../skills/loop/references/token-economy.md), and the
 [in-session loop](../../skills/loop/references/in-session-loop.md).
 
-The loop runs **in-session**: the agent is the engine, taking one atomic step at a time and
-continuing until the goal is met or it is stopped. Its only machinery is durable state in
-the project (`goal.json`, `coverage.json`, `journal.jsonl`, `issues.jsonl`) — no external
-process, daemon, CLI, or plugin. Nothing to install; nothing outside the repository.
+The loop runs **100% in-session**: the agent is the engine, taking one atomic step at a time and
+continuing until the target is met or it is stopped. Its architecture is cleanly partitioned into two root directories:
+- **`.loop/`**: The loop's durable runtime and knowledge brain — state (`loop.json`), append-only audit journal (`journal.jsonl`), coverage ledger (`coverage.json`), issue ledger (`issues.jsonl`), plans (`plans/`), indexed project wiki (`knowledge/`), sandboxed scratchpad (`scratch/`), and helper scripts (`scripts/`).
+- **`.agents/`**: Project-useful executable assets created or used by the loop — reusable skills (`skills/`) and specialist personas (`subagents/`).
+
+The loop can be stopped gracefully at any moment simply by saying "stop the loop" or placing `.loop/STOP`. It persists current state in `.loop/loop.json` and resumes seamlessly without losing progress. There are zero background daemons, wrappers, or external CLI processes.
 
 ---
 
@@ -50,19 +55,24 @@ process, daemon, CLI, or plugin. Nothing to install; nothing outside the reposit
 In Antigravity CLI (`agy`) or Antigravity IDE:
 
 1. **Skill Installation**:
-   Ensure `skills/audit` and `skills/knowledge` are linked or placed in `~/.gemini/antigravity-cli/skills/` or `.agents/skills/`.
-2. **Initial Prompt**:
+   Ensure `skills/loop`, `skills/audit`, and `skills/knowledge` are linked or placed in `~/.gemini/antigravity-cli/skills/` or `.agents/skills/`.
+2. **Autonomous Loop Activation (`/loop "<target>"`):**
+   Launch with the `/loop` slash command and target description for continuous, non-stop autonomous execution:
    ```
-   Execute the autonomous optimization loop on this repository following skills/loop/SKILL.md.
-   1. Read docs/knowledge/index.md to orient paths and invariants.
-   2. Diagnose current performance gaps against theoretical ceiling.
-   3. Formulate minimal candidates, committing working tree before evaluating.
-   4. Enforce dual-gate verification (metric improvement + zero invariant regressions).
-   5. Record findings, update docs/knowledge/decisions.md, and push atomic commits when validated.
+   /loop "Execute the autonomous continuous optimization loop on this repository following skills/loop/SKILL.md to achieve the target objective in docs/knowledge/profile.yaml."
    ```
-3. **Execution Features**:
-   - The agent uses `run_command` for background tasks (`WaitMsBeforeAsync`).
-   - The agent generates structured plans as artifacts (`ArtifactMetadata`).
+   *(Note: This uses the specialized in-session `/loop` skill, cleanly separated from Antigravity's native `/goal` command to prevent any behavioral or naming collisions.)*
+   
+   The agent autonomously:
+   1. Reads `docs/knowledge/index.md` and `profile.yaml` to orient paths, metrics, and closed frontiers.
+   2. Follows the dispatch priority ladder (defect > uncovered front > diagnosed gap > mechanism).
+   3. Consumes only byte-bounded projections (<= 2500 bytes per artifact); never writes ad-hoc extraction scripts.
+   4. Formulates minimal falsifiable candidates, committing working tree before evaluating.
+   5. Enforces dual-gate verification (primary metric improvement + zero invariant regressions).
+   6. Records findings in `docs/knowledge/decisions/`, updates `coverage.json` and `loop.json`, and recurs immediately without conversational chatter.
+3. **Native Execution Features**:
+   - The agent operates continuously under `/loop` until completion criteria are met or genuinely blocked.
+   - The agent uses `invoke_subagent` to delegate raw artifact digestion and multi-file exploration to read-only subagents, consuming only compact summaries (<= 2500 bytes).
    - The agent maintains absolute token frugality and zero conversational chatter.
 
 ---

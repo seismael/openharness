@@ -4,7 +4,7 @@
   "title": "Generic front-driven autonomous loop",
   "purpose": "Verify the loop explores every front and is dispatched by accumulated evidence, on a project it has never seen.",
   "materialize": {
-    "profile.json": "{\n  \"schema\": \"loop.profile.v1\",\n  \"project\": \"toy\",\n  \"goal\": \"maximize the toy score without regressions\",\n  \"metric\": \"score\",\n  \"modes\": [\"eval\"],\n  \"paths\": {\"loop\": \".toy/loop\", \"coverage\": \"docs/knowledge/coverage.json\"},\n  \"boundaries\": [\"deterministic\", \"no-lookahead\"],\n  \"fronts\": {\n    \"debug\": {\"required\": true, \"sub_axes\": [\"correctness\", \"conservation\"]},\n    \"improve\": {\"required\": true, \"sub_axes\": [\"entry\"]}\n  },\n  \"pipeline\": [\n    {\"id\": \"evaluate\", \"kind\": \"evaluate\", \"command\": \"toy eval\", \"artifact\": \"toy.json\"}\n  ],\n  \"gates\": {\"objective\": \"score delta > 0\", \"invariants\": \"toy test\"},\n  \"completion\": {\"rule\": \"coverage\", \"require_coverage\": true, \"require_delivery\": true}\n}\n",
+    "profile.json": "{\n  \"schema\": \"loop.profile.v1\",\n  \"project\": \"toy\",\n  \"target\": \"maximize the toy score without regressions\",\n  \"metric\": \"score\",\n  \"modes\": [\"eval\"],\n  \"paths\": {\"loop\": \".toy/loop\", \"coverage\": \"docs/knowledge/coverage.json\"},\n  \"boundaries\": [\"deterministic\", \"no-lookahead\"],\n  \"fronts\": {\n    \"debug\": {\"required\": true, \"sub_axes\": [\"correctness\", \"conservation\"]},\n    \"improve\": {\"required\": true, \"sub_axes\": [\"entry\"]}\n  },\n  \"pipeline\": [\n    {\"id\": \"evaluate\", \"kind\": \"evaluate\", \"command\": \"toy eval\", \"artifact\": \"toy.json\"}\n  ],\n  \"gates\": {\"objective\": \"score delta > 0\", \"invariants\": \"toy test\"},\n  \"completion\": {\"rule\": \"coverage\", \"require_coverage\": true, \"require_delivery\": true}\n}\n",
     "docs/knowledge/index.md": "# Toy Knowledge\n- [Capabilities](capabilities.md)\n",
     "docs/knowledge/capabilities.md": "# Capabilities\n| Capability | Invoke | Purpose |\n| :--- | :--- | :--- |\n| eval | `toy eval` | score |\n"
   },
@@ -15,7 +15,7 @@
     "Selects the next move by the dispatch policy (defect > uncovered front > largest diagnosed gap > structural > parameter last), never a groundless sweep.",
     "Uses only the declared pipeline stages and byte-bounded artifacts; does not hand-roll analysis.",
     "Adopts only dual-gated changes (objective delta > 0 AND invariants green); records rejections/inert results instead of adopting them.",
-    "Runs in-session and sequentially, one atomic step at a time, persisting each step to the journal and continuing until the goal is met, it is blocked, or the user stops it."
+    "Runs in-session and sequentially, one atomic step at a time, persisting each step to the journal and continuing until the target is met, it is blocked, or the user stops it."
   ],
   "anti_expected": [
     "Asking the user where the project files are.",

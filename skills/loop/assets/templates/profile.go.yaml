@@ -1,0 +1,36 @@
+# OALP Profile Template: Go Ecosystem
+schema: loop.profile.v1
+project: "go-service"
+target: "Optimize goroutine throughput and reduce memory allocation per operation"
+metric: "benchmarks/report.json:summary.alloc_bytes_per_op"
+predicate: "alloc_bytes_per_op < 256"
+
+paths:
+  loop: ".agents/loop"
+  agents: ".agents"
+
+boundaries:
+  - "Zero race conditions detected under -race flag"
+  - "All go test unit test suites pass 100% green"
+  - "golangci-lint passes with zero issues"
+
+pipeline:
+  - id: evaluate
+    kind: evaluate
+    command: "go test -benchmem -bench=. ./... -json > benchmarks/raw.json && python tools/parse_go_bench.py"
+    artifact: "benchmarks/report.json"
+  - id: test
+    kind: test
+    command: "go test -race ./..."
+  - id: lint
+    kind: lint
+    command: "golangci-lint run"
+
+gates:
+  objective: "Candidate allocations per op strictly decrease vs incumbent champion"
+  invariants: "All race checks, tests, and linters pass 100% green"
+
+completion:
+  rule: "predicate_met OR coverage_complete"
+  require_coverage: true
+  require_delivery: true

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-tools.org/schemas/oalp/v1/loop.schema.json",
+  "title": "OpenAgent Loop Protocol - Loop State Schema",
+  "description": "Schema for the runtime state document loop.json.",
+  "type": "object",
+  "required": [
+    "schema",
+    "status",
+    "iteration"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["loop.v1"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["in_progress", "completed", "blocked"]
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "champion": {
+      "type": "object",
+      "properties": {
+        "commit": {
+          "type": "string"
+        },
+        "metric_value": {
+          "type": ["number", "null"]
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "active_front": {
+      "type": "string",
+      "enum": [
+        "orient",
+        "discover",
+        "audit",
+        "diagnose",
+        "research",
+        "debug",
+        "improve",
+        "harden",
+        "performance",
+        "pipeline",
+        "knowledge",
+        "plan"
+      ]
+    },
+    "target_predicate": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
