@@ -75,10 +75,17 @@ and [project profile](references/project-profile.md).
   trade ticks, or multi-megabyte artifacts into context. Consume only byte-bounded projections
   (≤ 2,500 bytes per artifact) from canonical pipeline commands. Never write ad-hoc extraction
   scripts to the project root; keep temporary scratch work strictly inside `.agents/loop/scratch/`.
-- **Specialist Agent Orchestration**: Delegate breadth, deep AST searches, and large log digestion
-  to read-only specialized subagents (`.agents/subagents/`). Subagents return strictly bounded
-  summaries (≤ 2,500 bytes with exact `path:line` evidence); only the main session director applies
-  and commits changes.
+- **Specialist Agent Orchestration & Mandatory Delegation**: The parent session is strictly the executive
+  director that holds state, evaluates dual gates, and commits changes. Exploratory codebase searches (> 3 files),
+  deep AST pattern audits, and parsing logs/artifacts > 50 KB MUST be delegated to read-only specialized subagents
+  (`.agents/subagents/` or host `.opencode/agent/`: `diagnostician`, `architect`, `verifier`, `synthesizer`, `researcher`).
+  Subagents execute in isolated context windows and return strictly bounded summaries (≤ 2,500 bytes with exact
+  `path:line` evidence), completely insulating the parent session from context bloat and compaction.
+- **Dynamic Domain Skill Activation**: Never rely on naive pretraining when specialized skills are registered.
+  Before initiating work on a specialized engineering front, the engine MUST inspect available environment skills
+  and dynamically invoke the matching skill (e.g. `skill({ id: "entry-gate-diagnosis" })` for missed entries,
+  `skill({ id: "exit-quality-diagnosis" })` for give-backs, `skill({ id: "cross-cell-generalization" })` for multi-cell
+  evaluations, or `skill({ id: "experiment-design" })` for batch matrix design).
 - **Frontier Discipline & Closed Axes**: In the Orient phase, always review prior outcomes in
   `decisions/` and the `do_not_repeat` registry in `.loop/loop.json`. Never re-sweep an axis already
   proven exhausted or economically closed without fresh structural evidence.

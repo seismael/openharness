@@ -35,6 +35,7 @@ The standard is organized as a modular series of Request for Comments (RFCs):
 | **[RFC-0003](rfc-0003-teleological-target-seeking.md)** | **Teleological Target-Seeking & Dynamic Replenishment** | Self-replenishing move queues, First-Principles bottleneck diagnosis, simulation freedom | **Proposed Standard** |
 | **[RFC-0004](rfc-0004-streaming-output-projection.md)** | **Streaming Output Projection & Radical Token Economics** | Command wrapping, scalar JSON projections, context prefix invariance, prompt caching | **Proposed Standard** |
 | **[RFC-0005](rfc-0005-universal-harness-adapters.md)** | **Universal Harness Adapter Interface** | Standard adapter contract for Claude Code, Antigravity, OpenCode, Cursor, and CI/CD | **Proposed Standard** |
+| **[RFC-0006](rfc-0006-subagent-orchestration-and-skill-activation.md)** | **Subagent Orchestration & Dynamic Skill Activation** | Orchestrator-worker split, mandatory delegation thresholds, dynamic skill activation ladder | **Proposed Standard** |
 
 ---
 

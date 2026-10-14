@@ -50,6 +50,18 @@ next step" the policy forbids.
      - *Cross-Sectional / Regime Decomposition*: Decompose performance by component/asset/regime to isolate persistent drags vs alpha drivers.
   3. Formulate 2–3 novel structural mechanisms or filter relaxations from the diagnostic data.
   4. Replenish `plans/next_moves.json` and immediately dispatch the #1 ranked move.
+- **Dynamic Skill Activation & Subagent Delegation Ladder.** Never proceed with generic heuristics when
+  registered domain skills exist. Prior to dispatching work on an engineering front, the engine MUST
+  activate the corresponding skill via host tools (e.g. `skill({ id: "<skill>" })`) and delegate exploratory
+  sprawls (> 3 files or > 50 KB logs) to read-only subagents:
+  | Front / Operation | Mandatory Skill Invocation | Assigned Subagent Persona |
+  | :--- | :--- | :--- |
+  | Entry Gate Diagnosis | `entry-gate-diagnosis` | `diagnostician` |
+  | Exit Quality / MFE Forensics | `exit-quality-diagnosis` | `diagnostician` |
+  | Multi-Cell Cross-Validation | `cross-cell-generalization` | `verifier` |
+  | Experiment Matrix Batching | `experiment-design`, `matrix-analysis` | `architect` |
+  | Spec Alignment & Audit | `audit`, `knowledge` | `verifier` |
+  | Heavy Log Digestion | `characterize`, `oracle-divergence-diagnosis` | `synthesizer` |
 - **Simulation Freedom Invariant.** Documentation notes mentioning "operator-gated", "operator decision",
   or "manual approval" apply *strictly* to live production deployment. In headless research/evaluation
   mode (`eval`), the loop is **100% authorized and required** to prototype, simulate, and falsify any

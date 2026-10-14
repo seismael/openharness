@@ -36,6 +36,10 @@ class TestLoopScripts(unittest.TestCase):
         self.assertTrue((self.project_dir / ".agents" / "loop" / "knowledge" / "index.md").is_file())
         self.assertTrue((self.project_dir / ".agents" / "subagents" / "diagnostician.yaml").is_file())
         self.assertTrue((self.project_dir / ".agents" / "subagents" / "architect.yaml").is_file())
+        self.assertTrue((self.project_dir / ".opencode" / "agent" / "diagnostician.md").is_file())
+        self.assertTrue((self.project_dir / ".opencode" / "agent" / "architect.md").is_file())
+        self.assertTrue((self.project_dir / ".opencode" / "agent" / "verifier.md").is_file())
+        self.assertTrue((self.project_dir / ".opencode" / "agent" / "synthesizer.md").is_file())
 
         # 3. Check loop.json and env.json content
         loop_data = json.loads((self.project_dir / ".agents" / "loop" / "loop.json").read_text(encoding="utf-8"))

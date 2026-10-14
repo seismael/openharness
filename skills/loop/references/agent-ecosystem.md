@@ -67,19 +67,31 @@ smart contract formal verification), it dynamically builds a new specialist unde
    - System prompt with domain axioms and boundary constraints.
    - Required read-only tools.
    - Strict return format contract (≤ 2,500 bytes with line references).
-3. **Invoke**: In Antigravity or compatible hosts, invoke via `invoke_subagent` or host delegation:
-   ```yaml
-   Subagent:
-     TypeName: research
-     Role: "GPU Kernel Profiler"
-     Prompt: "Analyze kernel execution timeline in .loop/scratch/profile.json. Identify top warp stall."
-   ```
-4. **Consume Bounded Output**: The main director ingests only the compact summary and applies the change.
+3. **Invoke across Harnesses**:
+   - **Antigravity / Generic**:
+     ```yaml
+     Subagent:
+       TypeName: research
+       Role: "Causal Forensics Specialist"
+       Prompt: "Analyze missed trades in .agents/loop/scratch/gap.json. Identify top 3 suppressions with path:line."
+     ```
+   - **OpenCode**:
+     ```javascript
+     subagent({
+       agent: "diagnostician", // or "researcher", "verifier", "synthesizer"
+       description: "Analyze missed trades in gap.json",
+       prompt: "OBJECTIVE: Produce <= 20 lines identifying top 3 suppressions with path:line evidence. Read-only."
+     })
+     ```
+   - **Claude Code / MCP**:
+     Invoke `run_command` via isolated child agent or MCP subagent server.
+4. **Consume Bounded Output**: The main director ingests only the compact summary (<= 2,500 bytes) and applies the change.
 
 ---
 
 ## 4. Director-Only Write Invariant
 
 To guarantee absolute determinism and prevent race conditions:
-- **Subagents are read-only analysts.** They never edit files, stage commits, or push branches.
+- **Subagents are strictly read-only analysts.** They never edit files, stage commits, or push branches.
 - **The main session Director is the sole writer.** It reviews evidence from specialists, applies the minimal surgical diff, commits the pre-evaluation snapshot, and executes adoption.
+- **Context Protection Guarantee:** Heavy file scans (> 3 files) and multi-megabyte artifact parsing (> 50 KB) MUST be executed in subagents, shielding the Director's context window from explosive token expansion.
