@@ -41,6 +41,10 @@ next step" the policy forbids.
   re-rank. Repeatedly re-testing the same rejected class is a policy violation.
 - **Respect the bounded frontier.** When a class of candidates is empirically exhausted,
   say so with evidence and move to a higher-leverage class.
+- **Cognitive Depth Escalation (RFC-0007).** If two (2) consecutive evaluations at Cognitive Tier $N$
+  fail or yield $< 1\%$ improvement, Tier $N$ is declared saturated. The engine is algorithmically prohibited
+  from dispatching another Tier $N$ move and MUST escalate to Tier $N+1$ (Tier 1 Parameter $\rightarrow$
+  Tier 2 Algorithmic $\rightarrow$ Tier 3 Subsystem $\rightarrow$ Tier 4 First-Principles).
 - **Never Halt on Closed Lists (Self-Replenishing Queue Protocol).** The target is an outcome,
   not a static checklist. When every candidate on the active list has reached a terminal outcome:
   1. The engine MUST NOT halt, yield the turn, or declare "nothing to do".

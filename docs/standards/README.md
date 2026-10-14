@@ -36,6 +36,8 @@ The standard is organized as a modular series of Request for Comments (RFCs):
 | **[RFC-0004](rfc-0004-streaming-output-projection.md)** | **Streaming Output Projection & Radical Token Economics** | Command wrapping, scalar JSON projections, context prefix invariance, prompt caching | **Proposed Standard** |
 | **[RFC-0005](rfc-0005-universal-harness-adapters.md)** | **Universal Harness Adapter Interface** | Standard adapter contract for Claude Code, Antigravity, OpenCode, Cursor, and CI/CD | **Proposed Standard** |
 | **[RFC-0006](rfc-0006-subagent-orchestration-and-skill-activation.md)** | **Subagent Orchestration & Dynamic Skill Activation** | Orchestrator-worker split, mandatory delegation thresholds, dynamic skill activation ladder | **Proposed Standard** |
+| **[RFC-0007](rfc-0007-cognitive-depth-ladder.md)** | **Cognitive Depth Ladder & First-Principles Escalation** | 4-tier abstraction hierarchy, mandatory depth escalation, local minima saturation rules | **Proposed Standard** |
+| **[RFC-0008](rfc-0008-dynamic-tool-synthesis.md)** | **Dynamic Tool & Capability Synthesis Protocol** | Just-in-time tool authoring, scratch-to-helper promotion, environment manifest registration | **Proposed Standard** |
 
 ---
 

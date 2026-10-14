@@ -100,12 +100,36 @@ fuzzing, or unmeasured code edits. Every move follows a 5-phase cognitive discip
 
 ---
 
-## 4. Indexed Memory & Token Frugality
+## 4. The 4-Tier Cognitive Depth Ladder & Depth Escalation (RFC-0007)
+
+To prevent cognitive stagnation and local minima traps:
+
+1. **Tier 1 (Surface Parameter Tuning)**: Modifying thresholds, multipliers, or config constants.
+2. **Tier 2 (Structural & Algorithmic Diffs)**: Changing execution order, adding protective ratchets, replacing data structures, caching hot paths.
+3. **Tier 3 (Subsystem & Interface Decoupling)**: Refactoring state machines, isolating execution boundaries, asynchronous ring-buffers.
+4. **Tier 4 (First-Principles & Mathematical Reformulation)**: Interrogating metric definitions, correcting denominator biases, causal loss counterfactuals.
+
+**Mandatory Depth Escalation Rule:** If two consecutive evaluations at Tier $N$ fail or improve the target by $< 1\%$, Tier $N$ is declared saturated. The engine is algorithmically blocked from dispatching another Tier $N$ move and MUST escalate to Tier $N+1$.
+
+---
+
+## 5. Autonomous Tool Promotion & Scaffolding Lifecycle (RFC-0008)
+
+When the engine identifies a missing diagnostic, verification, or profiling capability:
+1. **Author Sandboxed Probe**: Write a Python/script probe inside `.agents/loop/scratch/`.
+2. **Audit for Determinism**: Ensure zero external dependencies, robust argument parsing, and $\le 2,500$ bytes output.
+3. **Promote to Scripts**: Promote the file to `.agents/loop/scripts/<tool>.py`.
+4. **Register in Manifest**: Add tool command to `.agents/loop/env.json` and document in `capabilities.md`.
+
+---
+
+## 6. Indexed Memory & Token Frugality
 
 To ensure the loop can run endlessly across dozens or hundreds of iterations without context degradation:
 
 - **Index-First Navigation**: The Map of Content (`.loop/knowledge/index.md`) stays strictly bounded under 2,048 bytes (< 400 tokens). Agents read the index first and open only the specific topic leaf needed.
 - **Bounded Projections**: Evaluator and tool outputs are capped at ≤ 2,500 bytes. Multi-megabyte raw logs are digested by subagents or piped to summary JSON.
+- **Semantic AST Slicing**: Code inspection uses AST function extractors (`ast_slice.py`) to read only the relevant target function ($\le 250$ tokens) rather than entire 1,000+ line files.
 - **Append-Only Auditing**: Decisions and lessons are persisted to disk in append-only files rather than retained in conversational history.
 
 ---

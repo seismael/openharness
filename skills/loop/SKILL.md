@@ -86,6 +86,17 @@ and [project profile](references/project-profile.md).
   and dynamically invoke the matching skill (e.g. `skill({ id: "entry-gate-diagnosis" })` for missed entries,
   `skill({ id: "exit-quality-diagnosis" })` for give-backs, `skill({ id: "cross-cell-generalization" })` for multi-cell
   evaluations, or `skill({ id: "experiment-design" })` for batch matrix design).
+- **4-Tier Cognitive Depth Ladder & Depth Escalation**: Classify every hypothesis into Tier 1 (Surface Parameters),
+  Tier 2 (Structural & Algorithmic Diffs), Tier 3 (Subsystem & Interface Decoupling), or Tier 4 (First-Principles &
+  Mathematical Reformulation). If two (2) consecutive evaluations at Tier $N$ fail or improve the target by $< 1\%$,
+  the engine is prohibited from continuing at Tier $N$ and MUST escalate to Tier $N+1$ — see
+  [self-evolution](references/self-evolution.md).
+- **JIT Capability & Tool Synthesis**: When a diagnostic or verification capability is missing, author a sandboxed
+  probe in `.agents/loop/scratch/`. If proven reusable across iterations, promote it to a deterministic helper in
+  `.agents/loop/scripts/` and register in `env.json` and `capabilities.md`. The loop autonomously expands its own tool suite.
+- **Semantic AST Slicing & Token Minimization**: When reading code, NEVER ingest entire multi-hundred-line files.
+  Use AST function extractors (`python .agents/loop/scripts/ast_slice.py <file> <symbol>`) or targeted line slices
+  to inspect only the relevant function, method, or class definition ($\le 250$ tokens).
 - **Frontier Discipline & Closed Axes**: In the Orient phase, always review prior outcomes in
   `decisions/` and the `do_not_repeat` registry in `.loop/loop.json`. Never re-sweep an axis already
   proven exhausted or economically closed without fresh structural evidence.

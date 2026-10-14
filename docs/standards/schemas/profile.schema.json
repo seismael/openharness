@@ -89,6 +89,19 @@
         "invariants": {
           "type": "string",
           "description": "Rule defining passage of all safety and regression invariant test suites."
+        },
+        "guardrails": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["metric", "operator", "value"],
+            "properties": {
+              "metric": {"type": "string"},
+              "operator": {"type": "string", "enum": ["<", "<=", ">", ">=", "==", "!="]},
+              "value": {"type": ["number", "string", "boolean"]}
+            }
+          },
+          "description": "Pareto guardrails: non-regression constraints across auxiliary system dimensions."
         }
       },
       "additionalProperties": false

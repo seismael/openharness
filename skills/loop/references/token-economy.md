@@ -57,6 +57,16 @@ This reference codifies the **Six Non-Negotiable Pillars of Token Efficiency** e
 - **Mechanism**: Once an economic frontier is proven closed or exhausted, it is recorded with its mathematical bound.
   The dispatch ladder immediately prunes it from future consideration.
 
+### Pillar 6: Semantic AST Slicing (≤ 250 Tokens)
+- **Forbidden**: Never ingest entire multi-hundred-line source files into context when inspecting or verifying a function.
+- **Rule**: Extract only the target function, method, or class slice via `ast_slice.py` (`python .agents/loop/scripts/ast_slice.py <file> <symbol>`).
+- **Mechanism**: Eliminates 85–95% of file-reading token bloat, reducing context consumption from 5,000 tokens to under 250 tokens per lookup.
+
+### Pillar 7: Context Prefix Stabilization & Prompt Cache Maximization
+- **Forbidden**: Never inject dynamic timestamps or fluctuating instructions into the top of context.
+- **Rule**: Maintain static system instructions, `env.json`, and `profile.yaml` as an invariant prefix.
+- **Mechanism**: Triggers >90% KV-cache hits on modern LLM APIs (Anthropic, Gemini, OpenAI, DeepSeek), slashing latency and token inference costs by up to 90%.
+
 ---
 
 ## 2. Ultra-Lean Dynamic Step Projections (< 500 Tokens)
