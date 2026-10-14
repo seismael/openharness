@@ -1,6 +1,6 @@
 ---
 name: loop
-description: Autonomous continuous optimization engine for software, quantitative trading, and systems engineering. Takes a single target description via `/loop "<target>"` and runs endless autonomous iterative cycles of diagnosis, candidate formulation, pre-evaluation snapshot, dual-gate verification, and knowledge compounding without stopping or asking intermediate questions. Runs entirely in-session, sequentially and self-managed, with no external process or plugin.
+description: Autonomous continuous optimization engine for polyglot software engineering, distributed systems, and performance tuning. Takes a single target description via `/loop "<target>"` and runs endless autonomous iterative cycles of diagnosis, candidate formulation, pre-evaluation snapshot, dual-gate verification, and knowledge compounding without stopping or asking intermediate questions. Runs entirely in-session, sequentially and self-managed, with no external process or plugin.
 ---
 
 # Loop (Autonomous Continuous Optimization Engine)
@@ -83,9 +83,9 @@ and [project profile](references/project-profile.md).
   `path:line` evidence), completely insulating the parent session from context bloat and compaction.
 - **Dynamic Domain Skill Activation**: Never rely on naive pretraining when specialized skills are registered.
   Before initiating work on a specialized engineering front, the engine MUST inspect available environment skills
-  and dynamically invoke the matching skill (e.g. `skill({ id: "entry-gate-diagnosis" })` for missed entries,
-  `skill({ id: "exit-quality-diagnosis" })` for give-backs, `skill({ id: "cross-cell-generalization" })` for multi-cell
-  evaluations, or `skill({ id: "experiment-design" })` for batch matrix design).
+  and dynamically invoke the matching skill (e.g. `skill({ id: "latency-diagnosis" })` for bottleneck profiling,
+  `skill({ id: "leak-diagnosis" })` for resource leakage, `skill({ id: "matrix-analysis" })` for parameter sweeps,
+  or `skill({ id: "spec-audit" })` for formal interface audits).
 - **4-Tier Cognitive Depth Ladder & Depth Escalation**: Classify every hypothesis into Tier 1 (Surface Parameters),
   Tier 2 (Structural & Algorithmic Diffs), Tier 3 (Subsystem & Interface Decoupling), or Tier 4 (First-Principles &
   Mathematical Reformulation). If two (2) consecutive evaluations at Tier $N$ fail or improve the target by $< 1\%$,
@@ -103,8 +103,9 @@ and [project profile](references/project-profile.md).
 - **Autonomous Target-Seeking & Continuous Hypothesis Generation**: The target is an outcome,
   never a static checklist. When existing candidate parameters or axes are exhausted, the engine
   MUST NOT declare "nothing to do", halt, or yield the turn. Escalate immediately to
-  First-Principles Diagnostics (forensic analysis of suppressed signals, missing trades, MFE give-back,
-  and cross-sectional variance) to generate novel structural hypotheses and replenish the queue.
+  First-Principles Diagnostics (forensic analysis of root-cause bottlenecks, missed optimizations,
+  resource leakage, throughput degradation, and cross-workload variance) to generate novel structural
+  hypotheses and replenish the queue.
   Documentation notes mentioning "operator-gated" apply strictly to live production deployment;
   in headless simulation/EVAL, the engine has unrestricted authority to simulate and test anything.
 - **Coverage Guarantee**: Maintain the [coverage ledger](references/coverage-ledger.md):

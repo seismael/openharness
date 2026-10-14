@@ -2,7 +2,8 @@
 """Comprehensive conformance test suite for OpenAgent Loop Protocol (OALP).
 
 Verifies schema contracts, internal skill initialization tools, multi-language
-starter templates, and schema validator policies under complete isolation.
+starter templates, polyglot archetypes, deterministic environment manifests,
+and AST semantic code extraction under complete isolation.
 """
 
 import json
@@ -11,6 +12,7 @@ import shutil
 import tempfile
 import unittest
 
+from skills.loop.scripts.ast_slice import extract_python_symbol, extract_polyglot_symbol
 from skills.loop.scripts.init_loop import init_project
 from skills.loop.scripts.validate_loop import validate_loop, _load_yaml
 
@@ -72,6 +74,117 @@ class OALPConformanceTests(unittest.TestCase):
             # Validate using internal validator
             errors = validate_loop(proj_dir)
             self.assertEqual(errors, [], f"Template {tmpl} produced validation errors: {errors}")
+
+    def test_polyglot_archetype_deep_conformance(self):
+        """Verify 4 distinct polyglot project archetypes initialize with exact target semantics."""
+        archetypes = [
+            ("python", "Maximize inference batch throughput (> 1,000 samples/sec)", "python_bin"),
+            ("rust", "Eliminate all heap allocations on the hot path (zero alloc)", "test_cmd"),
+            ("go", "Reduce p99 database query latency under 5ms", "loop_dir"),
+            ("node", "Reduce initial bundle size under 150KB and TTFB under 80ms", "scratch_dir"),
+        ]
+
+        for tmpl, target_str, check_key in archetypes:
+            proj_dir = self.temp_dir / f"archetype_{tmpl}"
+            proj_dir.mkdir(parents=True)
+
+            rc = init_project(proj_dir, target=target_str, template=tmpl)
+            self.assertEqual(rc, 0)
+
+            loop_dir = proj_dir / ".agents" / "loop"
+
+            # Check env.json
+            env_file = loop_dir / "env.json"
+            self.assertTrue(env_file.is_file())
+            env_data = json.loads(env_file.read_text(encoding="utf-8"))
+            self.assertIn(check_key, env_data)
+            self.assertEqual(env_data["project_name"], proj_dir.name)
+
+            # Check loop.json target preservation
+            loop_data = json.loads((loop_dir / "loop.json").read_text(encoding="utf-8"))
+            self.assertEqual(loop_data["target"], target_str)
+            self.assertEqual(loop_data["status"], "ACTIVE")
+
+            # Check profile.yaml target substitution
+            profile_content = (loop_dir / "knowledge" / "profile.yaml").read_text(encoding="utf-8")
+            self.assertIn(target_str, profile_content)
+
+            # Check subagent personas are created in both .agents/subagents/ and .opencode/agent/
+            subagents_dir = proj_dir / ".agents" / "subagents"
+            self.assertTrue(subagents_dir.is_dir())
+            opencode_dir = proj_dir / ".opencode" / "agent"
+            self.assertTrue(opencode_dir.is_dir())
+            for persona in ["diagnostician", "architect", "verifier", "synthesizer"]:
+                self.assertTrue((opencode_dir / f"{persona}.md").is_file(), f"Missing OpenCode persona: {persona}")
+                self.assertTrue((subagents_dir / f"{persona}.yaml").is_file(), f"Missing subagent persona: {persona}")
+
+    def test_polyglot_ast_slicing_integration(self):
+        """Verify zero-dependency AST semantic slicing across Python, Rust, Go, and TypeScript."""
+        # 1. Python Native AST
+        py_code = (
+            "import os\n\n"
+            "class Engine:\n"
+            "    def run(self):\n"
+            "        pass\n\n"
+            "def optimize_hot_path(x: int) -> int:\n"
+            "    # Critical loop\n"
+            "    y = x * 2\n"
+            "    return y + 1\n\n"
+            "def secondary():\n"
+            "    pass\n"
+        )
+        res_py = extract_python_symbol(py_code, "engine.py", "optimize_hot_path")
+        self.assertIsNotNone(res_py)
+        self.assertEqual(res_py["symbol"], "optimize_hot_path")
+        self.assertEqual(res_py["kind"], "function")
+        self.assertEqual(res_py["start_line"], 7)
+        self.assertEqual(res_py["end_line"], 10)
+        self.assertIn("return y + 1", res_py["code"])
+
+        # 2. Rust polyglot fallback
+        rust_code = (
+            "use std::sync::Arc;\n\n"
+            "pub fn process_event(event_id: u64) -> Result<(), Error> {\n"
+            "    let payload = fetch(event_id)?;\n"
+            "    validate(&payload);\n"
+            "    Ok(())\n"
+            "}\n\n"
+            "fn auxiliary() {}\n"
+        )
+        res_rust = extract_polyglot_symbol(rust_code, "lib.rs", "process_event")
+        self.assertIsNotNone(res_rust)
+        self.assertEqual(res_rust["symbol"], "process_event")
+        self.assertEqual(res_rust["start_line"], 3)
+        self.assertEqual(res_rust["end_line"], 7)
+        self.assertIn("validate(&payload)", res_rust["code"])
+
+        # 3. Go polyglot fallback
+        go_code = (
+            "package main\n\n"
+            "func RouteQuery(ctx context.Context, q string) (*Result, error) {\n"
+            "    resp := execute(q)\n"
+            "    return resp, nil\n"
+            "}\n"
+        )
+        res_go = extract_polyglot_symbol(go_code, "main.go", "RouteQuery")
+        self.assertIsNotNone(res_go)
+        self.assertEqual(res_go["symbol"], "RouteQuery")
+        self.assertEqual(res_go["start_line"], 3)
+        self.assertEqual(res_go["end_line"], 6)
+
+        # 4. TypeScript/Node polyglot fallback
+        ts_code = (
+            "import { Request, Response } from 'express';\n\n"
+            "export function handleMetrics(req: Request, res: Response) {\n"
+            "    const report = buildReport();\n"
+            "    res.json(report);\n"
+            "}\n"
+        )
+        res_ts = extract_polyglot_symbol(ts_code, "handler.ts", "handleMetrics")
+        self.assertIsNotNone(res_ts)
+        self.assertEqual(res_ts["symbol"], "handleMetrics")
+        self.assertEqual(res_ts["start_line"], 3)
+        self.assertEqual(res_ts["end_line"], 6)
 
     def test_validate_detects_missing_seam(self):
         """Verify validate_loop reports an error when profile.yaml is missing."""

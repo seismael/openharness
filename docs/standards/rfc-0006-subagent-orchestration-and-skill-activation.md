@@ -56,11 +56,11 @@ OALP mandates a strict functional separation between executive decisions and exp
                ▼                               ▼
 ┌─────────────────────────────┐ ┌─────────────────────────────┐
 │     SPECIALIZED WORKERS     │ │    DYNAMIC DOMAIN SKILLS    │
-│  - Diagnostician (Forensics)│ │  - entry-gate-diagnosis     │
-│  - Architect (Design/Specs) │ │  - exit-quality-diagnosis   │
-│  - Verifier (Gate Audits)   │ │  - cross-cell-generalization│
-│  - Synthesizer (Log Bounds) │ │  - experiment-design        │
-│  * Output: <= 2,500 bytes   │ │  * Loaded on demand         │
+│  - Diagnostician (Forensics)│ │  - Latency / Profiling      │
+│  - Architect (Design/Specs) │ │  - Resource Leak Diagnosis  │
+│  - Verifier (Gate Audits)   │ │  - Cross-Workload Matrix    │
+│  - Synthesizer (Log Bounds) │ │  - Formal Specification     │
+│  * Output: <= 2,500 bytes   │ │  * Loaded dynamically       │
 └─────────────────────────────┘ └─────────────────────────────┘
 ```
 
@@ -71,7 +71,7 @@ OALP mandates a strict functional separation between executive decisions and exp
 An OALP Orchestrator **MUST NOT** perform deep exploration or large-scale data digestion directly in its main conversation turn. An Orchestrator **SHALL** delegate the task to a read-only subagent whenever any of the following conditions are met:
 
 1. **Broad File System Exploration:** Any task requiring inspection or pattern-matching across $> 3$ files where the target path is not pre-known.
-2. **Heavy File Digestion:** Reading or parsing any log, dataset partition, or ledger exceeding $50\text{ KB}$ (e.g. `trades.jsonl`, `protection.jsonl`, `decisions.jsonl`).
+2. **Heavy File Digestion:** Reading or parsing any log, dataset partition, or ledger exceeding $50\text{ KB}$ (e.g. `traces.jsonl`, `metrics.jsonl`, `decisions.jsonl`).
 3. **Spec Alignment & Cross-Reference Sweeps:** Auditing adherence across multiple normative documents or work packages.
 4. **Multi-Step Diagnostic Probing:** Formulating counterfactual loss attribution that requires multi-query iterative scripting.
 
@@ -85,21 +85,21 @@ When dispatching a subagent, the Orchestrator MUST enforce:
 
 ---
 
-## 5. Dynamic Skill Activation Ladder
+## 5. Generic Semantic Front-to-Skill Matching Protocol
 
-An engine operating within an environment exposing modular domain skills MUST NOT ignore registered skills. The Orchestrator SHALL invoke the appropriate skill using the host runtime's skill activation interface (e.g., `skill({ id: "<skill>" })`) prior to executing work on the corresponding front.
+An OALP Orchestrator operating within an environment exposing modular domain skills MUST NOT ignore registered skills. Prior to dispatching work on an engineering front, the Orchestrator SHALL dynamically inspect available host skills (`.agents/skills/`, `.opencode/skills/`, or host tools) and bind them to the active engineering front according to their semantic archetypes.
 
-### 5.1 Canonical Front-to-Skill Dispatch Matrix
+### 5.1 Canonical Semantic Front-to-Skill Dispatch Matrix
 
-| Engineering Front | Objective / Operation | Mandatory Skill Invocation | Dedicated Persona |
+| Canonical Front | Target Objective / Operation | Matched Domain Skill Archetype | Dedicated Persona |
 | :--- | :--- | :--- | :--- |
-| **`diagnose`** | Missed Entry Investigation / Causal Losses | `entry-gate-diagnosis` | `diagnostician` |
-| **`diagnose`** | MFE Give-Back / Exit Quality Forensics | `exit-quality-diagnosis` | `diagnostician` |
-| **`research`** | Theoretical Gap / Dynamic Programming Divergence | `oracle-divergence-diagnosis` | `synthesizer` |
-| **`improve`** | Cross-Cell / Multi-Regime Generalization | `cross-cell-generalization` | `verifier` |
-| **`improve`** | Hypothesis Matrix & Variant Batching | `experiment-design`, `matrix-analysis` | `architect` |
-| **`audit`** | Specification Integrity & Invariant Compliance | `audit`, `knowledge` | `verifier` |
-| **`harden`** | Flaky Test Removal & Determinism Verification | `validation-holdout-discipline` | `verifier` |
+| **`diagnose`** | Bottleneck profiling, latency decomposition, error clustering | `*-diagnosis`, `*-profiling`, `*-metrics` | `diagnostician` |
+| **`audit`** | Interface compliance, safety boundary checks, static linting | `*-audit`, `*-lint`, `*-security` | `verifier` |
+| **`research`** | Theoretical bounds, literature/spec review, capability mining | `*-research`, `*-spec`, `*-oracle` | `synthesizer` |
+| **`improve`** | Algorithmic refactoring, caching, data structure optimization | `*-optimization`, `*-refactor`, `*-tuning` | `architect` |
+| **`harden`** | Regression defense, determinism checks, edge-case testing | `*-validation`, `*-fuzzing`, `*-testing` | `verifier` |
+| **`pipeline`** | Build system, CI matrix, receipt aggregation | `*-pipeline`, `*-ci`, `*-build` | `synthesizer` |
+| **`knowledge`** | Map of Content indexing, invariant compounding | `knowledge`, `*-docs` | `synthesizer` |
 
 ---
 
@@ -112,3 +112,19 @@ To guarantee complete portability across agent harnesses, project scaffolding MU
 3. **Antigravity / Generic OALP:** Materialized as declarative YAML descriptors in `.agents/subagents/<name>.yaml`.
 
 Scaffolding tools (such as `skills/loop/scripts/init_loop.py`) MUST generate both `.agents/subagents/*.yaml` and `.opencode/agent/*.md` to ensure zero runtime friction across all environments.
+
+---
+
+## 7. Non-Normative Case Study: High-Frequency Systems Skill Mapping
+
+> [!NOTE]
+> The mapping below illustrates how a complex real-world project (such as a high-frequency trading platform) binds its domain-specific skills into OALP's generic canonical fronts.
+
+| Canonical Front | Real-World Domain Skill | Assigned Role |
+| :--- | :--- | :--- |
+| `diagnose` | `entry-gate-diagnosis` (missed opportunities) | Diagnostician |
+| `diagnose` | `exit-quality-diagnosis` (peak vs realized metric give-back) | Diagnostician |
+| `improve` | `cross-cell-generalization` (multi-asset evaluation) | Verifier |
+| `improve` | `experiment-design` (combinatorial matrix testing) | Architect |
+| `research` | `oracle-divergence-diagnosis` (theoretical limit analysis) | Synthesizer |
+| `harden` | `validation-holdout-discipline` (overfitting prevention) | Verifier |

@@ -147,17 +147,17 @@ Every step or turn executed by the engine MUST append exactly one JSON object to
   "ts": "2026-10-14T01:39:12Z",
   "iteration": 72,
   "front": "improve",
-  "hypothesis": "Apply continuous linear drawdown throttle to allocate capital proportional to drawdown severity",
+  "hypothesis": "Replace coarse-grained table lock with lock-free concurrent hash ring for partition routing",
   "candidate_commit": "a23fdcd",
-  "metric_before": 1042.50,
-  "metric_after": 999.03,
-  "decision": "rejected",
+  "metric_before": 1420.50,
+  "metric_after": 1985.20,
+  "decision": "adopted",
   "decision_ref": "D-190",
   "invariant_checks": {
     "unit_tests": "PASS",
-    "float_parity": "PASS"
+    "memory_safety": "PASS"
   },
-  "rationale": "Drawdown scale reduced drawdown by 6.2pp but starved recovery entries during regime transitions, resulting in net PnL degradation (-43.47 USDT)."
+  "rationale": "Eliminated reader lock contention on high-concurrency partition lookups, increasing throughput by +39.7% with zero regression on race detectors."
 }
 ```
 
@@ -255,9 +255,10 @@ A central design defect of early AI agents is halting when a pre-configured move
 
 1. **Mandatory Continuation:** If all items in `plans/next_moves.json` have reached a terminal outcome (adopted or rejected) and the target predicate is not satisfied, the engine SHALL NOT halt.
 2. **First-Principles Diagnostic Escalation:** The engine MUST transition to the `diagnose` or `research` front:
-   - In quantitative or financial models: Analyze suppressed entry candles, opportunity costs, and MFE give-backs.
-   - In web/microservices: Analyze latency breakdown by subsystem, flamegraphs, and thread contention.
-   - In compilers/runtimes: Inspect instruction caches, memory layout, and branch prediction misses.
+   - In distributed systems & datastores: Analyze connection pool starvation, lock contention, and queue backlog give-backs.
+   - In quantitative & numerical engines: Analyze suppressed potential, opportunity costs, and peak-to-realized metric give-backs.
+   - In web & microservices: Analyze latency breakdown by subsystem, flamegraphs, and thread contention.
+   - In compilers & systems runtimes: Inspect instruction caches, memory layout, and branch prediction misses.
 3. **Queue Replenishment:** From the diagnostic findings, the engine MUST synthesize 2–3 new structural hypotheses, insert them into `plans/next_moves.json`, and immediately resume the dispatch cycle.
 4. **Simulation Freedom Invariant:** Annotations or documentation mentioning "operator-gated" or "requires human decision" apply strictly to live production environments. In headless evaluation (`eval` simulation), an OALP engine possesses **100% unconditional authorization** to simulate, benchmark, prototype, and falsify any architectural candidate.
 

@@ -49,23 +49,24 @@ next step" the policy forbids.
   not a static checklist. When every candidate on the active list has reached a terminal outcome:
   1. The engine MUST NOT halt, yield the turn, or declare "nothing to do".
   2. The engine must immediately escalate up the abstraction ladder to **First-Principles Diagnostics**:
-     - *Leakage / Give-Back Forensics*: Quantify where the objective metric is lost (e.g. MFE peak vs realized exit give-back).
-     - *Suppressed Potential / Funnel Forensics*: Quantify candidate signals or inputs that were filtered out but had positive expectancy (the "missing trades" vector).
-     - *Cross-Sectional / Regime Decomposition*: Decompose performance by component/asset/regime to isolate persistent drags vs alpha drivers.
+     - *Leakage / Degradation Forensics*: Quantify where the objective metric is lost (e.g. theoretical peak throughput vs realized p99 latency, cache hit degradation vs memory bandwidth).
+     - *Suppressed Potential / Funnel Forensics*: Quantify candidate code paths, requests, or transactions that were filtered or throttled out but had positive value (missed throughput vector).
+     - *Cross-Sectional / Workload Decomposition*: Decompose performance by component/subsystem/workload to isolate persistent drags vs performance drivers.
   3. Formulate 2–3 novel structural mechanisms or filter relaxations from the diagnostic data.
   4. Replenish `plans/next_moves.json` and immediately dispatch the #1 ranked move.
 - **Dynamic Skill Activation & Subagent Delegation Ladder.** Never proceed with generic heuristics when
   registered domain skills exist. Prior to dispatching work on an engineering front, the engine MUST
-  activate the corresponding skill via host tools (e.g. `skill({ id: "<skill>" })`) and delegate exploratory
-  sprawls (> 3 files or > 50 KB logs) to read-only subagents:
-  | Front / Operation | Mandatory Skill Invocation | Assigned Subagent Persona |
-  | :--- | :--- | :--- |
-  | Entry Gate Diagnosis | `entry-gate-diagnosis` | `diagnostician` |
-  | Exit Quality / MFE Forensics | `exit-quality-diagnosis` | `diagnostician` |
-  | Multi-Cell Cross-Validation | `cross-cell-generalization` | `verifier` |
-  | Experiment Matrix Batching | `experiment-design`, `matrix-analysis` | `architect` |
-  | Spec Alignment & Audit | `audit`, `knowledge` | `verifier` |
-  | Heavy Log Digestion | `characterize`, `oracle-divergence-diagnosis` | `synthesizer` |
+  inspect host capabilities (`.agents/skills/`, `.opencode/skills/`, or host tools) and activate the corresponding
+  skill via host tools (e.g. `skill({ id: "<skill>" })`). Exploratory sprawls (> 3 files or > 50 KB logs) MUST
+  be delegated to read-only subagents:
+  | Canonical Engineering Front | Target Objective / Operation | Matched Domain Skill Archetype | Assigned Subagent Persona |
+  | :--- | :--- | :--- | :--- |
+  | **`diagnose`** | Bottleneck profiling, latency decomposition, error clustering | `*-diagnosis`, `*-profiling`, `*-metrics` | `diagnostician` |
+  | **`audit`** | Interface compliance, safety boundary checks, linting | `*-audit`, `*-lint`, `*-security` | `verifier` |
+  | **`research`** | Theoretical bounds, literature/spec review, capability mining | `*-research`, `*-spec`, `*-oracle` | `synthesizer` |
+  | **`improve`** | Algorithmic refactoring, caching, data structure optimization | `*-optimization`, `*-refactor`, `*-tuning` | `architect` |
+  | **`harden`** | Regression defense, determinism checks, edge-case testing | `*-validation`, `*-fuzzing`, `*-testing` | `verifier` |
+  | **`pipeline`** | Build system, CI matrix, receipt aggregation | `*-pipeline`, `*-ci`, `*-build` | `synthesizer` |
 - **Simulation Freedom Invariant.** Documentation notes mentioning "operator-gated", "operator decision",
   or "manual approval" apply *strictly* to live production deployment. In headless research/evaluation
   mode (`eval`), the loop is **100% authorized and required** to prototype, simulate, and falsify any

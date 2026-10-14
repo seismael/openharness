@@ -85,9 +85,12 @@ When long-running agent sessions reach maximum context capacity:
 
 ---
 
-## 6. Empirical Proof: Apex Quantitative Benchmark
+## 6. Non-Normative Case Study: Production High-Frequency Systems Audit
 
-The OALP token economics standard was validated in an overnight production audit on **Apex**, an institutional cryptocurrency trading platform:
+> [!NOTE]
+> The empirical measurements below document real-world performance on a high-throughput financial computing platform. The OALP streaming projection and token caching standard is fully language- and domain-agnostic, applying identically to compilers, databases, distributed microservices, and web applications.
+
+The OALP token economics standard was validated in an overnight production audit on **Apex**, a high-frequency platform:
 
 | Metric | Measured Value | Standard Threshold |
 | :--- | :--- | :--- |

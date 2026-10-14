@@ -2,7 +2,7 @@
 
 The autonomous loop is an **agnostic, self-evolving engineering engine**. It does not rely on
 static scripts or rigid pre-configured assumptions. Given an open-ended directive — such as
-`/loop "maximise profit of the application to reach max potential and realistic profit we can achieve"`
+`/loop "maximize throughput and minimize p99 latency to reach the maximum potential of the system"`
 — the loop autonomously derives the system's objective function, establishes baseline metrics,
 synthesizes tools and specialist agents on demand, and accumulates indexed knowledge to direct
 its own next moves.
@@ -18,7 +18,7 @@ by the user or project invariants.
 Instead, the loop executes autonomous grounding:
 
 ```
-1. Target Analysis   -- Parse intent: profit maximization, latency reduction, accuracy, throughput.
+1. Target Analysis   -- Parse intent: throughput, latency reduction, memory footprint, accuracy, cost.
 2. System Discovery  -- Inspect .loop/knowledge/index.md, config/ topologies, and CLI capabilities.
 3. Metric Grounding  -- Identify the authoritative metric calculation pipeline and ground truth logs.
 4. Frontier Mapping  -- Establish the gap between current baseline and theoretical potential.

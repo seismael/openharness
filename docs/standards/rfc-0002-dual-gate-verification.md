@@ -28,7 +28,7 @@ A candidate state $S_{\text{candidate}}$ is defined as a mutation applied to a b
 
 Traditional autonomous agents frequently introduce subtle collateral damage:
 - An optimization targeting API latency may increase memory consumption or leak thread handles.
-- A quant model adjustment may boost simulated returns in bull markets while causing catastrophic drawdown in crash regimes.
+- A candidate optimization may boost throughput on synthetic workloads while causing catastrophic tail latency degradation under bursty production traffic.
 - A refactored algorithm may satisfy unit tests while failing numerical float parity against baseline receipts.
 
 OALP eliminates collateral regression through a strict, deterministic **Dual-Gate Contract**.
@@ -132,4 +132,4 @@ An OALP engine MUST distinguish between **functional regressions** and **stale n
 In computational, scientific, and quantitative repositories:
 - Candidates MUST be evaluated against historical control pools to verify that unchanged codepaths retain exact numerical determinism.
 - Control pool checks SHOULD assert floating-point parity up to IEEE 754 double-precision tolerances (or exact 28-decimal parity in fixed-point arithmetic).
-- Rejection receipts MUST record the exact numerical divergence observed (e.g., `-43.47 USDT` or `+1.42ms`).
+- Rejection receipts MUST record the exact numerical divergence observed (e.g., `+18.4ms p99 latency`, `-12.4% throughput`, or `+4.2MB heap allocation`).

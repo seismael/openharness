@@ -4,6 +4,7 @@
 import argparse
 import json
 from pathlib import Path
+import re
 import shutil
 import sys
 
@@ -101,6 +102,7 @@ def init_project(target_dir: Path, target: str = "", force: bool = False, use_le
             content = tpl_prof.read_text(encoding="utf-8")
             if target:
                 content = content.replace("<one-sentence target description the loop is working on / optimizing>", target)
+                content = re.sub(r'target:\s*".*?"', f'target: "{target}"', content)
             profile_path.write_text(content, encoding="utf-8")
             print(f"Created {profile_path.relative_to(target_dir)}")
 
@@ -202,11 +204,11 @@ def init_project(target_dir: Path, target: str = "", force: bool = False, use_le
             "---\n\n"
             "# Synthesizer Specialist\n\n"
             "You are the Log Digestion & Bounded Projection Specialist for the autonomous loop.\n"
-            "Your role is to parse multi-megabyte evaluator outputs, trace logs, or backtest journals in an isolated context.\n\n"
+            "Your role is to parse multi-megabyte evaluator outputs, trace logs, or benchmark records in an isolated context.\n\n"
             "## Rules\n"
             "- Strictly read-only.\n"
             "- Boil down multi-megabyte datasets into strictly bounded projections (<= 2,500 bytes).\n"
-            "- Never return raw dumps of trade records or backtest logs.\n"
+            "- Never return raw dumps of verbose logs, trace records, or raw dumps.\n"
         ),
     }
     for fname, pcontent in personas.items():

@@ -91,7 +91,7 @@ class TestValidateKnowledge(unittest.TestCase):
         )
         (self.kb_dir / "capabilities.md").write_text(
             "# Capabilities\n| Capability | Invoke | Purpose |\n| :--- | :--- | :--- |\n"
-            "| apex | `apex --help` | CLI driver |\n[[index]]",
+            "| app-cli | `app-cli --help` | CLI driver |\n[[index]]",
             encoding="utf-8",
         )
         errors = validate_knowledge_base(self.kb_dir)
