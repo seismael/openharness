@@ -140,6 +140,11 @@ Operating references: [harness optimization](skills/loop/references/openharness.
 [measurement](skills/loop/references/measurement.md), and
 [capability and failure](skills/loop/references/capability-and-failure.md).
 
+This repository declares its own surface in `harness.json`, its required kinds in
+`requirements.json`, its evaluation inputs in `cases.json`, and its guardrails in
+`policy.json`. CI runs all four through these helpers, so the declarations cannot drift from
+the tree.
+
 ---
 
 ## The Autonomous Loop Architecture

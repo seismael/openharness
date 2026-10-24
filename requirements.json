@@ -1,0 +1,13 @@
+{
+  "schema": "openharness.requirements.v1",
+  "requirements": [
+    { "id": "always-on-entry", "kind": "system_prompt", "component": "agents" },
+    { "id": "product-skills", "kind": "skills" },
+    { "id": "protocol-commands", "kind": "tool_guidance", "component": "commands" },
+    { "id": "proposal-agent", "kind": "subagents", "component": "adapter-agents" },
+    { "id": "deterministic-helpers", "kind": "scripts", "component": "scripts" },
+    { "id": "mcp-surface", "kind": "plugins", "component": "mcp" },
+    { "id": "guardrails", "kind": "guardrails", "required": false },
+    { "id": "memory", "kind": "memory", "required": false }
+  ]
+}

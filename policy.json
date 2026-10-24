@@ -1,0 +1,37 @@
+{
+  "schema": "openharness.policy.v1",
+  "description": "Repository-level guardrails for agents working in OpenHarness. Denial is terminal; ask blocks autonomous continuation.",
+  "default": "ask",
+  "rules": [
+    {
+      "id": "declared-verification",
+      "match": { "tool": "shell", "command_regex": "^python(-B)?\\s+(-B\\s+)?(-m\\s+unittest|tools/check_release\\.py|skills/[a-z]+/scripts/)" },
+      "verdict": "allow",
+      "reason": "the repository's declared verification commands"
+    },
+    {
+      "id": "no-destructive",
+      "match": { "tool": "shell", "command_regex": "\\brm\\s+-rf\\b|Remove-Item[^|;]*-Recurse" },
+      "verdict": "deny",
+      "reason": "recursive deletion needs a human decision"
+    },
+    {
+      "id": "no-history-rewrite",
+      "match": { "tool": "shell", "command_regex": "git\\s+(push\\s+--force|reset\\s+--hard|clean\\s+-[a-z]*f)" },
+      "verdict": "deny",
+      "reason": "destructive history or working-tree operations are never autonomous"
+    },
+    {
+      "id": "protect-git-internals",
+      "match": { "path_glob": ".git/**" },
+      "verdict": "deny",
+      "reason": "repository internals are out of scope"
+    },
+    {
+      "id": "publish-needs-approval",
+      "match": { "tool": "shell", "command_regex": "git\\s+push" },
+      "verdict": "ask",
+      "reason": "publication is a human decision"
+    }
+  ]
+}

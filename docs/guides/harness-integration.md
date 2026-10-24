@@ -100,6 +100,24 @@ See **[adapters/opencode/README.md](../../adapters/opencode/README.md)** for the
 bindings and a starter `harness.json`. The audit is deterministic and model-free; adoption
 still requires a probe receipt for the exact harness state (RFC-0009).
 
+The adapter command exposes one sub-mode per helper. The same eight helpers implement
+RFC-0009 through RFC-0015 and all live in the installed skill's `scripts/` directory:
+
+| Helper | Question | RFC |
+| :--- | :--- | :--- |
+| `openharness_audit.py` | What is the surface, and does it hold together? | 0009 |
+| `openharness_verify.py` | Is this journal entry coherent? | 0010 |
+| `openharness_select.py` | Which output wins, without knowing its author? | 0010 |
+| `openharness_cases.py` | Did the declared cases behave as expected? | 0012 |
+| `openharness_telemetry.py` | What did the effort cost and what did it buy? | 0011 |
+| `openharness_inventory.py` | Which declared capabilities actually exist? | 0013 |
+| `openharness_failures.py` | Why did iterations fail, and is a class recurring? | 0014 |
+| `openharness_policy.py` | Is this action allowed, denied, or undecided? | 0015 |
+
+Declare the surface in `harness.json`, the required kinds in `requirements.json`, the
+evaluation inputs in `cases.json`, and the guardrails in `policy.json`. The repository runs
+all four against itself in CI, so the declarations cannot drift from the tree.
+
 ---
 
 ## 4. Cursor & Windsurf (via MCP Server)
@@ -126,7 +144,7 @@ Add the following to your Cursor MCP configuration (`~/.cursor/mcp.json` or proj
 ### Available MCP Tools
 - **`loop_status`**: Returns current iteration, champion commit, metric ground truth, and active front.
 - **`loop_step`**: Returns the highest Expected-Value move from `plans/next_moves.json`.
-- **`loop_verify`**: Executes the verification pipeline defined in `profile.yaml` and reports pass/fail receipts.
+- **`loop_verify`**: Checks that the project seam and `profile.yaml` are present; it is not the journal-contract validator. That validator is `openharness_verify.py` in the `loop` skill (RFC-0010).
 - **`loop_journal`**: Fetches recent chronological iteration receipts from `journal.jsonl`.
 
 ### Project Rule Integration (`.cursorrules`)

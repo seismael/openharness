@@ -1,0 +1,33 @@
+{
+  "schema": "openharness.cases.v1",
+  "cases": [
+    {
+      "id": "purity",
+      "description": "Protocol and skills carry no instance vocabulary",
+      "command": "python -B -m unittest tests.test_generic_purity -q",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 120
+    },
+    {
+      "id": "protocol-series",
+      "description": "RFC series, schemas, and helper roster stay consistent",
+      "command": "python -B -m unittest tests.test_ohp_conformance.ProtocolSeriesConformanceTests -q",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 300
+    },
+    {
+      "id": "adapter-enforcement",
+      "description": "Every adapter claim names an existing artifact",
+      "command": "python -B -m unittest tests.test_harness_adapter -q",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 300
+    },
+    {
+      "id": "release-structure",
+      "description": "Bundles, frontmatter, and links remain portable",
+      "command": "python -B tools/check_release.py",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 120
+    }
+  ]
+}

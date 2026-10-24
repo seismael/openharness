@@ -1,0 +1,48 @@
+{
+  "schema": "harness.manifest.v1",
+  "name": "openharness",
+  "root": ".",
+  "budget": {
+    "always_on_tokens": 4000,
+    "total_tokens": 150000
+  },
+  "components": [
+    {
+      "id": "agents",
+      "kind": "system_prompt",
+      "paths": ["AGENTS.md"],
+      "always_on": true
+    },
+    {
+      "id": "readme",
+      "kind": "system_prompt",
+      "paths": ["README.md"]
+    },
+    {
+      "id": "skills",
+      "kind": "skills",
+      "paths": ["skills/*/SKILL.md"]
+    },
+    {
+      "id": "commands",
+      "kind": "tool_guidance",
+      "paths": ["adapters/opencode/commands/*.md"]
+    },
+    {
+      "id": "adapter-agents",
+      "kind": "subagents",
+      "paths": ["adapters/opencode/agents/*.md"],
+      "trigger_names": ["harness-editor"]
+    },
+    {
+      "id": "scripts",
+      "kind": "scripts",
+      "paths": ["skills/*/scripts/*.py"]
+    },
+    {
+      "id": "mcp",
+      "kind": "plugins",
+      "paths": ["tools/mcp_server.py"]
+    }
+  ]
+}

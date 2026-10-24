@@ -50,3 +50,8 @@ jobs:
         run: python -B -m unittest discover -s tests -p "test_*.py" -v
       - name: Test autonomous loop engine scripts
         run: python -B -m unittest discover -s skills/loop/scripts -p "test_*.py" -v
+      - name: Check the protocol against this repository
+        run: |
+          python -B skills/loop/scripts/openharness_audit.py --manifest harness.json
+          python -B skills/loop/scripts/openharness_inventory.py --manifest harness.json --requirements requirements.json
+          python -B skills/loop/scripts/openharness_cases.py --cases cases.json --workdir .

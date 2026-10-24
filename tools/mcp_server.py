@@ -26,7 +26,9 @@ def tool_loop_status(root: Path, _args: dict) -> dict:
     loop_dir = get_loop_dir(root)
     state_file = loop_dir / "loop.json"
     if not state_file.is_file():
-        return {"error": f"No active loop found at {state_file}. Initialize .agents/loop or run skills/loop/scripts/init_loop.py first."}
+        return {
+            "error": f"No active loop found at {state_file}. Initialize .agents/loop or run skills/loop/scripts/init_loop.py first."
+        }
     try:
         data = json.loads(state_file.read_text(encoding="utf-8"))
         return {
@@ -46,20 +48,20 @@ def tool_loop_step(root: Path, _args: dict) -> dict:
     if not moves_file.is_file():
         return {
             "queue_empty": True,
-            "directive": "Escalate to First-Principles Diagnostics (diagnose/research front) to replenish next_moves.json."
+            "directive": "Escalate to First-Principles Diagnostics (diagnose/research front) to replenish next_moves.json.",
         }
     try:
         moves = json.loads(moves_file.read_text(encoding="utf-8"))
         if not isinstance(moves, list) or not moves:
             return {
                 "queue_empty": True,
-                "directive": "Escalate to First-Principles Diagnostics to synthesize 2-3 new hypotheses."
+                "directive": "Escalate to First-Principles Diagnostics to synthesize 2-3 new hypotheses.",
             }
         top_move = moves[0]
         return {
             "queue_empty": False,
             "next_move": top_move,
-            "remaining_queue_length": len(moves) - 1
+            "remaining_queue_length": len(moves) - 1,
         }
     except Exception as exc:
         return {"error": f"Failed to read next_moves.json: {exc}"}
@@ -72,7 +74,11 @@ def tool_loop_journal(root: Path, args: dict) -> dict:
     if not journal_file.is_file():
         return {"entries": [], "count": 0}
     try:
-        lines = [line.strip() for line in journal_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+        lines = [
+            line.strip()
+            for line in journal_file.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
         recent = [json.loads(line) for line in lines[-limit:]]
         return {"entries": recent, "total_recorded": len(lines)}
     except Exception as exc:
@@ -80,14 +86,13 @@ def tool_loop_journal(root: Path, args: dict) -> dict:
 
 
 def tool_loop_verify(root: Path, _args: dict) -> dict:
-    loop_dir = get_loop_dir(root)
-    profile_file = loop_dir / "knowledge" / "profile.yaml"
+    profile_file = get_loop_dir(root) / "knowledge" / "profile.yaml"
     if not profile_file.is_file():
         return {"error": "Missing profile.yaml in knowledge/"}
     # Return verification contract details
     return {
         "status": "ready",
-        "message": "Execute pipeline commands defined in profile.yaml under projection wrapping (suppressing stdout). Commit candidate changes before running."
+        "message": "Execute pipeline commands defined in profile.yaml under projection wrapping (suppressing stdout). Commit candidate changes before running.",
     }
 
 
@@ -136,7 +141,11 @@ def handle_request(request: dict, root: Path) -> dict:
 
     if method == "tools/list":
         tools_list = [
-            {"name": name, "description": spec["description"], "inputSchema": spec["inputSchema"]}
+            {
+                "name": name,
+                "description": spec["description"],
+                "inputSchema": spec["inputSchema"],
+            }
             for name, spec in TOOLS.items()
         ]
         return {"jsonrpc": "2.0", "id": msg_id, "result": {"tools": tools_list}}
@@ -167,7 +176,11 @@ def handle_request(request: dict, root: Path) -> dict:
 
 
 def main():
-    root = Path(os.environ.get("AGENTIC_LOOP_ROOT", os.environ.get("OPENLOOP_ROOT", os.getcwd()))).resolve()
+    root = Path(
+        os.environ.get(
+            "AGENTIC_LOOP_ROOT", os.environ.get("OPENLOOP_ROOT", os.getcwd())
+        )
+    ).resolve()
     for raw_line in sys.stdin:
         line = raw_line.strip()
         if not line:

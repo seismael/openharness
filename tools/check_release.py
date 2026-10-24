@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TEXT_SUFFIXES = {".md", ".py", ".sh", ".json", ".yaml", ".yml", ".toml", ".txt"}
 PUBLIC_DOCUMENTS = (
     "README.md",
+    "AGENTS.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
     "LICENSE",
