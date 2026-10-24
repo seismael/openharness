@@ -135,6 +135,21 @@ class BundleTests(unittest.TestCase):
 
         return patch.object(Path, "is_symlink", fake)
 
+    def simulated_hardlinks(self, *paths):
+        """Report extra links so the guard runs even where hardlinks are unavailable."""
+        real = Path.stat
+        marked = {str(Path(path)) for path in paths}
+
+        def fake(candidate, *args, **kwargs):
+            info = real(candidate, *args, **kwargs)
+            if str(candidate) not in marked:
+                return info
+            fields = list(info)
+            fields[3] = 2  # st_nlink
+            return os.stat_result(fields)
+
+        return patch.object(Path, "stat", fake)
+
     def test_symlink_refused(self):
         link = self.root / "linked"
         with self.simulated_symlinks(link), self.assertRaisesRegex(ValueError, "Symlink"):
@@ -298,11 +313,10 @@ class BundleTests(unittest.TestCase):
         self.assertFalse((self.folder / "journal.json").exists())
 
     def test_hardlinked_target_refused(self):
-        try:
-            os.link(self.target, self.root / "alias")
-        except OSError:
-            self.skipTest("hardlinks unavailable")
-        with self.assertRaisesRegex(ValueError, "single-link"):
+        with (
+            self.simulated_hardlinks(self.target),
+            self.assertRaisesRegex(ValueError, "single-link"),
+        ):
             self.stage()
         self.assertFalse(self.folder.exists())
 

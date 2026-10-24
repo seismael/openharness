@@ -115,8 +115,8 @@
         },
         {
           "path": "skills/characterize/scripts/test_change_bundle.py",
-          "sha256": "a2340ba6ed19e7438ff9d908fc058f8348f72b99721dab9139ee3c72396a9b1d",
-          "tokens": 4004
+          "sha256": "49dc5e6368ded22faf923cc73c34b37a998011a72e0b621df2b1400d789e4220",
+          "tokens": 4123
         },
         {
           "path": "skills/enhance/scripts/review_ledger.py",
@@ -256,7 +256,7 @@
       ],
       "id": "scripts",
       "kind": "scripts",
-      "tokens": 52245
+      "tokens": 52364
     },
     {
       "always_on": false,
@@ -287,7 +287,7 @@
       "sha256": "adc82347235660af82f0a1e54ece6753a9c14d806489fa30f49125c668201993"
     }
   },
-  "fingerprint": "164e248df53128111c97b70a572517fa140782ad9618e577e384779ac6ad8fc5",
+  "fingerprint": "f7da1cb9c33fa3b7f139a32a048021eec8918803706e347cfec74c1b90605fa5",
   "generator": {
     "name": "openharness",
     "version": "0.2.0"
@@ -298,6 +298,6 @@
     "always_on_tokens": 762,
     "components": 7,
     "files": 41,
-    "total_tokens": 74047
+    "total_tokens": 74166
   }
 }

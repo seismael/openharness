@@ -15,6 +15,11 @@ All notable changes to this project are documented here. The format follows
   and `--format text` prints a human projection.
 - `context.schema.json`: the normative context-budget receipt contract.
 - `py.typed`: the package now ships inline type information.
+- `tools/e2e_check.py`: end-to-end validation outside the source tree. It builds
+  the wheel and sdist, installs each in a clean environment, exercises every
+  command, exit code, format, and workflow, emulates the composite action and
+  skill bundle, and proves committed bytes on a clean clone. `--quick` keeps the
+  fast legs, and CI runs it on every push and pull request.
 
 ### Changed
 
@@ -35,8 +40,12 @@ All notable changes to this project are documented here. The format follows
 - `select` writes `selection.json` and `mapping.json` atomically.
 - Every bounded receipt is now hard-capped at 2500 bytes: a hostile payload can
   no longer exceed the limit through an unshrunk projection.
-- Platform-dependent tests no longer skip. Symlink and POSIX-mode preconditions
-  are simulated deterministically, so the whole suite runs on every OS.
+- Platform-dependent tests no longer skip. Symlink, hardlink, and POSIX-mode
+  preconditions are simulated deterministically, so the whole suite runs on
+  every OS.
+- Generated-directory ignore rules are anchored to the repository root, so
+  fixture skill directories named `build` are committed rather than silently
+  ignored. A repository-state test fails when a fixture file is untracked.
 
 ## [0.2.0] - 2026-10-24
 

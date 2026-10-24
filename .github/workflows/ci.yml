@@ -100,3 +100,18 @@ jobs:
           lock: harness.lock
           report-format: markdown
           report-path: harness-report.md
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - name: Install the build backend
+        run: |
+          python -m pip install --upgrade pip build
+      - name: Validate the built distribution end to end
+        run: python -B tools/e2e_check.py --quick
