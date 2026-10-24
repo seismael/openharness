@@ -1,4 +1,4 @@
-# OALP Profile Template: Python Ecosystem
+# OHP Profile Template: Python Ecosystem
 schema: loop.profile.v1
 project: "python-service"
 target: "Optimize performance and reduce execution latency while maintaining 100% test pass rate"

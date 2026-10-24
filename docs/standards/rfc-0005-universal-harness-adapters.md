@@ -1,7 +1,7 @@
-# RFC-0005: Universal Harness Adapter Interface for OALP
+# RFC-0005: Universal Harness Adapter Interface for OHP
 
 - **RFC Number:** 0005
-- **Title:** Universal Harness Adapter Interface for OpenAgent Loop Protocol
+- **Title:** Universal Harness Adapter Interface for Open Harness Protocol
 - **Status:** Proposed Standard (Working Draft)
 - **Category:** Standards Track
 - **Version:** 1.0.0-draft
@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for **Harness Adapters** that connect arbitrary AI agent runtimes (such as Claude Code, Google Antigravity, OpenCode, Cursor, Windsurf, Copilot Workspace, and headless CI runners) to an OALP-compliant repository. By specifying standard invocation surfaces, state synchronization mechanisms, output projection filtering, and subagent delegation protocols, this RFC ensures cross-platform portability without modifying target repository physics.
+This document defines the normative requirements for **Harness Adapters** that connect arbitrary AI agent runtimes (such as Claude Code, Google Antigravity, OpenCode, Cursor, Windsurf, Copilot Workspace, and headless CI runners) to an OHP-compliant repository. By specifying standard invocation surfaces, state synchronization mechanisms, output projection filtering, and subagent delegation protocols, this RFC ensures cross-platform portability without modifying target repository physics.
 
 ---
 
@@ -26,7 +26,7 @@ A **Compliant Harness Adapter** is any module, plugin, server, or script that br
 
 ## 2. Adapter Responsibilities & Architecture
 
-An OALP Harness Adapter SHALL fulfill four fundamental obligations:
+An OHP Harness Adapter SHALL fulfill four fundamental obligations:
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -36,7 +36,7 @@ An OALP Harness Adapter SHALL fulfill four fundamental obligations:
                            │
                            ▼
 ┌────────────────────────────────────────────────────────┐
-│               OALP HARNESS ADAPTER LAYER               │
+│               OHP HARNESS ADAPTER LAYER               │
 ├────────────────────────────────────────────────────────┤
 │ 1. Seam Discovery: Locates .agents/loop/ & profile.yaml│
 │ 2. Tool Binding: Maps skills, slash cmds & MCP tools   │
@@ -75,7 +75,7 @@ For chat-based harnesses supporting slash commands (Claude Code, Antigravity):
 ### 4.2 Model Context Protocol (MCP) Interface
 For IDEs and desktop harnesses supporting the Model Context Protocol (Cursor, Windsurf, Claude Desktop):
 - The adapter MUST expose `loop_status`, `loop_step`, `loop_verify`, and `loop_journal`.
-- The MCP tools MUST return valid JSON strings conforming to OALP schemas.
+- The MCP tools MUST return valid JSON strings conforming to OHP schemas.
 
 ### 4.3 Headless CI/CD Runner Interface
 For CI/CD runners and containerized environments:
@@ -85,7 +85,7 @@ For CI/CD runners and containerized environments:
 
 ## 5. Output Projection & Token Protection Contract
 
-Host runtimes frequently leak large stdout/stderr streams into LLM context. An OALP adapter MUST enforce output suppression:
+Host runtimes frequently leak large stdout/stderr streams into LLM context. An OHP adapter MUST enforce output suppression:
 
 1. **Shell Command Execution:**
    - Any evaluation command defined in `profile.yaml` MUST have its raw stdout suppressed at the process boundary.

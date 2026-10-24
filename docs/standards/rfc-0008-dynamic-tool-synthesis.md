@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for **Dynamic Tool and Capability Synthesis** in the OpenAgent Loop Protocol (OALP). Autonomous engineering loops frequently encounter diagnostic, verification, or data-extraction requirements that are not provided out-of-the-box by the target codebase. RFC-0008 establishes the formal lifecycle for **Just-In-Time (JIT) Tool Synthesis**, specifying how an autonomous engine authors, isolates, audits, and promotes bespoke CLI tools into `.agents/loop/scripts/` and registers them in `.agents/loop/env.json` and `capabilities.md` for permanent, zero-overhead reusability.
+This document defines the normative requirements for **Dynamic Tool and Capability Synthesis** in the Open Harness Protocol (OHP). Autonomous engineering loops frequently encounter diagnostic, verification, or data-extraction requirements that are not provided out-of-the-box by the target codebase. RFC-0008 establishes the formal lifecycle for **Just-In-Time (JIT) Tool Synthesis**, specifying how an autonomous engine authors, isolates, audits, and promotes bespoke CLI tools into `.agents/loop/scripts/` and registers them in `.agents/loop/env.json` and `capabilities.md` for permanent, zero-overhead reusability.
 
 ---
 
@@ -33,7 +33,7 @@ In typical AI coding sessions:
 2. The script leaves git worktrees dirty, introduces uncommitted dependencies, and is discarded or lost when the context window compacts.
 3. In subsequent iterations, the agent inevitably re-invents the exact same utility from scratch, burning thousands of tokens and introducing variance.
 
-OALP standardizes tool creation as a first-class engineering lifecycle.
+OHP standardizes tool creation as a first-class engineering lifecycle.
 
 ---
 

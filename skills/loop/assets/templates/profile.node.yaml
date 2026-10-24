@@ -1,4 +1,4 @@
-# OALP Profile Template: Node.js / TypeScript Ecosystem
+# OHP Profile Template: Node.js / TypeScript Ecosystem
 schema: loop.profile.v1
 project: "node-service"
 target: "Optimize server response latency and bundle execution speed"

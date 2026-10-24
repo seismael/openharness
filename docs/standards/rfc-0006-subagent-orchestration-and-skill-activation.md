@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for **Subagent Orchestration** and **Dynamic Skill Activation** in the OpenAgent Loop Protocol (OALP). First-generation autonomous loops frequently exhibit "monolithic inline execution," where a single executive agent executes deep codebase searches, heavy multi-megabyte log parsing, indicator calculation, and code modifications within a single parent context window. This behavior inflates context to millions of tokens, accelerates context compaction, degrades reasoning depth, and induces false handoff anxiety. RFC-0006 specifies an **Orchestrator-Worker Split**, defines strict **Delegation Thresholds**, establishes the **Front-to-Skill Dynamic Activation Ladder**, and details native harness adaptation across OpenCode, Claude Code, and Antigravity.
+This document defines the normative requirements for **Subagent Orchestration** and **Dynamic Skill Activation** in the Open Harness Protocol (OHP). First-generation autonomous loops frequently exhibit "monolithic inline execution," where a single executive agent executes deep codebase searches, heavy multi-megabyte log parsing, indicator calculation, and code modifications within a single parent context window. This behavior inflates context to millions of tokens, accelerates context compaction, degrades reasoning depth, and induces false handoff anxiety. RFC-0006 specifies an **Orchestrator-Worker Split**, defines strict **Delegation Thresholds**, establishes the **Front-to-Skill Dynamic Activation Ladder**, and details native harness adaptation across OpenCode, Claude Code, and Antigravity.
 
 ---
 
@@ -38,7 +38,7 @@ Empirical analysis of long-running autonomous loop sessions demonstrates that wh
 
 ## 3. The Orchestrator-Worker Architecture
 
-OALP mandates a strict functional separation between executive decisions and exploratory compute:
+OHP mandates a strict functional separation between executive decisions and exploratory compute:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -68,7 +68,7 @@ OALP mandates a strict functional separation between executive decisions and exp
 
 ## 4. Mandatory Subagent Delegation Thresholds
 
-An OALP Orchestrator **MUST NOT** perform deep exploration or large-scale data digestion directly in its main conversation turn. An Orchestrator **SHALL** delegate the task to a read-only subagent whenever any of the following conditions are met:
+An OHP Orchestrator **MUST NOT** perform deep exploration or large-scale data digestion directly in its main conversation turn. An Orchestrator **SHALL** delegate the task to a read-only subagent whenever any of the following conditions are met:
 
 1. **Broad File System Exploration:** Any task requiring inspection or pattern-matching across $> 3$ files where the target path is not pre-known.
 2. **Heavy File Digestion:** Reading or parsing any log, dataset partition, or ledger exceeding $50\text{ KB}$ (e.g. `traces.jsonl`, `metrics.jsonl`, `decisions.jsonl`).
@@ -87,7 +87,7 @@ When dispatching a subagent, the Orchestrator MUST enforce:
 
 ## 5. Generic Semantic Front-to-Skill Matching Protocol
 
-An OALP Orchestrator operating within an environment exposing modular domain skills MUST NOT ignore registered skills. Prior to dispatching work on an engineering front, the Orchestrator SHALL dynamically inspect available host skills (`.agents/skills/`, `.opencode/skills/`, or host tools) and bind them to the active engineering front according to their semantic archetypes.
+An OHP Orchestrator operating within an environment exposing modular domain skills MUST NOT ignore registered skills. Prior to dispatching work on an engineering front, the Orchestrator SHALL dynamically inspect available host skills (`.agents/skills/`, `.opencode/skills/`, or host tools) and bind them to the active engineering front according to their semantic archetypes.
 
 ### 5.1 Canonical Semantic Front-to-Skill Dispatch Matrix
 
@@ -109,7 +109,7 @@ To guarantee complete portability across agent harnesses, project scaffolding MU
 
 1. **OpenCode:** Materialized as Markdown definitions in `.opencode/agent/<name>.md`.
 2. **Claude Code / MCP:** Materialized as tool definitions or plugin agent descriptors in `.claude-plugin/` and `tools/mcp_server.py`.
-3. **Antigravity / Generic OALP:** Materialized as declarative YAML descriptors in `.agents/subagents/<name>.yaml`.
+3. **Antigravity / Generic OHP:** Materialized as declarative YAML descriptors in `.agents/subagents/<name>.yaml`.
 
 Scaffolding tools (such as `skills/loop/scripts/init_loop.py`) MUST generate both `.agents/subagents/*.yaml` and `.opencode/agent/*.md` to ensure zero runtime friction across all environments.
 
@@ -118,7 +118,7 @@ Scaffolding tools (such as `skills/loop/scripts/init_loop.py`) MUST generate bot
 ## 7. Non-Normative Case Study: High-Frequency Systems Skill Mapping
 
 > [!NOTE]
-> The mapping below illustrates how a complex real-world project (such as a high-frequency trading platform) binds its domain-specific skills into OALP's generic canonical fronts.
+> The mapping below illustrates how a complex real-world project (such as a high-frequency trading platform) binds its domain-specific skills into OHP's generic canonical fronts.
 
 | Canonical Front | Real-World Domain Skill | Assigned Role |
 | :--- | :--- | :--- |

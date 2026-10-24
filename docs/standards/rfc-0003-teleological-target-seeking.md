@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for **Teleological Target-Seeking** and the **Self-Replenishing Queue Protocol** in the OpenAgent Loop Protocol (OALP). Conventional AI coding agents operate as checklist executors that halt when a predetermined prompt or list of candidate knobs is exhausted. OALP formalizes cybernetic goal-directed behavior, establishing an Expected-Value dispatch hierarchy, dynamic queue replenishment via First-Principles diagnostics, and the Simulation Freedom Invariant, ensuring autonomous continuous progress until teleological criteria are satisfied.
+This document defines the normative requirements for **Teleological Target-Seeking** and the **Self-Replenishing Queue Protocol** in the Open Harness Protocol (OHP). Conventional AI coding agents operate as checklist executors that halt when a predetermined prompt or list of candidate knobs is exhausted. OHP formalizes cybernetic goal-directed behavior, establishing an Expected-Value dispatch hierarchy, dynamic queue replenishment via First-Principles diagnostics, and the Simulation Freedom Invariant, ensuring autonomous continuous progress until teleological criteria are satisfied.
 
 ---
 
@@ -20,7 +20,7 @@ This document defines the normative requirements for **Teleological Target-Seeki
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [RFC 2119].
 
-**Teleology:** In the context of OALP, the property of an autonomous system whereby actions are continuously selected, evaluated, and adapted to minimize the distance between current repository performance and a declared objective predicate.
+**Teleology:** In the context of OHP, the property of an autonomous system whereby actions are continuously selected, evaluated, and adapted to minimize the distance between current repository performance and a declared objective predicate.
 
 ---
 
@@ -38,7 +38,7 @@ This behavior confuses **"the predefined checklist of parameter knobs is exhaust
 
 ## 3. Cybernetic Target-Seeking State Machine
 
-An OALP engine operates as a closed-loop cybernetic feedback controller:
+An OHP engine operates as a closed-loop cybernetic feedback controller:
 
 ```
                             DECLARATIVE TARGET (profile.yaml)
@@ -128,9 +128,9 @@ From the diagnostic findings, the engine MUST:
 
 In enterprise software engineering, documentation often contains notes such as *"operator-gated"*, *"requires manual approval"*, or *"human authorization needed"*.
 
-An OALP engine SHALL enforce the following strict boundary:
+An OHP engine SHALL enforce the following strict boundary:
 1. **Live Production vs. Headless Evaluation:** Restrictions regarding operator gates apply **strictly to live production environments** (deploying to mainnet, updating live customer databases, altering production cloud infrastructure).
-2. **Unconditional Simulation Authority:** In headless evaluation (`eval` mode, test environments, simulation harnesses, backtesters), an OALP engine possesses **100% unconditional authorization** to prototype, simulate, benchmark, and falsify any candidate mechanism, formula, or architecture.
+2. **Unconditional Simulation Authority:** In headless evaluation (`eval` mode, test environments, simulation harnesses, backtesters), an OHP engine possesses **100% unconditional authorization** to prototype, simulate, benchmark, and falsify any candidate mechanism, formula, or architecture.
 3. An engine MUST NOT pause or yield its turn in simulation on the grounds of inherited production conservatism.
 
 ---
@@ -152,5 +152,5 @@ In host agentic runtimes (OpenCode, Claude Code, Cursor, Antigravity):
 ## 8. Auto-Compaction Resilience & Anti-Anxiety Directive
 
 1. **Context & Budget Anxiety Prohibition:** Context window accumulation or token count **SHALL NEVER** constitute a valid justification for an engine to pause, yield the turn, or trigger a human handoff.
-2. **Compaction Invariance:** Modern host runtimes execute deterministic, non-destructive context compaction. Furthermore, OALP guarantees that all critical state (active iteration, incumbent baseline, journal, coverage ledger, issues queue, and next moves) is durably anchored to the local filesystem under `.agents/loop/`.
+2. **Compaction Invariance:** Modern host runtimes execute deterministic, non-destructive context compaction. Furthermore, OHP guarantees that all critical state (active iteration, incumbent baseline, journal, coverage ledger, issues queue, and next moves) is durably anchored to the local filesystem under `.agents/loop/`.
 3. **Immediate Post-Compaction Resumption:** If an automatic context compaction event occurs, the engine MUST immediately execute a tool call reading `.agents/loop/loop.json` and `.agents/loop/plans/next_moves.json`, and resume the active move without seeking human permission or waiting for chat input.

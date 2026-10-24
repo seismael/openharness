@@ -1,16 +1,16 @@
-# Agentic Tools & The OpenAgent Loop Protocol (OALP)
+# OpenHarness & The Open Harness Protocol (OHP)
 
 Portable skills and the open architecture for making AI agents **autonomous, continuous, invariant-safe, and economically viable** in enterprise software development and computational research.
 
 ---
 
-## The Standardization Objective: OpenAgent Loop Protocol (OALP)
+## The Standardization Objective: Open Harness Protocol (OHP)
 
 Current AI engineering is polarized between two inadequate paradigms:
 1. **The Copilot / Chatbot Paradigm:** Requires continuous human micromanagement, prompt babysitting, manual testing, and copy-pasting of isolated code snippets.
 2. **The Naive Autonomous Agent Paradigm:** Executes open-ended tasks with unconstrained tool sprawl, hallucination cascades, context window bloat ($15–$50/hour), and silent regression of system invariants.
 
-**Agentic Tools establishes the OpenAgent Loop Protocol (OALP):** A vendor-neutral, domain-agnostic open standard for **Deterministic, Dual-Gated, In-Session Continuous AI Engineering**. 
+**OpenHarness establishes the Open Harness Protocol (OHP):** A vendor-neutral, domain-agnostic open standard for **Deterministic, Dual-Gated, In-Session Continuous AI Engineering**. 
 
 Our objective is to standardize how autonomous agents interact with any repository—transforming AI from an interactive prompt chatbot into a self-directed, teleological research engineer that explores codebases, diagnoses bottlenecks, formulates minimal falsifiable candidates, verifies changes against mathematical dual gates, and compounds knowledge without human intervention.
 
@@ -18,7 +18,7 @@ Our objective is to standardize how autonomous agents interact with any reposito
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                              THE THREE AGENTIC PARADIGMS                               │
 ├──────────────────────────┬─────────────────────────────┬───────────────────────────────┤
-│ 1. Copilots / Chatbots   │ 2. Naive Autonomous Agents  │ 3. OpenAgent Loop Protocol    │
+│ 1. Copilots / Chatbots   │ 2. Naive Autonomous Agents  │ 3. Open Harness Protocol    │
 ├──────────────────────────┼─────────────────────────────┼───────────────────────────────┤
 │ • Human writes prompt    │ • Open-ended task prompt    │ • Single target directive     │
 │ • LLM generates snippet  │ • Arbitrary tool execution  │ • Declarative seam: profile   │
@@ -32,11 +32,11 @@ Our objective is to standardize how autonomous agents interact with any reposito
 
 ### The Standards Initiative & Formal RFC Series
 
-To transition this architecture from an internal capability into a universal, vendor-neutral industry standard, we have established the **OALP Standards Track**. Any agent runtime (Antigravity, OpenCode, Claude Code, Cursor, Copilot, Cline, Aider) and any software repository (Python, Rust, Go, TypeScript, C++) can implement or conform to the specification:
+To transition this architecture from an internal capability into a universal, vendor-neutral industry standard, we have established the **OHP Standards Track**. Any agent runtime (Antigravity, OpenCode, Claude Code, Cursor, Copilot, Cline, Aider) and any software repository (Python, Rust, Go, TypeScript, C++) can implement or conform to the specification:
 
-- **[OALP Working Group Charter & Overview](docs/standards/README.md)**: Mission, governance, roadmap, and RFC lifecycle.
+- **[OHP Working Group Charter & Overview](docs/standards/README.md)**: Mission, governance, roadmap, and RFC lifecycle.
 - **The Complete Normative RFC Series:**
-  - **[RFC-0001: Core Protocol & Repository Topology](docs/standards/rfc-0001-openagent-loop-protocol.md)**: Standard `.agents/loop/` layout, declarative `profile.yaml`, state ledgers, and 12-front lifecycle.
+  - **[RFC-0001: Core Protocol & Repository Topology](docs/standards/rfc-0001-openharness-protocol.md)**: Standard `.agents/loop/` layout, declarative `profile.yaml`, state ledgers, and 12-front lifecycle.
   - **[RFC-0002: Dual-Gate Verification Protocol](docs/standards/rfc-0002-dual-gate-verification.md)**: Mathematical formulation of gate acceptance, git snapshot transitions, and atomic rollbacks.
   - **[RFC-0003: Teleological Target-Seeking Protocol](docs/standards/rfc-0003-teleological-target-seeking.md)**: Expected-Value move dispatch, self-replenishing queues, and the Simulation Freedom Invariant.
   - **[RFC-0004: Streaming Output Projection](docs/standards/rfc-0004-streaming-output-projection.md)**: Output projection filters, scalar JSON extraction, and radical token economics ($0.19/10.5h).
@@ -52,11 +52,11 @@ To transition this architecture from an internal capability into a universal, ve
 
 ---
 
-## Comparative Analysis: `obra/superpowers` vs. Agentic Tools (OALP)
+## Comparative Analysis: `obra/superpowers` vs. OpenHarness (OHP)
 
-While popular skill frameworks like **`obra/superpowers`** have brought valuable discipline to human-in-the-loop "vibe coding", they operate under fundamentally different assumptions than **Agentic Tools (OALP)**:
+While popular skill frameworks like **`obra/superpowers`** have brought valuable discipline to human-in-the-loop "vibe coding", they operate under fundamentally different assumptions than **OpenHarness (OHP)**:
 
-| Vector | `obra/superpowers` | Agentic Tools (OALP) |
+| Vector | `obra/superpowers` | OpenHarness (OHP) |
 | :--- | :--- | :--- |
 | **Operating Paradigm** | **Interactive Pairing**: 2–5 min micro-tasks while human sits at chat prompt | **Autonomous Macro-Loop**: 10+ hours non-stop unattended execution |
 | **Target-Seeking** | **Static Checklist**: Halts when initial tasks finish; asks human what to do next | **Teleological Closed Loop**: Prohibited from halting; auto-replenishes via diagnostics |
@@ -65,13 +65,13 @@ While popular skill frameworks like **`obra/superpowers`** have brought valuable
 | **Token Economics** | **Raw Command Streaming**: Burns $5–$20/hr via verbose build/test outputs | **Projection Wrapping**: Scalar receipts + static prefix caching (**$0.19 / 10.5h**) |
 | **Domain Scope** | Code-centric software feature development | Universal: software features, systems latency, algorithmic trading, ML, compilers |
 
-> See the full technical whitepaper: **[docs/architecture/superpowers-vs-oalp.md](docs/architecture/superpowers-vs-oalp.md)**.
+> See the full technical whitepaper: **[docs/architecture/superpowers-vs-ohp.md](docs/architecture/superpowers-vs-ohp.md)**.
 
 ---
 
 ## Universal Harness Compatibility & Adapters
 
-Agentic Tools is designed to integrate natively with **zero repository lock-in** across all leading AI coding harnesses:
+OpenHarness is designed to integrate natively with **zero repository lock-in** across all leading AI coding harnesses:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -89,8 +89,8 @@ Agentic Tools is designed to integrate natively with **zero repository lock-in**
 
 - **Claude Code 1-Click Installation:**
   ```bash
-  /plugin marketplace add seismael/agentic-tools
-  /plugin install agentic-tools@agentic-tools-marketplace
+  /plugin marketplace add seismael/openharness
+  /plugin install openharness@openharness-marketplace
   ```
 - **Cursor / Windsurf MCP Server:**
   Add `tools/mcp_server.py` to your MCP configuration to expose `loop_status`, `loop_step`, and `loop_verify` directly in IDE chats.
@@ -198,7 +198,7 @@ A true autonomous agent does not stop when a static checklist runs out:
 - **Simulation Freedom:** Notes mentioning "operator-gated" apply strictly to live production deployment. In headless evaluation (`eval`), the engine is **100% authorized** to prototype, simulate, and falsify anything without human intervention.
 
 ### 5. Radical Token Economics
-Traditional agents burn massive token budgets by streaming raw multi-megabyte terminal outputs into context. OALP achieves industrial efficiency through three architectural pillars:
+Traditional agents burn massive token budgets by streaming raw multi-megabyte terminal outputs into context. OHP achieves industrial efficiency through three architectural pillars:
 - **Projection Filtering:** Commands are wrapped to suppress noisy output (`Out-Null`) and return only single-line scalar JSON receipts (`net_pnl`, `trades`, `fees`, `latency_ms`). New inputs are bounded to ~150–250 tokens per turn.
 - **Prefix Invariance & Prompt Caching:** System prompts, skill instructions, and project memory leaves (`profile.yaml`, `invariants.md`, `env.json`) remain byte-static at the context head, maximizing provider KV-cache hits.
 - **Automated Window Compaction:** Context growth is managed smoothly, preventing token degradation while preserving the active disk-backed state.
@@ -236,7 +236,7 @@ We are standardizing this architecture across three production tiers:
     ┌─────────────────────────────────────┼─────────────────────────────────────┐
     ▼                                     ▼                                     ▼
 [Tier 1: Native In-Harness Integration] [Tier 2: Nightly CI/CD Optimizer]  [Tier 3: Enterprise Governance Hub]
-• OpenAgent Loop Protocol (OALP)        • Automated overnight research     • Immutable audit ledger
+• Open Harness Protocol (OHP)        • Automated overnight research     • Immutable audit ledger
 • Native Plugins & MCP Server           • Headless in-session runner       • SOC2 & regulatory compliance
 • Zero external CLI friction            • Automated PR with receipts       • Risk & safety guarantees
 ```
@@ -277,8 +277,8 @@ See [Autonomous Optimization Guide](docs/guides/autonomous-loop.md) for cross-pl
 Clone this repository or download its source. Copy the **whole** selected directory under `skills/` into one supported skill location:
 
 ```sh
-git clone https://github.com/seismael/agentic-tools.git
-cd agentic-tools
+git clone https://github.com/seismael/openharness.git
+cd openharness
 python tools/install_skill.py --skill loop --to ~/.agents/skills/loop --check
 python tools/install_skill.py --skill loop --to ~/.agents/skills/loop
 ```

@@ -1,7 +1,7 @@
-# RFC-0001: OpenAgent Loop Protocol (OALP) Core Specification
+# RFC-0001: Open Harness Protocol (OHP) Core Specification
 
 - **RFC Number:** 0001
-- **Title:** OpenAgent Loop Protocol (OALP) Core Specification
+- **Title:** Open Harness Protocol (OHP) Core Specification
 - **Status:** Proposed Standard (Working Draft)
 - **Category:** Standards Track
 - **Version:** 1.0.0-draft
@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document specifies the core protocol, repository topology, state ledgers, and cognitive execution lifecycle of the **OpenAgent Loop Protocol (OALP)**. OALP defines a vendor-neutral, domain-agnostic standard for autonomous, continuous, dual-gated AI software engineering. By decoupling repository-specific physics from cognitive LLM orchestration through a declarative seam (`profile.yaml`), enforcing dual-gate mathematical verification, and formalizing a self-replenishing dispatch queue, OALP enables artificial intelligence agents to conduct hours or days of uninterrupted empirical research and development at radical token efficiency.
+This document specifies the core protocol, repository topology, state ledgers, and cognitive execution lifecycle of the **Open Harness Protocol (OHP)**. OHP defines a vendor-neutral, domain-agnostic standard for autonomous, continuous, dual-gated AI software engineering. By decoupling repository-specific physics from cognitive LLM orchestration through a declarative seam (`profile.yaml`), enforcing dual-gate mathematical verification, and formalizing a self-replenishing dispatch queue, OHP enables artificial intelligence agents to conduct hours or days of uninterrupted empirical research and development at radical token efficiency.
 
 ---
 
@@ -20,9 +20,9 @@ This document specifies the core protocol, repository topology, state ledgers, a
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [RFC 2119] [RFC 8174] when, and only when, they appear in all capitals, as shown here.
 
-An **OALP-Compliant Engine** is any autonomous LLM agent runtime, CLI, or orchestration framework that implements the execution semantics, dual-gate invariants, and state management defined herein.
+An **OHP-Compliant Engine** is any autonomous LLM agent runtime, CLI, or orchestration framework that implements the execution semantics, dual-gate invariants, and state management defined herein.
 
-An **OALP-Compliant Repository** is any software repository that implements the directory topology, declarative seam (`profile.yaml`), and state ledgers specified in Section 3.
+An **OHP-Compliant Repository** is any software repository that implements the directory topology, declarative seam (`profile.yaml`), and state ledgers specified in Section 3.
 
 ---
 
@@ -32,7 +32,7 @@ Contemporary AI developer tooling is dominated by two suboptimal patterns:
 1. **Interactive Prompt Turn-Taking:** The human operator acts as a manual test-runner and context-paster, causing cognitive fatigue and throttling agentic throughput.
 2. **Unguided Autonomous Drift:** Autonomous agents lacking formal state machines execute noisy shell commands, pollute context windows, hallucinate non-existent surfaces, break undocumented invariants, and generate massive financial waste through token thrashing.
 
-OALP addresses these limitations through four foundational axioms:
+OHP addresses these limitations through four foundational axioms:
 - **Axiom 1: Declarative Decoupling.** The cognitive engine SHALL contain zero domain-specific code. All targets, commands, paths, metrics, and invariant bounds MUST reside in the repository seam.
 - **Axiom 2: Dual-Gate Invariant Safety.** Progress is strictly defined as an increase in the primary objective metric subject to zero regressions across all certified invariant gates. Any regression SHALL trigger an immediate, atomic git rollback.
 - **Axiom 3: Compounding Immutable Memory.** All trials, whether adopted, rejected, or inconclusive, MUST be recorded in append-only cryptographic or structured ledgers. The engine SHALL never repeat a falsified avenue.
@@ -43,12 +43,12 @@ OALP addresses these limitations through four foundational axioms:
 
 ## 3. Standardized Repository Topology
 
-An OALP-compliant repository SHALL structure its agentic memory and tool assets under the `.agents/` root directory.
+An OHP-compliant repository SHALL structure its agentic memory and tool assets under the `.agents/` root directory.
 
 ```
 <project-root>/
 └── .agents/
-    ├── loop/                                # OALP Engine Durable State & Memory
+    ├── loop/                                # OHP Engine Durable State & Memory
     │   ├── loop.json                        # Active iteration, champion state, status
     │   ├── journal.jsonl                    # Immutable, append-only chronological audit ledger
     │   ├── coverage.json                    # 12-Front breadth coverage guarantee ledger
@@ -69,13 +69,13 @@ An OALP-compliant repository SHALL structure its agentic memory and tool assets 
 ```
 
 ### 3.1 Backward Compatibility
-For legacy installations, if `.agents/loop/` does not exist but `.loop/` is present at the repository root, an OALP engine MUST gracefully bind to `.loop/` without error.
+For legacy installations, if `.agents/loop/` does not exist but `.loop/` is present at the repository root, an OHP engine MUST gracefully bind to `.loop/` without error.
 
 ---
 
 ## 4. The Declarative Seam: `profile.yaml`
 
-The file `.agents/loop/knowledge/profile.yaml` (or `.loop/knowledge/profile.yaml`) defines the contract between the repository and the OALP engine.
+The file `.agents/loop/knowledge/profile.yaml` (or `.loop/knowledge/profile.yaml`) defines the contract between the repository and the OHP engine.
 
 ### 4.1 Specification Schema
 
@@ -117,7 +117,7 @@ Example: `benchmarks/results.json:summary.p99_latency_ms` specifies reading `sum
 
 ## 5. Durable State Ledgers
 
-All OALP state files MUST adhere to valid JSON or JSONL formats and be machine-parseable.
+All OHP state files MUST adhere to valid JSON or JSONL formats and be machine-parseable.
 
 ### 5.1 Active Loop State (`loop.json`)
 The `loop.json` document records the current execution pointer and champion ground truth:
@@ -182,7 +182,7 @@ The `status` for each front MUST be one of: `"unstarted"`, `"active"`, `"covered
 
 ## 6. The 12-Front Engineering Taxonomy
 
-OALP defines twelve canonical fronts of software and system research:
+OHP defines twelve canonical fronts of software and system research:
 
 1. **`orient`**: Establish ground truth, inspect git status, verify clean working tree, and reproduce the current champion baseline metric.
 2. **`discover`**: Systematically inspect repository capabilities, uncalled functions, hidden flags, and unused modules; catalog findings in `capabilities.md`.
@@ -201,7 +201,7 @@ OALP defines twelve canonical fronts of software and system research:
 
 ## 7. Dual-Gate Verification Protocol
 
-An OALP engine MUST NOT adopt any candidate change that fails either the objective gate or the invariant gate.
+An OHP engine MUST NOT adopt any candidate change that fails either the objective gate or the invariant gate.
 
 ### 7.1 Mathematical Contract
 Let $M(S)$ denote the objective metric value for repository state $S$. Let $I_1(S), I_2(S), \dots, I_k(S)$ denote the verification status ($\text{PASS} = 1, \text{FAIL} = 0$) of all defined invariant suites.
@@ -229,7 +229,7 @@ To guarantee reproducibility and prevent uncommitted mutation contamination:
 
 ## 8. Teleological Target-Seeking & Self-Replenishing Queue Protocol
 
-A central design defect of early AI agents is halting when a pre-configured move queue or parameter checklist is exhausted. OALP mandates active replenishment:
+A central design defect of early AI agents is halting when a pre-configured move queue or parameter checklist is exhausted. OHP mandates active replenishment:
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -260,13 +260,13 @@ A central design defect of early AI agents is halting when a pre-configured move
    - In web & microservices: Analyze latency breakdown by subsystem, flamegraphs, and thread contention.
    - In compilers & systems runtimes: Inspect instruction caches, memory layout, and branch prediction misses.
 3. **Queue Replenishment:** From the diagnostic findings, the engine MUST synthesize 2–3 new structural hypotheses, insert them into `plans/next_moves.json`, and immediately resume the dispatch cycle.
-4. **Simulation Freedom Invariant:** Annotations or documentation mentioning "operator-gated" or "requires human decision" apply strictly to live production environments. In headless evaluation (`eval` simulation), an OALP engine possesses **100% unconditional authorization** to simulate, benchmark, prototype, and falsify any architectural candidate.
+4. **Simulation Freedom Invariant:** Annotations or documentation mentioning "operator-gated" or "requires human decision" apply strictly to live production environments. In headless evaluation (`eval` simulation), an OHP engine possesses **100% unconditional authorization** to simulate, benchmark, prototype, and falsify any architectural candidate.
 
 ---
 
 ## 9. Token Economics & Output Projection Wrapping
 
-Unconstrained command streaming can exhaust LLM context windows within a dozen turns. An OALP engine MUST adhere to strict projection wrapping:
+Unconstrained command streaming can exhaust LLM context windows within a dozen turns. An OHP engine MUST adhere to strict projection wrapping:
 
 1. **Command Output Suppression:** Benchmark, compilation, and test commands producing voluminous stdout MUST redirect or suppress raw logs:
    - PowerShell: `command | Out-Null`
@@ -280,14 +280,14 @@ Unconstrained command streaming can exhaust LLM context windows within a dozen t
 ## 10. Security & Invariant Safety Considerations
 
 1. **Hermetic Boundaries:** Candidates SHALL NOT modify files outside the repository boundary or access unauthorized network endpoints during evaluation.
-2. **Protected Branches:** An OALP engine MUST NOT force-push or alter protected git branches (`origin/main`, `origin/master`) without explicit authorization configured in `profile.yaml`.
+2. **Protected Branches:** An OHP engine MUST NOT force-push or alter protected git branches (`origin/main`, `origin/master`) without explicit authorization configured in `profile.yaml`.
 3. **Secret Isolation:** API credentials, private tokens, and environment secrets MUST NOT be written to `journal.jsonl`, `scratch/`, or committed to the repository history.
 
 ---
 
 ## 11. Appendix: Conformance Checklist
 
-To certify a repository or agent framework as **OALP v1.0 Compliant**, the implementation MUST pass the following checks:
+To certify a repository or agent framework as **OHP v1.0 Compliant**, the implementation MUST pass the following checks:
 
 - [ ] Topology contains `.agents/loop/` (or `.loop/`) with all required state ledgers.
 - [ ] Declarative seam `profile.yaml` validates against `profile.schema.json`.

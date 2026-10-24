@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive conformance test suite for OpenAgent Loop Protocol (OALP).
+"""Comprehensive conformance test suite for Open Harness Protocol (OHP).
 
 Verifies schema contracts, internal skill initialization tools, multi-language
 starter templates, polyglot archetypes, deterministic environment manifests,
@@ -21,10 +21,10 @@ SCHEMAS_DIR = ROOT / "docs" / "standards" / "schemas"
 TEMPLATES_DIR = ROOT / "skills" / "loop" / "assets" / "templates"
 
 
-class OALPConformanceTests(unittest.TestCase):
+class OHPConformanceTests(unittest.TestCase):
 
     def setUp(self):
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="oalp_test_"))
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="ohp_test_"))
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir, ignore_errors=True)

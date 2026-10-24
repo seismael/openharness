@@ -19,20 +19,20 @@ If a host/version changes discovery or metadata behavior, include its exact vers
 
 ---
 
-## OpenAgent Loop Protocol (OALP) Standards Contribution
+## Open Harness Protocol (OHP) Standards Contribution
 
-The **OpenAgent Loop Protocol (OALP)** is governed as an open, vendor-neutral specification under [`docs/standards/`](docs/standards/README.md).
+The **Open Harness Protocol (OHP)** is governed as an open, vendor-neutral specification under [`docs/standards/`](docs/standards/README.md).
 
 ### RFC Lifecycle & Proposals
 1. **Proposal:** New standards proposals, extensions, or major schema revisions MUST be submitted as an RFC document under `docs/standards/rfc-XXXX-<topic>.md`.
 2. **Review:** RFCs undergo open review for technical precision, RFC 2119 keyword compliance, and mathematical invariant safety.
-3. **Reference Implementation:** Any proposed RFC MUST be accompanied by working reference code in `skills/loop/`, along with automated tests in `tests/test_oalp_conformance.py`.
+3. **Reference Implementation:** Any proposed RFC MUST be accompanied by working reference code in `skills/loop/`, along with automated tests in `tests/test_ohp_conformance.py`.
 
-### OALP Conformance Certification
-Repositories implementing OALP may display the official conformance badge in their README:
+### OHP Conformance Certification
+Repositories implementing OHP may display the official conformance badge in their README:
 
 ```markdown
-[![OALP v1.0 Compliant](https://img.shields.io/badge/OALP-v1.0--Compliant-blue)](https://github.com/seismael/agentic-tools/tree/main/docs/standards)
+[![OHP v1.0 Compliant](https://img.shields.io/badge/OHP-v1.0--Compliant-blue)](https://github.com/seismael/openharness/tree/main/docs/standards)
 ```
 
 To certify conformance, run the internal validator:

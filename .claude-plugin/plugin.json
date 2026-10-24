@@ -1,11 +1,11 @@
 {
-  "name": "agentic-tools",
+  "name": "openharness",
   "version": "1.0.0",
-  "description": "Deterministic, dual-gated autonomous optimization loop (OALP) and portable engineering skills for AI coding agents.",
+  "description": "Deterministic, dual-gated autonomous optimization loop (OHP) and portable engineering skills for AI coding agents.",
   "author": {
     "name": "seismael"
   },
-  "repository": "https://github.com/seismael/agentic-tools",
+  "repository": "https://github.com/seismael/openharness",
   "license": "MIT",
   "skills": [
     "./skills/loop",

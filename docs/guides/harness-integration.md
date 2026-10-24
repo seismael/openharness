@@ -1,6 +1,6 @@
 # Universal Harness Integration Guide
 
-How to integrate **Agentic Tools** and the **OpenAgent Loop Protocol (OALP)** natively across all major AI agent runtimes and developer environments.
+How to integrate **OpenHarness** and the **Open Harness Protocol (OHP)** natively across all major AI agent runtimes and developer environments.
 
 ---
 
@@ -18,13 +18,13 @@ How to integrate **Agentic Tools** and the **OpenAgent Loop Protocol (OALP)** na
 
 ## 1. Anthropic Claude Code
 
-Claude Code supports Agentic Tools either via its official plugin system or via direct skill installation.
+Claude Code supports OpenHarness either via its official plugin system or via direct skill installation.
 
 ### Option A: Plugin Installation (Recommended)
 Add the marketplace and install with two commands:
 ```bash
-/plugin marketplace add seismael/agentic-tools
-/plugin install agentic-tools@agentic-tools-marketplace
+/plugin marketplace add seismael/openharness
+/plugin install openharness@openharness-marketplace
 ```
 
 ### Option B: Local Project Installation
@@ -88,7 +88,7 @@ Execute the autonomous optimization loop according to skills/loop/SKILL.md:
 
 ## 4. Cursor & Windsurf (via MCP Server)
 
-For IDE-based agents like Cursor and Windsurf, Agentic Tools provides a zero-dependency **Model Context Protocol (MCP)** server: `tools/mcp_server.py`.
+For IDE-based agents like Cursor and Windsurf, OpenHarness provides a zero-dependency **Model Context Protocol (MCP)** server: `tools/mcp_server.py`.
 
 ### Configuring MCP in Cursor
 Add the following to your Cursor MCP configuration (`~/.cursor/mcp.json` or project settings):
@@ -127,7 +127,7 @@ When executing autonomous optimization or refactoring tasks:
 
 ## 5. Headless CI/CD Runners (GitHub Actions)
 
-Deploy OALP as an overnight research workflow running on a scheduled cron:
+Deploy OHP as an overnight research workflow running on a scheduled cron:
 
 ```yaml
 name: Nightly Autonomous Optimization

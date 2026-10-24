@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for the **Cognitive Depth Ladder** and the **First-Principles Escalation Protocol** in the OpenAgent Loop Protocol (OALP). Conventional AI coding agents suffer from a fundamental bias toward shallow, localized parameter tuning (e.g. tweaking numeric thresholds or configuration weights). When these tweaks fail to yield meaningful improvements, naive agents spin in repetitive loops or prematurely halt. RFC-0007 formalizes a 4-tier cognitive hierarchy—spanning parameter tuning, algorithmic restructuring, architectural decoupling, and first-principles mathematical reformulations—and specifies mandatory algorithmic depth-escalation rules to guarantee that autonomous engines explore high-leverage frontiers.
+This document defines the normative requirements for the **Cognitive Depth Ladder** and the **First-Principles Escalation Protocol** in the Open Harness Protocol (OHP). Conventional AI coding agents suffer from a fundamental bias toward shallow, localized parameter tuning (e.g. tweaking numeric thresholds or configuration weights). When these tweaks fail to yield meaningful improvements, naive agents spin in repetitive loops or prematurely halt. RFC-0007 formalizes a 4-tier cognitive hierarchy—spanning parameter tuning, algorithmic restructuring, architectural decoupling, and first-principles mathematical reformulations—and specifies mandatory algorithmic depth-escalation rules to guarantee that autonomous engines explore high-leverage frontiers.
 
 ---
 
@@ -37,7 +37,7 @@ Empirical observation across autonomous engineering sessions demonstrates that L
 
 ## 3. The 4-Tier Cognitive Depth Ladder
 
-An OALP engine MUST classify every candidate hypothesis into exactly one of four cognitive tiers:
+An OHP engine MUST classify every candidate hypothesis into exactly one of four cognitive tiers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

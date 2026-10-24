@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Automated architectural purity linter for OpenAgent Loop Protocol (OALP).
+"""Automated architectural purity linter for Open Harness Protocol (OHP).
 
 Enforces strict domain-agnostic separation:
 1. ZERO domain-specific vocabulary (e.g. trading, finance, USDT, MFE) permitted in core skills/

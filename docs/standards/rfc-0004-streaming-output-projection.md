@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document defines the normative requirements for **Streaming Output Projection** and **Radical Token Economics** in the OpenAgent Loop Protocol (OALP). Unconstrained AI coding agents rapidly deplete LLM context windows by streaming raw compilation, test runner, and benchmark outputs directly into conversational history. This specification mandates process-level stdout suppression, single-line scalar JSON projection wrapping, context prefix invariance, and prompt cache alignment, enabling multi-hour, multi-day autonomous research sessions at negligible operating expense (<$0.20 per 10 hours).
+This document defines the normative requirements for **Streaming Output Projection** and **Radical Token Economics** in the Open Harness Protocol (OHP). Unconstrained AI coding agents rapidly deplete LLM context windows by streaming raw compilation, test runner, and benchmark outputs directly into conversational history. This specification mandates process-level stdout suppression, single-line scalar JSON projection wrapping, context prefix invariance, and prompt cache alignment, enabling multi-hour, multi-day autonomous research sessions at negligible operating expense (<$0.20 per 10 hours).
 
 ---
 
@@ -33,18 +33,18 @@ Standard Agent:
 LLM -> runs pytest -> 25,000 tokens of raw stdout streamed into context
 Result: Context window saturates in 15 turns; costs $15–$50/hour; triggers lossy compaction.
 
-OALP Engine:
+OHP Engine:
 LLM -> runs pytest | Out-Null -> reads single-line scalar JSON receipt (150 tokens)
 Result: Runs 130+ turns continuously; costs <$0.20 total; 96.9% prompt cache hit rate.
 ```
 
-OALP eliminates token waste through two core mechanisms: **Projection Filtering** and **Prefix Invariance**.
+OHP eliminates token waste through two core mechanisms: **Projection Filtering** and **Prefix Invariance**.
 
 ---
 
 ## 3. Output Projection Filtering Contract
 
-An OALP engine MUST NOT stream raw stdout or stderr of evaluation pipelines into the LLM context.
+An OHP engine MUST NOT stream raw stdout or stderr of evaluation pipelines into the LLM context.
 
 ### 3.1 Process-Level Suppression
 All commands executed as part of the pipeline defined in `profile.yaml` SHALL suppress stdout at the operating system process boundary:
@@ -64,7 +64,7 @@ Evaluation results MUST be written to an artifact file (e.g., `target/results.js
 Modern LLM inference providers (Anthropic, DeepSeek, Google, OpenAI) implement KV-cache prompt caching: static prompt prefixes that remain byte-identical across requests are served from GPU memory at an 80%–90% price discount and near-zero latency.
 
 ### 4.1 Byte-Static Prefix Rule
-To maximize prompt cache hit rates, an OALP engine MUST maintain static prefix ordering:
+To maximize prompt cache hit rates, an OHP engine MUST maintain static prefix ordering:
 1. **Head (Static):** System prompt, protocol rules, tool definitions, declarative seam (`profile.yaml`), system invariants (`invariants.md`), toolchain manifest (`env.json`).
 2. **Middle (Infrequent):** Architectural wiki summary (`knowledge/index.md`).
 3. **Tail (Dynamic):** Active turn receipts, current iteration candidate diff, latest scalar outcome.
@@ -72,7 +72,7 @@ To maximize prompt cache hit rates, an OALP engine MUST maintain static prefix o
 An engine MUST NOT insert dynamic timestamps, random IDs, or changing counters into the static prefix head.
 
 ### 4.2 Cache Efficiency Target
-An OALP-compliant engine SHOULD achieve an average **Prompt Cache Hit Rate of $\ge 90\%$** across sessions exceeding 20 iterations.
+An OHP-compliant engine SHOULD achieve an average **Prompt Cache Hit Rate of $\ge 90\%$** across sessions exceeding 20 iterations.
 
 ---
 
@@ -80,7 +80,7 @@ An OALP-compliant engine SHOULD achieve an average **Prompt Cache Hit Rate of $\
 
 When long-running agent sessions reach maximum context capacity:
 1. The host runtime's automated summarization or compaction algorithm MAY truncate conversation history.
-2. Because all OALP state is durably persisted on disk (`loop.json`, `journal.jsonl`, `decisions/`, `coverage.json`), the engine **survives context compaction with zero cognitive drift**.
+2. Because all OHP state is durably persisted on disk (`loop.json`, `journal.jsonl`, `decisions/`, `coverage.json`), the engine **survives context compaction with zero cognitive drift**.
 3. Upon compaction, the engine resumes seamlessly by re-reading `loop.json` and continuing the dispatch cycle.
 
 ---
@@ -88,9 +88,9 @@ When long-running agent sessions reach maximum context capacity:
 ## 6. Non-Normative Case Study: Production High-Frequency Systems Audit
 
 > [!NOTE]
-> The empirical measurements below document real-world performance on a high-throughput financial computing platform. The OALP streaming projection and token caching standard is fully language- and domain-agnostic, applying identically to compilers, databases, distributed microservices, and web applications.
+> The empirical measurements below document real-world performance on a high-throughput financial computing platform. The OHP streaming projection and token caching standard is fully language- and domain-agnostic, applying identically to compilers, databases, distributed microservices, and web applications.
 
-The OALP token economics standard was validated in an overnight production audit on **Apex**, a high-frequency platform:
+The OHP token economics standard was validated in an overnight production audit on **Apex**, a high-frequency platform:
 
 | Metric | Measured Value | Standard Threshold |
 | :--- | :--- | :--- |
@@ -101,4 +101,4 @@ The OALP token economics standard was validated in an overnight production audit
 | **Total Session API Cost** | **$0.1938** (less than $0.20) | $\le \$2.00$ |
 | **Average Cost per Turn** | **$0.00147** (~1/7th of 1 cent) | $\le \$0.02$ |
 
-This establishes OALP as the most economically viable autonomous agent protocol in industry literature.
+This establishes OHP as the most economically viable autonomous agent protocol in industry literature.

@@ -82,7 +82,7 @@ In Antigravity CLI (`agy`) or Antigravity IDE:
 In OpenCode:
 
 1. **Skill Configuration**:
-   Place or symlink `agentic-tools/skills/` into your OpenCode skills directory (e.g. `~/.config/opencode/skills/` or repository root `.opencode/`).
+   Place or symlink `openharness/skills/` into your OpenCode skills directory (e.g. `~/.config/opencode/skills/` or repository root `.opencode/`).
 2. **Initial Prompt**:
    ```
    Run the autonomous optimization loop for this project:

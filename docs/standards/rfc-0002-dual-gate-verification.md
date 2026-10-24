@@ -12,7 +12,7 @@
 
 ## Abstract
 
-This document specifies the normative requirements for the **Dual-Gate Verification Protocol** in the OpenAgent Loop Protocol (OALP). In autonomous software engineering and computational optimization, improvements on a primary metric must not introduce silent regressions across existing system invariants. This specification defines the mathematical contract for candidate acceptance, pre-evaluation git snapshot semantics, invariant test suite classification, atomic rollback procedures, and synthetic fixture realignment rules.
+This document specifies the normative requirements for the **Dual-Gate Verification Protocol** in the Open Harness Protocol (OHP). In autonomous software engineering and computational optimization, improvements on a primary metric must not introduce silent regressions across existing system invariants. This specification defines the mathematical contract for candidate acceptance, pre-evaluation git snapshot semantics, invariant test suite classification, atomic rollback procedures, and synthetic fixture realignment rules.
 
 ---
 
@@ -31,7 +31,7 @@ Traditional autonomous agents frequently introduce subtle collateral damage:
 - A candidate optimization may boost throughput on synthetic workloads while causing catastrophic tail latency degradation under bursty production traffic.
 - A refactored algorithm may satisfy unit tests while failing numerical float parity against baseline receipts.
 
-OALP eliminates collateral regression through a strict, deterministic **Dual-Gate Contract**.
+OHP eliminates collateral regression through a strict, deterministic **Dual-Gate Contract**.
 
 ---
 
@@ -86,7 +86,7 @@ To ensure reproducible provenance and prevent uncommitted workspace corruption, 
 ```
 
 ### 4.1 Pre-Evaluation Snapshot Requirement
-An OALP engine MUST NOT execute benchmark or evaluation commands on an uncommitted or dirty working tree.
+An OHP engine MUST NOT execute benchmark or evaluation commands on an uncommitted or dirty working tree.
 - The engine SHALL stage and commit the working tree prior to initiating evaluation:
   `git commit -m "feat(candidate): [front] <concise hypothesis statement>"`
 - This snapshot guarantees that evaluation artifacts map cryptographically to an exact git commit hash.
@@ -104,7 +104,7 @@ Upon rejection ($\text{Accept}(S_{\text{candidate}}) = \text{FALSE}$):
 
 ## 5. Invariant Classification & Verification Hierarchy
 
-An OALP-compliant repository SHALL classify its verification gates into three tiers:
+An OHP-compliant repository SHALL classify its verification gates into three tiers:
 
 | Tier | Category | Scope | Execution Frequency |
 | :--- | :--- | :--- | :--- |
@@ -118,7 +118,7 @@ An OALP-compliant repository SHALL classify its verification gates into three ti
 
 When an architectural improvement intentionally alters nominal baseline outputs (e.g. changing an allocation formula or optimizing a data layout), static unit tests asserting old nominal outputs will fail.
 
-An OALP engine MUST distinguish between **functional regressions** and **stale nominal fixtures**:
+An OHP engine MUST distinguish between **functional regressions** and **stale nominal fixtures**:
 1. **Disallowed Fixture Weakening:** An engine MUST NOT delete assertions, weaken bounds, or skip tests to force an invariant gate to pass.
 2. **Authorized Realignment:** If an improved mechanism changes expected scalar outputs, the engine MAY update the expected nominal values in test fixtures IF AND ONLY IF:
    - The test was verifying the old formula's nominal value, not an architectural boundary.

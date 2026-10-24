@@ -1,4 +1,4 @@
-# OALP Profile Template: Go Ecosystem
+# OHP Profile Template: Go Ecosystem
 schema: loop.profile.v1
 project: "go-service"
 target: "Optimize goroutine throughput and reduce memory allocation per operation"

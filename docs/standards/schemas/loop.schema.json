@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentic-tools.org/schemas/oalp/v1/loop.schema.json",
-  "title": "OpenAgent Loop Protocol - Loop State Schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/loop.schema.json",
+  "title": "Open Harness Protocol - Loop State Schema",
   "description": "Schema for the runtime state document loop.json.",
   "type": "object",
   "required": [

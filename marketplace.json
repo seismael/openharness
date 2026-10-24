@@ -1,10 +1,10 @@
 {
-  "name": "agentic-tools-marketplace",
-  "description": "Official marketplace for Agentic Tools and the OpenAgent Loop Protocol (OALP).",
+  "name": "openharness-marketplace",
+  "description": "Official marketplace for OpenHarness and the Open Harness Protocol (OHP).",
   "plugins": [
     {
-      "name": "agentic-tools",
-      "description": "Deterministic, dual-gated autonomous loop protocol (OALP) and portable skills for continuous AI engineering.",
+      "name": "openharness",
+      "description": "Deterministic, dual-gated autonomous loop protocol (OHP) and portable skills for continuous AI engineering.",
       "version": "1.0.0",
       "source": "./"
     }

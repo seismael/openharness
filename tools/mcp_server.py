@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zero-dependency Model Context Protocol (MCP) server for OpenAgent Loop Protocol (OALP).
+"""Zero-dependency Model Context Protocol (MCP) server for Open Harness Protocol (OHP).
 
 Exposes .agents/loop state, moves, and verification tools to MCP-compatible
 IDEs and agents (Cursor, Windsurf, Claude Desktop, Antigravity).

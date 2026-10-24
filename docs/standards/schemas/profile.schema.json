@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentic-tools.org/schemas/oalp/v1/profile.schema.json",
-  "title": "OpenAgent Loop Protocol - Profile Schema",
-  "description": "Defines the declarative seam contract between an OALP-compliant cognitive engine and a target repository.",
+  "$id": "https://openharness.org/schemas/ohp/v1/profile.schema.json",
+  "title": "Open Harness Protocol - Profile Schema",
+  "description": "Defines the declarative seam contract between an OHP-compliant cognitive engine and a target repository.",
   "type": "object",
   "required": [
     "schema",

@@ -1,4 +1,4 @@
-# OALP Profile Template: Rust Ecosystem
+# OHP Profile Template: Rust Ecosystem
 schema: loop.profile.v1
 project: "rust-service"
 target: "Optimize throughput and reduce P99 latency without increasing heap allocation"
