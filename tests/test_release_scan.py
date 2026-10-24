@@ -37,7 +37,7 @@ class ReleaseScanTests(unittest.TestCase):
 
     def test_generated_caches_are_not_release_content(self):
         with tempfile.TemporaryDirectory() as name:
-            root = Path(name)
+            root = Path(name).resolve()
             skill = root / "skills" / "demo"
             cache = skill / "__pycache__"
             cache.mkdir(parents=True)
@@ -50,7 +50,7 @@ class ReleaseScanTests(unittest.TestCase):
 
     def test_private_directories_are_still_refused(self):
         with tempfile.TemporaryDirectory() as name:
-            root = Path(name)
+            root = Path(name).resolve()
             skill = root / "skills" / "demo"
             (skill / ".venv" / "bin").mkdir(parents=True)
             errors = self.scan(skill, root)
