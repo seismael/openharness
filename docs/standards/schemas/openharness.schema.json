@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/openharness.schema.json",
+  "title": "Open Harness Protocol - Harness Manifest & Audit Receipt Schema",
+  "description": "Schema for the declarative harness surface (harness.json) audited under RFC-0009, and for the bounded audit receipt it produces.",
+  "type": "object",
+  "required": ["schema", "components"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["harness.manifest.v1"]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable identifier used in audit receipts."
+    },
+    "root": {
+      "type": "string",
+      "default": ".",
+      "description": "Directory that component globs resolve against, relative to the manifest."
+    },
+    "budget": {
+      "type": "object",
+      "description": "Token ceilings enforced by the audit.",
+      "properties": {
+        "always_on_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "system_prompt",
+        "guardrails",
+        "memory",
+        "tool_guidance",
+        "subagents",
+        "skills",
+        "scripts",
+        "plugins"
+      ]
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "kind", "paths"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Glob patterns, resolved against root."
+        },
+        "always_on": {
+          "type": "boolean",
+          "default": false,
+          "description": "Text loaded on every turn; counted against the always-on budget."
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "trigger_names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names that an always-on component must mention for this component to be reachable."
+        }
+      },
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "required": ["schema", "totals", "findings", "counts", "ok"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": ["openharness.receipt.v1"]
+        },
+        "manifest": {
+          "type": "string"
+        },
+        "totals": {
+          "type": "object",
+          "required": ["always_on_tokens", "total_tokens", "files", "components"]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "severity", "component", "detail"]
+          }
+        },
+        "counts": {
+          "type": "object",
+          "required": ["error", "warn", "info"]
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "dropped_findings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -98,6 +98,31 @@ OpenHarness is designed to integrate natively with **zero repository lock-in** a
 
 ---
 
+## Harness Optimization (RFC-0009)
+
+The harness is the part of the agent a loop iteration can actually change: instructions,
+guardrails, memory, tool guidance, subagents, skills, scripts, and plugins. OpenHarness
+measures it instead of describing it.
+
+```bash
+# 1. Declare the surface once, in harness.json (schema: harness.manifest.v1)
+# 2. Audit it: deterministic, no model calls, no writes, byte-identical on an unchanged tree
+python skills/loop/scripts/openharness_audit.py --manifest harness.json
+```
+
+The audit reports per-component token estimates, always-on and total budget violations,
+unreachable skills or subagents, duplicated instruction lines, and broken local links. It
+emits a receipt capped at 2,500 bytes and exits non-zero on any error-severity finding.
+
+Adoption is scoped. Every harness change is declared `invariant` (must be probed on at
+least two cells) or `local` (may not become a global default), and no change is adopted
+without a probe receipt for that exact harness state. A clean audit is necessary, never
+sufficient: it cannot prove that an instruction is obeyed or that a behavior transfers to
+another model. See **[RFC-0009](docs/standards/rfc-0009-openharness.md)** and the
+[operating reference](skills/loop/references/openharness.md).
+
+---
+
 ## The Autonomous Loop Architecture
 
 The architecture decouples the **Domain-Agnostic Cognitive Engine** from the **Project-Specific Physics** through standardized repository seams:

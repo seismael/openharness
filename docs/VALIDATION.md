@@ -10,10 +10,13 @@ python -B -m unittest discover -s skills/characterize/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/enhance/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/audit/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s skills/knowledge/scripts -p 'test_*.py' -v
+python -B -m unittest discover -s skills/loop/scripts -p 'test_*.py' -v
 python -B -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
 Tests use temporary directories and synthetic data; they make no model calls, change no real agent settings, and activate no hooks. GitHub Actions is configured to run these commands on Windows, macOS, and Linux. A configured workflow is not evidence that its remote run passed; inspect the actual run after publishing.
+
+RFC-0009 adds 11 harness audit regressions in the loop lane and 6 conformance cases in `tests/`. On 2026-10-24 they passed locally on Windows/Python 3.14 (loop lane 19 tests, tests lane 25 tests), alongside the release structure check. The audit contract they cover is determinism, bounded receipts under adversarial input, budget and reachability errors, and refusal of an invalid manifest; they do not establish that a harness change improves a real workflow.
 
 Prior release evidence (Characterize and Enhance): 44 automated tests passed locally: 23 Characterize change-bundle tests, 11 Enhance ledger tests, and 10 installer tests. The [successful cross-platform run](https://github.com/seismael/openharness/actions/runs/37195311391) for commit `648d407c30874ef9aec771cf9c6f1387b797f347` passed Ubuntu/Python 3.10, Ubuntu/Python 3.13, macOS/Python 3.13, and Windows/Python 3.13 on 2026-10-04. These results predate Audit Project and do not establish its test or CI status. Platform-specific skips follow the tests; live target CLI integration remains pending. Instruction scenarios are a separate evidence level and cannot certify runtime policy enforcement.
 

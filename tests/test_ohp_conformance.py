@@ -9,6 +9,8 @@ and AST semantic code extraction under complete isolation.
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -22,7 +24,6 @@ TEMPLATES_DIR = ROOT / "skills" / "loop" / "assets" / "templates"
 
 
 class OHPConformanceTests(unittest.TestCase):
-
     def setUp(self):
         self.temp_dir = Path(tempfile.mkdtemp(prefix="ohp_test_"))
 
@@ -31,7 +32,13 @@ class OHPConformanceTests(unittest.TestCase):
 
     def test_json_schemas_validity(self):
         """Verify all normative JSON schemas are valid and parseable."""
-        schemas = ["profile.schema.json", "loop.schema.json", "journal.schema.json", "coverage.schema.json"]
+        schemas = [
+            "profile.schema.json",
+            "loop.schema.json",
+            "journal.schema.json",
+            "coverage.schema.json",
+            "openharness.schema.json",
+        ]
         for s_name in schemas:
             schema_file = SCHEMAS_DIR / s_name
             self.assertTrue(schema_file.is_file(), f"Missing schema: {s_name}")
@@ -42,15 +49,32 @@ class OHPConformanceTests(unittest.TestCase):
 
     def test_starter_templates_conformance(self):
         """Verify that Python, Rust, Go, and Node starter templates contain all required profile fields."""
-        templates = ["profile.python.yaml", "profile.rust.yaml", "profile.go.yaml", "profile.node.yaml"]
-        required_fields = ["schema", "project", "target", "metric", "paths", "boundaries", "pipeline", "gates", "completion"]
+        templates = [
+            "profile.python.yaml",
+            "profile.rust.yaml",
+            "profile.go.yaml",
+            "profile.node.yaml",
+        ]
+        required_fields = [
+            "schema",
+            "project",
+            "target",
+            "metric",
+            "paths",
+            "boundaries",
+            "pipeline",
+            "gates",
+            "completion",
+        ]
         for t_name in templates:
             t_file = TEMPLATES_DIR / t_name
             self.assertTrue(t_file.is_file(), f"Missing template: {t_name}")
             content = t_file.read_text(encoding="utf-8")
             data = _load_yaml(content)
             for req in required_fields:
-                self.assertIn(req, data, f"Template {t_name} missing required field '{req}'")
+                self.assertIn(
+                    req, data, f"Template {t_name} missing required field '{req}'"
+                )
             self.assertEqual(data["schema"], "loop.profile.v1")
 
     def test_init_project_and_validate_all_templates(self):
@@ -59,7 +83,9 @@ class OHPConformanceTests(unittest.TestCase):
             proj_dir = self.temp_dir / f"proj_{tmpl}"
             proj_dir.mkdir(parents=True)
 
-            rc = init_project(proj_dir, target=f"Optimize {tmpl} service", template=tmpl)
+            rc = init_project(
+                proj_dir, target=f"Optimize {tmpl} service", template=tmpl
+            )
             self.assertEqual(rc, 0)
 
             # Validate directory structure
@@ -73,15 +99,29 @@ class OHPConformanceTests(unittest.TestCase):
 
             # Validate using internal validator
             errors = validate_loop(proj_dir)
-            self.assertEqual(errors, [], f"Template {tmpl} produced validation errors: {errors}")
+            self.assertEqual(
+                errors, [], f"Template {tmpl} produced validation errors: {errors}"
+            )
 
     def test_polyglot_archetype_deep_conformance(self):
         """Verify 4 distinct polyglot project archetypes initialize with exact target semantics."""
         archetypes = [
-            ("python", "Maximize inference batch throughput (> 1,000 samples/sec)", "python_bin"),
-            ("rust", "Eliminate all heap allocations on the hot path (zero alloc)", "test_cmd"),
+            (
+                "python",
+                "Maximize inference batch throughput (> 1,000 samples/sec)",
+                "python_bin",
+            ),
+            (
+                "rust",
+                "Eliminate all heap allocations on the hot path (zero alloc)",
+                "test_cmd",
+            ),
             ("go", "Reduce p99 database query latency under 5ms", "loop_dir"),
-            ("node", "Reduce initial bundle size under 150KB and TTFB under 80ms", "scratch_dir"),
+            (
+                "node",
+                "Reduce initial bundle size under 150KB and TTFB under 80ms",
+                "scratch_dir",
+            ),
         ]
 
         for tmpl, target_str, check_key in archetypes:
@@ -106,7 +146,9 @@ class OHPConformanceTests(unittest.TestCase):
             self.assertEqual(loop_data["status"], "ACTIVE")
 
             # Check profile.yaml target substitution
-            profile_content = (loop_dir / "knowledge" / "profile.yaml").read_text(encoding="utf-8")
+            profile_content = (loop_dir / "knowledge" / "profile.yaml").read_text(
+                encoding="utf-8"
+            )
             self.assertIn(target_str, profile_content)
 
             # Check subagent personas are created in both .agents/subagents/ and .opencode/agent/
@@ -115,8 +157,14 @@ class OHPConformanceTests(unittest.TestCase):
             opencode_dir = proj_dir / ".opencode" / "agent"
             self.assertTrue(opencode_dir.is_dir())
             for persona in ["diagnostician", "architect", "verifier", "synthesizer"]:
-                self.assertTrue((opencode_dir / f"{persona}.md").is_file(), f"Missing OpenCode persona: {persona}")
-                self.assertTrue((subagents_dir / f"{persona}.yaml").is_file(), f"Missing subagent persona: {persona}")
+                self.assertTrue(
+                    (opencode_dir / f"{persona}.md").is_file(),
+                    f"Missing OpenCode persona: {persona}",
+                )
+                self.assertTrue(
+                    (subagents_dir / f"{persona}.yaml").is_file(),
+                    f"Missing subagent persona: {persona}",
+                )
 
     def test_polyglot_ast_slicing_integration(self):
         """Verify zero-dependency AST semantic slicing across Python, Rust, Go, and TypeScript."""
@@ -190,11 +238,116 @@ class OHPConformanceTests(unittest.TestCase):
         """Verify validate_loop reports an error when profile.yaml is missing."""
         loop_dir = self.temp_dir / ".agents" / "loop"
         loop_dir.mkdir(parents=True)
-        (loop_dir / "loop.json").write_text('{"target": "t", "status": "ACTIVE"}', encoding="utf-8")
-        (loop_dir / "coverage.json").write_text('{}', encoding="utf-8")
+        (loop_dir / "loop.json").write_text(
+            '{"target": "t", "status": "ACTIVE"}', encoding="utf-8"
+        )
+        (loop_dir / "coverage.json").write_text("{}", encoding="utf-8")
 
         errors = validate_loop(self.temp_dir)
-        self.assertTrue(any("profile.yaml" in e for e in errors), f"Expected missing profile error, got: {errors}")
+        self.assertTrue(
+            any("profile.yaml" in e for e in errors),
+            f"Expected missing profile error, got: {errors}",
+        )
+
+
+class HarnessOptimizationConformanceTests(unittest.TestCase):
+    """RFC-0009: the audit is deterministic, bounded, and refuses invalid manifests."""
+
+    SCRIPT = ROOT / "skills" / "loop" / "scripts" / "openharness_audit.py"
+
+    def setUp(self):
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="ohp_harness_"))
+        self.addCleanup(shutil.rmtree, self.temp_dir, ignore_errors=True)
+
+    def write(self, relative, text):
+        path = self.temp_dir / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def manifest(self, components, budget=None):
+        payload = {
+            "schema": "harness.manifest.v1",
+            "name": "conformance",
+            "root": ".",
+            "components": components,
+        }
+        if budget is not None:
+            payload["budget"] = budget
+        return self.write("harness.json", json.dumps(payload))
+
+    def audit(self, path):
+        return subprocess.run(
+            [sys.executable, "-B", str(self.SCRIPT), "--manifest", str(path)],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+    def fixture(self):
+        self.write("AGENTS.md", "When building, load the `build` skill.\n")
+        self.write(
+            "skills/build/SKILL.md",
+            "---\nname: build\ndescription: Build things\n---\nBody\n",
+        )
+        return [
+            {
+                "id": "prompt",
+                "kind": "system_prompt",
+                "paths": ["AGENTS.md"],
+                "always_on": True,
+            },
+            {"id": "build", "kind": "skills", "paths": ["skills/*/SKILL.md"]},
+        ]
+
+    def test_receipt_satisfies_bounded_projection(self):
+        result = self.audit(self.manifest(self.fixture(), {"always_on_tokens": 1000}))
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertLessEqual(len(result.stdout.encode("utf-8")), 2500)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["schema"], "openharness.receipt.v1")
+        for key in ("totals", "findings", "counts", "ok", "truncated"):
+            self.assertIn(key, receipt)
+        self.assertEqual(
+            set(receipt["totals"]),
+            {"always_on_tokens", "total_tokens", "files", "components"},
+        )
+
+    def test_audit_is_byte_identical_across_runs(self):
+        path = self.manifest(self.fixture())
+        self.assertEqual(self.audit(path).stdout, self.audit(path).stdout)
+
+    def test_invalid_manifest_is_refused_without_receipt(self):
+        path = self.manifest(self.fixture())
+        path.write_text(
+            '{"schema": "harness.manifest.v0", "components": []}', encoding="utf-8"
+        )
+        result = self.audit(path)
+        self.assertEqual(result.returncode, 2)
+        payload = json.loads(result.stdout)
+        self.assertIn("error", payload)
+        self.assertNotIn("totals", payload)
+
+    def test_unreachable_component_is_an_error(self):
+        components = self.fixture()
+        self.write("AGENTS.md", "When deploying, read the runbook.\n")
+        result = self.audit(self.manifest(components))
+        self.assertEqual(result.returncode, 1)
+        codes = [item["code"] for item in json.loads(result.stdout)["findings"]]
+        self.assertIn("reachability.orphan", codes)
+
+    def test_budget_violation_is_an_error(self):
+        result = self.audit(self.manifest(self.fixture(), {"always_on_tokens": 1}))
+        self.assertEqual(result.returncode, 1)
+        codes = [item["code"] for item in json.loads(result.stdout)["findings"]]
+        self.assertIn("budget.always_on_exceeded", codes)
+
+    def test_reference_protocol_declares_scope_and_probe_rules(self):
+        text = (ROOT / "skills" / "loop" / "references" / "openharness.md").read_text(
+            encoding="utf-8"
+        )
+        for token in ("invariant", "local", "probe", "budget"):
+            self.assertIn(token, text.lower())
 
 
 if __name__ == "__main__":

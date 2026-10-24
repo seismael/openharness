@@ -38,6 +38,7 @@ The standard is organized as a modular series of Request for Comments (RFCs):
 | **[RFC-0006](rfc-0006-subagent-orchestration-and-skill-activation.md)** | **Subagent Orchestration & Dynamic Skill Activation** | Orchestrator-worker split, mandatory delegation thresholds, dynamic skill activation ladder | **Proposed Standard** |
 | **[RFC-0007](rfc-0007-cognitive-depth-ladder.md)** | **Cognitive Depth Ladder & First-Principles Escalation** | 4-tier abstraction hierarchy, mandatory depth escalation, local minima saturation rules | **Proposed Standard** |
 | **[RFC-0008](rfc-0008-dynamic-tool-synthesis.md)** | **Dynamic Tool & Capability Synthesis Protocol** | Just-in-time tool authoring, scratch-to-helper promotion, environment manifest registration | **Proposed Standard** |
+| **[RFC-0009](rfc-0009-openharness.md)** | **OpenHarness Harness Optimization Protocol** | Harness component taxonomy, deterministic audit receipts, proposal scopes, probe evidence, composition budget | **Proposed Standard** |
 
 ---
 
@@ -49,6 +50,7 @@ Formal machine-readable JSON schemas validating OHP compliant repositories:
 - [`schemas/loop.schema.json`](schemas/loop.schema.json): Schema for the active loop runtime state (`loop.json`).
 - [`schemas/journal.schema.json`](schemas/journal.schema.json): Schema for the append-only chronological audit ledger (`journal.jsonl`).
 - [`schemas/coverage.schema.json`](schemas/coverage.schema.json): Schema for the 12-front breadth coverage ledger (`coverage.json`).
+- [`schemas/openharness.schema.json`](schemas/openharness.schema.json): Schema for the audited harness manifest (`harness.json`) and its bounded audit receipt.
 
 ---
 

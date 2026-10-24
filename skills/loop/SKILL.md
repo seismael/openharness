@@ -114,6 +114,10 @@ and [project profile](references/project-profile.md).
 - **Evidence-Based Dispatch**: Choose the next move with the [dispatch policy](references/dispatch-policy.md)
   — defect > uncovered front > largest diagnosed gap > structural candidate > parameter
   (last) > hygiene. Reason from data, code, wiki, and prior outcomes; never act without grounds.
+- **Harness Discipline**: Treat the harness as a measured surface, not free text. Audit it
+  [deterministically](references/openharness.md) before proposing a change, declare every
+  change `invariant` or `local`, and adopt only with a probe receipt for that exact harness
+  state. An `invariant` change needs more than one cell; a `local` win is never a global one.
 - **Pipeline Only**: Execute the project's declared canonical [pipeline](references/pipeline-contract.md)
   stages. Never hand-roll analysis or produce numbers the pipeline cannot reproduce from a
   committed snapshot.
