@@ -349,6 +349,38 @@ class HarnessOptimizationConformanceTests(unittest.TestCase):
         for token in ("invariant", "local", "probe", "budget"):
             self.assertIn(token, text.lower())
 
+    def test_opencode_adapter_uses_current_frontmatter(self):
+        """V2 rejects the legacy `tools`/`permission` keys; keep the adapter loadable."""
+        agent = (
+            ROOT / "adapters" / "opencode" / "agents" / "harness-editor.md"
+        ).read_text(encoding="utf-8")
+        command = (
+            ROOT / "adapters" / "opencode" / "commands" / "openharness.md"
+        ).read_text(encoding="utf-8")
+        self.assertTrue(agent.startswith("---\n"))
+        self.assertIn("mode: subagent", agent)
+        self.assertIn("permissions:", agent)
+        for legacy in ("\ntools:", "\npermission:", "\ndisable:", "\nmaxSteps:"):
+            self.assertNotIn(legacy, agent)
+        self.assertIn("description:", command.split("---", 2)[1])
+        self.assertNotIn("template:", command.split("---", 2)[1])
+
+    def test_adapter_declares_every_component_kind(self):
+        readme = (ROOT / "adapters" / "opencode" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        for kind in (
+            "system_prompt",
+            "guardrails",
+            "memory",
+            "tool_guidance",
+            "subagents",
+            "skills",
+            "scripts",
+            "plugins",
+        ):
+            self.assertIn(f"`{kind}`", readme)
+
 
 if __name__ == "__main__":
     unittest.main()

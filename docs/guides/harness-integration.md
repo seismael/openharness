@@ -84,6 +84,22 @@ Execute the autonomous optimization loop according to skills/loop/SKILL.md:
 - Record all results in .agents/loop/journal.jsonl.
 ```
 
+### Harness optimization adapter
+The OpenCode adapter installs the `/openharness` command and a read-only `harness-editor`
+subagent, bound to the native V2 surfaces (`AGENTS.md`, `.opencode/agents/`,
+`.opencode/skills/`, `.opencode/plugins/`):
+
+```bash
+mkdir -p .opencode/commands .opencode/agents
+cp adapters/opencode/commands/openharness.md .opencode/commands/openharness.md
+cp adapters/opencode/agents/harness-editor.md .opencode/agents/harness-editor.md
+python skills/loop/scripts/openharness_audit.py --manifest harness.json
+```
+
+See **[adapters/opencode/README.md](../../adapters/opencode/README.md)** for the kind
+bindings and a starter `harness.json`. The audit is deterministic and model-free; adoption
+still requires a probe receipt for the exact harness state (RFC-0009).
+
 ---
 
 ## 4. Cursor & Windsurf (via MCP Server)

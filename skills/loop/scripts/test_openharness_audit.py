@@ -168,6 +168,18 @@ class HarnessAuditTests(unittest.TestCase):
         result = self.run_audit(self.manifest(components))
         self.assertEqual(result.returncode, 0, result.stdout)
 
+    def test_manifest_with_bom_is_accepted(self):
+        """Windows shells write UTF-8 BOM by default; that must not read as a broken manifest."""
+        payload = {
+            "schema": "harness.manifest.v1",
+            "name": "bom",
+            "components": self.surface(),
+        }
+        path = self.root / "bom.json"
+        path.write_text(json.dumps(payload), encoding="utf-8-sig")
+        result = self.run_audit(path)
+        self.assertEqual(result.returncode, 0, result.stdout)
+
     def test_invalid_manifest_exits_two(self):
         path = self.manifest(self.surface(), schema="wrong.v0")
         result = self.run_audit(path)

@@ -82,6 +82,7 @@ OpenHarness is designed to integrate natively with **zero repository lock-in** a
 │ **Claude Code**    │ Official Plugin & Marketplace        │ `/plugin install`, `/loop` │
 │ **Antigravity**    │ Global/Local Skills & Subagents      │ `/loop "<target>"`         │
 │ **OpenCode**       │ In-Session Skill Protocol & DB       │ Headless session prompt    │
+│ **OpenCode (OHP)** │ `/openharness` command + subagent    │ `adapters/opencode/`       │
 │ **Cursor/Windsurf**│ Model Context Protocol (MCP) Server  │ `tools/mcp_server.py`      │
 │ **Headless CI/CD** │ Scheduled Overnight Runner           │ GitHub Actions / Cron      │
 └────────────────────┴──────────────────────────────────────┴────────────────────────────┘

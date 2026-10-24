@@ -61,7 +61,7 @@ def finding(code, severity, component, detail):
 def load_manifest(path):
     """Return (manifest, error_message)."""
     try:
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
     except OSError as error:
         return None, f"cannot read manifest: {error}"
     except json.JSONDecodeError as error:
@@ -138,7 +138,7 @@ def declared_names(component, files):
     names = list(component.get("trigger_names") or [])
     for path in files:
         try:
-            head = path.read_text(encoding="utf-8", errors="replace")[:800]
+            head = path.read_text(encoding="utf-8-sig", errors="replace")[:800]
         except OSError:
             continue
         match = FRONTMATTER_NAME.search(head)
@@ -171,7 +171,7 @@ def audit(manifest, manifest_path):
 
         for path in files:
             try:
-                text = path.read_text(encoding="utf-8", errors="replace")
+                text = path.read_text(encoding="utf-8-sig", errors="replace")
             except OSError:
                 findings.append(
                     finding("component.unreadable", "error", identifier, str(path))
