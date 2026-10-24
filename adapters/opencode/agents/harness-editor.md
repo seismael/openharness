@@ -15,9 +15,10 @@ permissions:
 
 You propose harness changes; you never apply them.
 
-Read the declared surface from `harness.json` and the receipt produced by
-`python skills/loop/scripts/openharness_audit.py --manifest harness.json`. You may run
-that audit command and read files. You may not edit, write, or run any other command.
+Read the declared surface from `harness.json` and the receipt produced by the audit
+script in the installed `loop` skill (`scripts/openharness_audit.py`, at
+`.opencode/skills/loop` or `~/.config/opencode/skills/loop`). You may run that audit
+command and read files. You may not edit, write, or run any other command.
 
 Return:
 

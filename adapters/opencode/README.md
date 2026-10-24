@@ -19,14 +19,26 @@ OpenCode V2 command and agent formats; undocumented for V1.
 
 ## Install
 
+Global install (recommended — the command works in every project):
+
+```bash
+mkdir -p ~/.config/opencode/commands ~/.config/opencode/agents
+cp adapters/opencode/commands/openharness.md ~/.config/opencode/commands/openharness.md
+cp adapters/opencode/agents/harness-editor.md ~/.config/opencode/agents/harness-editor.md
+```
+
+Project install:
+
 ```bash
 mkdir -p .opencode/commands .opencode/agents
 cp adapters/opencode/commands/openharness.md .opencode/commands/openharness.md
 cp adapters/opencode/agents/harness-editor.md .opencode/agents/harness-editor.md
 ```
 
-Install the `loop` skill from this repository first; the command references
-`skills/loop/references/openharness.md` and the audit script inside it.
+Either way, install the `loop` skill from this repository first
+(`python tools/install_skill.py --skill loop --to <skills-dir>/loop`); the command loads its
+`references/openharness.md` and runs the audit script it ships. The command resolves that
+skill directory from wherever it is installed, so no project-relative path is required.
 
 ## Declare the surface
 

@@ -4,7 +4,8 @@ description: Audit the declared harness surface, then gate one scoped harness ch
 
 Operate the OpenHarness harness-optimization protocol (OHP RFC-0009) on $ARGUMENTS.
 
-Follow `skills/loop/references/openharness.md` exactly. Do not invent a variant of it.
+Load the `loop` skill and read its `references/openharness.md`; follow it exactly. Do not
+invent a variant of it.
 
 1. **Locate the manifest.** Expect `harness.json` at the project root. If it is absent,
    draft one with the 8 declared kinds that actually exist here — `system_prompt`,
@@ -12,7 +13,9 @@ Follow `skills/loop/references/openharness.md` exactly. Do not invent a variant 
    and set `always_on: true` only for text loaded on every turn. Show the draft before
    relying on it.
 2. **Audit.** Run
-   `python skills/loop/scripts/openharness_audit.py --manifest harness.json`.
+   `python "<loop-skill-dir>/scripts/openharness_audit.py" --manifest harness.json`,
+   resolving `<loop-skill-dir>` to wherever the `loop` skill is installed (for example
+   `.opencode/skills/loop` or `~/.config/opencode/skills/loop`).
    Exit `0` means no error-severity finding, `1` means at least one, `2` means the manifest
    is invalid. Report the receipt totals and each finding with its code. Never weaken the
    audit, remove a component, or raise a budget to make a finding disappear.
