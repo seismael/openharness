@@ -140,13 +140,17 @@ class BundleTests(unittest.TestCase):
         real = Path.stat
         marked = {str(Path(path)) for path in paths}
 
+        class Proxy:
+            def __init__(self, info, links):
+                self._info = info
+                self.st_nlink = links
+
+            def __getattr__(self, name):
+                return getattr(self._info, name)
+
         def fake(candidate, *args, **kwargs):
             info = real(candidate, *args, **kwargs)
-            if str(candidate) not in marked:
-                return info
-            fields = list(info)
-            fields[3] = 2  # st_nlink
-            return os.stat_result(fields)
+            return Proxy(info, 2) if str(candidate) in marked else info
 
         return patch.object(Path, "stat", fake)
 

@@ -110,7 +110,7 @@ runs:
       with:
         script: |
           const fs = require('fs');
-          const path = process.env.REPORT_PATH;
+          const path = ${{ toJSON(inputs.report-path) }};
           if (!fs.existsSync(path)) {
             core.info('No report to comment on.');
             return;
@@ -132,5 +132,3 @@ runs:
           } else {
             await github.rest.issues.createComment({ owner, repo, issue_number, body });
           }
-        env:
-          REPORT_PATH: ${{ inputs.report-path }}

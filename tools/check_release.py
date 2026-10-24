@@ -23,6 +23,7 @@ PUBLIC_DOCUMENTS = (
 PRIVATE_MARKERS = re.compile(
     r"skill://|skill-[0-9a-f]{32}|(?<![A-Za-z0-9_.-])/(?:workspace|mnt/data)/|/root/\.codex/"
 )
+GENERATED_DIRS = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".cache"}
 LINK = re.compile(r"\[[^\]]*\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+['\"][^)]*)?\s*\)")
 REFERENCE_LINK = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(?:<([^>]+)>|(\S+))", re.MULTILINE)
 
@@ -106,6 +107,8 @@ def inspect_path(base, errors, skill=None):
         relative = path.relative_to(ROOT)
         if path.is_symlink():
             errors.append(f"{relative}: symlinks are not allowed in the release")
+            continue
+        if any(part in GENERATED_DIRS or part.endswith(".egg-info") for part in relative.parts):
             continue
         if any(
             part in IGNORED_DIRS

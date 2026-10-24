@@ -46,6 +46,14 @@ All notable changes to this project are documented here. The format follows
 - Generated-directory ignore rules are anchored to the repository root, so
   fixture skill directories named `build` are committed rather than silently
   ignored. A repository-state test fails when a fixture file is untracked.
+- The release scan ignores generated caches and package metadata instead of
+  treating a checkout as broken after a test run. Private state directories are
+  still refused, and a regression test covers both sides.
+- The composite action loads on GitHub: a step `env` mapping that the runner
+  rejected was replaced by an evaluated input, so the report comment can read
+  the configured path.
+- The hardlink guard is simulated with a proxy that preserves platform stat
+  attributes, so the Windows test no longer fails on `st_file_attributes`.
 
 ## [0.2.0] - 2026-10-24
 

@@ -19,7 +19,7 @@ IGNORED_DIRS = {
     "logs",
     "state",
 }
-IGNORED_SUFFIXES = (".pyc", ".pyo", ".log", ".sqlite", ".sqlite3", ".db")
+IGNORED_SUFFIXES = (".pyc", ".pyo", ".log", ".sqlite", ".sqlite3", ".db", ".egg-info", ".dist-info")
 
 
 def report(message, error=False):
