@@ -1,6 +1,8 @@
 """Exercise the installer CLI using an isolated, synthetic skill repository."""
 
-import errno
+import contextlib
+import importlib.util
+import io
 import os
 import shutil
 import subprocess
@@ -8,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 INSTALLER = Path(__file__).resolve().parents[1] / "tools" / "install_skill.py"
 
@@ -28,6 +31,10 @@ class InstallSkillTests(unittest.TestCase):
         )
         (self.source / "references" / "guide.md").write_text("Example reference\n")
         self.destination = self.root / "new-parent" / "installed-skill"
+        spec = importlib.util.spec_from_file_location("install_skill_under_test", self.cli)
+        assert spec is not None and spec.loader is not None
+        self.module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.module)
 
     def run_cli(self, *extra, skill="enhance", destination=None, env=None):
         return subprocess.run(
@@ -48,18 +55,29 @@ class InstallSkillTests(unittest.TestCase):
             env=env,
         )
 
-    def symlink(self, target, link, directory=False):
-        try:
-            link.symlink_to(target, target_is_directory=directory)
-        except NotImplementedError:
-            self.skipTest("Platform does not support symlinks")
-        except OSError as error:
-            if (
-                error.errno in {errno.ENOSYS, errno.ENOTSUP}
-                or getattr(error, "winerror", None) == 1314
-            ):
-                self.skipTest("Platform does not permit symlink creation")
-            raise
+    def run_inprocess(self, *extra, skill="enhance", destination=None):
+        """Run the installer in-process so a simulated link needs no OS privilege."""
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            code = self.module.main(
+                [
+                    "--skill",
+                    skill,
+                    "--to",
+                    str(destination or self.destination),
+                    *extra,
+                ]
+            )
+        return code, stdout.getvalue(), stderr.getvalue()
+
+    def simulated_symlinks(self, *paths):
+        real = Path.is_symlink
+        marked = {str(Path(path)) for path in paths}
+
+        def fake(candidate):
+            return str(candidate) in marked or real(candidate)
+
+        return patch.object(Path, "is_symlink", fake)
 
     def assert_refused(self, result):
         self.assertNotEqual(result.returncode, 0, result.stdout)
@@ -137,29 +155,39 @@ class InstallSkillTests(unittest.TestCase):
         self.assertFalse(destination.parent.exists())
 
     def test_refuses_symlink_in_source_even_if_excluded(self):
-        self.symlink(self.source / "SKILL.md", self.source / "cache.pyc")
-        self.assert_refused(self.run_cli())
+        (self.source / "cache.pyc").write_text("local state")
+        with self.simulated_symlinks(self.source / "cache.pyc"):
+            code, _, stderr = self.run_inprocess()
+        self.assertEqual(code, 1)
+        self.assertIn("Symlinks are not supported", stderr)
         self.assertFalse(self.destination.parent.exists())
 
     def test_refuses_symlink_source_ancestor(self):
-        original = self.repository / "skills"
-        moved = self.repository / "real-skills"
-        original.rename(moved)
-        self.symlink(moved, original, directory=True)
-        self.assert_refused(self.run_cli())
+        with self.simulated_symlinks(self.repository / "skills"):
+            code, _, stderr = self.run_inprocess()
+        self.assertEqual(code, 1)
+        self.assertIn("Symlinks are not supported", stderr)
         self.assertFalse(self.destination.parent.exists())
 
     def test_refuses_symlink_destination_and_ancestor(self):
         outside = self.root / "outside"
         outside.mkdir()
-        self.symlink(outside, self.destination.parent, directory=True)
-        self.assert_refused(self.run_cli())
-        self.assert_refused(self.run_cli(destination=self.destination.parent / ".." / "normalized"))
+        with self.simulated_symlinks(self.destination.parent):
+            code, _, stderr = self.run_inprocess()
+        self.assertEqual(code, 1)
+        self.assertIn("Symlinks are not supported", stderr)
+        normalized = self.root / "normalized"
+        with self.simulated_symlinks(normalized):
+            code, _, _ = self.run_inprocess(
+                destination=self.destination.parent / ".." / "normalized"
+            )
+        self.assertEqual(code, 1)
         self.assertEqual(list(outside.iterdir()), [])
         dangling = self.root / "dangling"
-        self.symlink(self.root / "missing", dangling)
-        self.assert_refused(self.run_cli(destination=dangling))
-        self.assertTrue(dangling.is_symlink())
+        with self.simulated_symlinks(dangling):
+            code, _, stderr = self.run_inprocess(destination=dangling)
+        self.assertEqual(code, 1)
+        self.assertIn("Symlinks are not supported", stderr)
 
 
 if __name__ == "__main__":

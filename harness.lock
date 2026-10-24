@@ -24,13 +24,13 @@
       "files": [
         {
           "path": "README.md",
-          "sha256": "eb8c35670e6e112c07a9dc30d609f52cdbd0bcc1efddfd4bf89edbac99fc7895",
-          "tokens": 1735
+          "sha256": "f2692edd5498c4a000258ebca069214d598f6636cf56ec651278da5e70e54994",
+          "tokens": 1798
         }
       ],
       "id": "readme",
       "kind": "system_prompt",
-      "tokens": 1735
+      "tokens": 1798
     },
     {
       "always_on": false,
@@ -38,17 +38,17 @@
       "files": [
         {
           "path": "skills/audit/SKILL.md",
-          "sha256": "2e6d789476dd2e29f139ceec1e06f99d2866c49366896c57ee2e3ea5bde6fc4a",
+          "sha256": "6c5a08d02c62324e3e4ad56a0fb022e7a60b1d77b9692781b197e61090fa0fc8",
           "tokens": 4314
         },
         {
           "path": "skills/characterize/SKILL.md",
-          "sha256": "6e8aa4ffb717bd65173ec6a4600190255228ffe800572556cd73abbb44cef4ae",
+          "sha256": "483fcb7dedaa7a8bfc1491f0f34bd9a0a0b4963458555d9fe9d1d5e0fb9a6d16",
           "tokens": 2576
         },
         {
           "path": "skills/enhance/SKILL.md",
-          "sha256": "59a9f35817d9be212545dbc07879ae5630b1c6164537739cafac9bf26cce2604",
+          "sha256": "1bd01ca383e18a7dad7d2df3f7216e31a721a95808156917b33e31768c7cca77",
           "tokens": 4220
         },
         {
@@ -58,7 +58,7 @@
         },
         {
           "path": "skills/loop/SKILL.md",
-          "sha256": "92ee7f208733e129034bc91eb81cccfde93c13210610614e19e91f633a47bdad",
+          "sha256": "2f5464acb63f168d2b4f0950ea417c84f2c17a84daf3b7ac2f2ef56dfb1ef7ae",
           "tokens": 3396
         }
       ],
@@ -72,13 +72,13 @@
       "files": [
         {
           "path": "adapters/opencode/commands/openharness.md",
-          "sha256": "24355df796601f9f49ffd51b414574dbf806ce5b61dad89770faf8918056272c",
-          "tokens": 1093
+          "sha256": "9d9d8246e6fd933477a71dc452d4eae3508f92f66b9bbee3bf1bd6ad0836b59b",
+          "tokens": 1140
         }
       ],
       "id": "commands",
       "kind": "tool_guidance",
-      "tokens": 1093
+      "tokens": 1140
     },
     {
       "always_on": false,
@@ -86,7 +86,7 @@
       "files": [
         {
           "path": "adapters/opencode/agents/harness-editor.md",
-          "sha256": "7ed496adf2d8af7ccc6f490a204983ca9dcb2e0d1b9af42a9b27a3db9086c66a",
+          "sha256": "fe1a2a4b3a14e40ec0ac20267ce4271a138ba3080315b60087dd790b57ceec40",
           "tokens": 555
         }
       ],
@@ -100,32 +100,32 @@
       "files": [
         {
           "path": "skills/audit/scripts/test_validate_audit.py",
-          "sha256": "dce2a410684b930343a3aa5d9bb023f07c6c3888cd69ba512e3143d472659bf7",
-          "tokens": 6918
+          "sha256": "f2ef3559d0e3269de92b6471e7e3e72cc5b2f33a1d393f20ef682c14d1eea167",
+          "tokens": 6970
         },
         {
           "path": "skills/audit/scripts/validate_audit.py",
-          "sha256": "7d35c96acc984390e47476fb9610b4d411fc9eb0a3e16a3f3df9c0ce23e952b3",
+          "sha256": "bef5fb9bbc42e49819158083f7f47521b2b76f6cc0d5c57f722058ede18b6d95",
           "tokens": 5159
         },
         {
           "path": "skills/characterize/scripts/change_bundle.py",
-          "sha256": "fb1b08e750032c57c9aad55e60111ba8f7299088a76cc8538e04a5fc8dd77f96",
+          "sha256": "88f7709807a8d13b5ce64e0fba923e4a98db3adeb09432da0e9a5267371fb20e",
           "tokens": 3173
         },
         {
           "path": "skills/characterize/scripts/test_change_bundle.py",
-          "sha256": "1c7e37a5d27491794adc64ca12a236b6e7d86b4d96f2e99fdb7f24887369e57c",
-          "tokens": 3808
+          "sha256": "a2340ba6ed19e7438ff9d908fc058f8348f72b99721dab9139ee3c72396a9b1d",
+          "tokens": 4004
         },
         {
           "path": "skills/enhance/scripts/review_ledger.py",
-          "sha256": "dabddd1ba8d90b690a8aae5afe882938471e01abf114e909724c9d003de2dbb6",
+          "sha256": "bbe6cee3ab64bcb494f649c5d3b6928c4ccad78572abb438f3eb45731c124151",
           "tokens": 3381
         },
         {
           "path": "skills/enhance/scripts/test_review_ledger.py",
-          "sha256": "ee92067bed02510973b62abecd74d9beeb21a62f5e78aff52e0cb7e10f16dada",
+          "sha256": "0aee2ead2669c0bfbc7eff6f0528156345c1f6e097bb6cc50c5d6d5dfe7ecce1",
           "tokens": 3663
         },
         {
@@ -150,8 +150,8 @@
         },
         {
           "path": "skills/loop/scripts/openharness_audit.py",
-          "sha256": "0c428822fc9cea943e54259e1160bc8a2d36524f05c96f42946d900a7afc19fb",
-          "tokens": 239
+          "sha256": "fc62282deb4ed9c7dd3bbe0549ad3d5a01ae02a565f16b888b6d9d05420fac0a",
+          "tokens": 246
         },
         {
           "path": "skills/loop/scripts/openharness_cases.py",
@@ -210,7 +210,7 @@
         },
         {
           "path": "skills/loop/scripts/test_openharness_audit.py",
-          "sha256": "d85f6d21e2ae1abb08253e80dbeb1b800a5cf2be11a0a8bf8e3af8a65fe46c27",
+          "sha256": "7434e1d9fbb1ca28ae99b786501108532d3ae30bfcec5517bf555162855581be",
           "tokens": 2258
         },
         {
@@ -256,7 +256,7 @@
       ],
       "id": "scripts",
       "kind": "scripts",
-      "tokens": 51990
+      "tokens": 52245
     },
     {
       "always_on": false,
@@ -264,7 +264,7 @@
       "files": [
         {
           "path": "tools/mcp_server.py",
-          "sha256": "8ad01fb1bba14dfffaa15b90db636ec94a73144ffd4c3e7a7f431495816fea91",
+          "sha256": "685516355eb125957990cc49b31cb7140db368a67902d867b95c93d07fcc77b7",
           "tokens": 1629
         }
       ],
@@ -276,7 +276,7 @@
   "declarations": {
     "cases": {
       "path": "cases.json",
-      "sha256": "1a48f60d15330ac1bb0722c640ac8f15d2c8c692da0f9a4d4f2efe706fa28d7f"
+      "sha256": "789f44183173e4d2e01972387713564657adcef6d89de0ea1df76e9b6873e204"
     },
     "policy": {
       "path": "policy.json",
@@ -287,7 +287,7 @@
       "sha256": "adc82347235660af82f0a1e54ece6753a9c14d806489fa30f49125c668201993"
     }
   },
-  "fingerprint": "c15dda3924009247d9b30afdb54a12695ced36aa275bdfed378d07616edaf783",
+  "fingerprint": "164e248df53128111c97b70a572517fa140782ad9618e577e384779ac6ad8fc5",
   "generator": {
     "name": "openharness",
     "version": "0.2.0"
@@ -298,6 +298,6 @@
     "always_on_tokens": 762,
     "components": 7,
     "files": 41,
-    "total_tokens": 73682
+    "total_tokens": 74047
   }
 }

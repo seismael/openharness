@@ -66,6 +66,8 @@ def run_spec(name: str, spec: dict) -> str:
         completed = invoke(argv, workdir)
         if completed.returncode not in (0, 1, 3):
             raise SystemExit(f"{name} exited {completed.returncode}: {completed.stderr}")
+        if "Traceback (most recent call last)" in completed.stderr:
+            raise SystemExit(f"{name} raised an exception:\n{completed.stderr}")
         return normalize(completed.stdout, workdir)
     finally:
         if temporary is not None:

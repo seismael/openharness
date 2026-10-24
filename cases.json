@@ -42,6 +42,13 @@
       "command": "python -B skills/loop/scripts/openharness_cli.py plan --check",
       "expect": { "exit_code": 0 },
       "timeout_s": 120
+    },
+    {
+      "id": "context-budget",
+      "description": "The declared context budget is within its limits",
+      "command": "python -B skills/loop/scripts/openharness_cli.py context --check",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 120
     }
   ]
 }

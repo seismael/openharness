@@ -43,8 +43,8 @@ def bounded(payload: dict[str, Any], reducers: Sequence[Reducer] = ()) -> str:
     """Return canonical JSON capped at 2500 bytes.
 
     Each reducer maps the full payload to a smaller projection. The first
-    projection that fits wins; if none fits, the last projection is returned so
-    the verdict is always present.
+    projection that fits wins. If none fits, a minimal projection carrying the
+    verdict is emitted, so a hostile payload cannot breach the cap.
     """
     text = compact(payload)
     if byte_size(text) <= MAX_BYTES:
@@ -53,7 +53,19 @@ def bounded(payload: dict[str, Any], reducers: Sequence[Reducer] = ()) -> str:
         text = compact(reduce(payload))
         if byte_size(text) <= MAX_BYTES:
             return text
-    return text
+    minimal = compact(
+        {
+            "schema": payload.get("schema"),
+            "ok": payload.get("ok"),
+            "truncated": True,
+        }
+    )
+    if byte_size(minimal) <= MAX_BYTES:
+        return minimal
+    verdict = compact({"ok": payload.get("ok"), "truncated": True})
+    if byte_size(verdict) <= MAX_BYTES:
+        return verdict
+    return compact({"truncated": True})
 
 
 def read_json(path: str | Path, label: str = "document") -> Any:

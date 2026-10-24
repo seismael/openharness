@@ -53,6 +53,7 @@ jobs:
       - name: Check the protocol against this repository
         run: |
           openharness audit --manifest harness.json
+          openharness context --manifest harness.json --check
           openharness inventory --manifest harness.json --requirements requirements.json
           openharness cases --cases cases.json --workdir .
           openharness lock --check

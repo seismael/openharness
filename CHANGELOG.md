@@ -6,6 +6,38 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `openharness context`: a deterministic context budget (RFC-0017) that splits
+  enabled tokens into `resident`, `loadable`, and `executable` layers, reports
+  per-kind totals, the largest components, one named lever per component, and
+  headroom against every declared budget. `--check` gates on an exceeded budget
+  and `--format text` prints a human projection.
+- `context.schema.json`: the normative context-budget receipt contract.
+- `py.typed`: the package now ships inline type information.
+
+### Changed
+
+- Audit, lock, plan, and report share one measurement pass. Each declared file
+  is read once as exact bytes; the fingerprint is computed from those same
+  hashes instead of re-reading the tree.
+- `report --execute` accepts `--workdir` and hashes the same declarations it
+  evaluates.
+
+### Fixed
+
+- `cases --only` now filters in dry-run mode and rejects unknown ids instead of
+  silently ignoring the selection.
+- `report --execute` validates the working directory instead of failing deep in
+  the runner.
+- Declaration paths outside the manifest directory stay relative in the lock
+  (RFC-0016 §5).
+- `select` writes `selection.json` and `mapping.json` atomically.
+- Every bounded receipt is now hard-capped at 2500 bytes: a hostile payload can
+  no longer exceed the limit through an unshrunk projection.
+- Platform-dependent tests no longer skip. Symlink and POSIX-mode preconditions
+  are simulated deterministically, so the whole suite runs on every OS.
+
 ## [0.2.0] - 2026-10-24
 
 ### Added

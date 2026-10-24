@@ -14,7 +14,7 @@ from ..commands import telemetry as telemetry_command
 from ..drift import build_lock, compare, load_lock, summarize
 from ..errors import EXIT_FINDINGS, EXIT_OK, EXIT_USAGE, OpenHarnessError
 from ..journal import load_entries
-from ..manifest import audit, require_manifest
+from ..manifest import measure, require_manifest
 from ..schemas import REPORT, REPORT_RECEIPT
 
 HELP = "compose audit, inventory, lock, cases, and telemetry"
@@ -233,6 +233,10 @@ def configure(parser: argparse.ArgumentParser) -> None:
         help="Execute declared cases instead of only validating them",
     )
     parser.add_argument(
+        "--workdir",
+        help="Directory case commands run in (default: the manifest directory)",
+    )
+    parser.add_argument(
         "--format",
         choices=tuple(FORMATS),
         default="json",
@@ -253,7 +257,7 @@ def _shrink(payload: dict[str, Any]) -> dict[str, Any]:
 def run(args: argparse.Namespace) -> int:
     try:
         manifest = require_manifest(args.manifest)
-        audit_receipt = audit(manifest, args.manifest)
+        audit_receipt, file_stats = measure(manifest, args.manifest)
 
         inventory_payload: dict[str, Any] | None = None
         if args.requirements:
@@ -264,7 +268,12 @@ def run(args: argparse.Namespace) -> int:
         lock_file = Path(args.lock)
         if lock_file.is_file():
             locked = load_lock(lock_file)
-            actual = build_lock(manifest, args.manifest)
+            actual = build_lock(
+                manifest,
+                args.manifest,
+                {"requirements": args.requirements, "cases": args.cases},
+                measured=(audit_receipt, file_stats),
+            )
             changes = compare(locked, actual)
             state = summarize(locked, actual, changes)
             lock_payload = {
@@ -288,7 +297,11 @@ def run(args: argparse.Namespace) -> int:
                 "ok": True,
             }
             if args.execute:
-                workdir = Path(args.manifest).resolve().parent
+                workdir = (
+                    Path(args.workdir) if args.workdir else Path(args.manifest).resolve().parent
+                )
+                if not workdir.is_dir():
+                    raise OpenHarnessError(f"not a directory: {workdir}")
                 receipt = cases_command.execute_cases(
                     declarations, workdir, fingerprint=audit_receipt["fingerprint"]
                 )

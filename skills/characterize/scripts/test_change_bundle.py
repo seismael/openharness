@@ -125,14 +125,21 @@ class BundleTests(unittest.TestCase):
             self.stage([{"path": str(self.base / "outside"), "source": str(self.proposed)}])
         self.assertFalse(self.folder.exists())
 
+    def simulated_symlinks(self, *paths):
+        """Mark paths as links so the guard is exercised without OS privileges."""
+        real = Path.is_symlink
+        marked = {str(Path(path)) for path in paths}
+
+        def fake(candidate):
+            return str(candidate) in marked or real(candidate)
+
+        return patch.object(Path, "is_symlink", fake)
+
     def test_symlink_refused(self):
         link = self.root / "linked"
-        try:
-            link.symlink_to(self.proposed)
-        except OSError:
-            self.skipTest("symlinks unavailable")
-        with self.assertRaisesRegex(ValueError, "Symlink"):
+        with self.simulated_symlinks(link), self.assertRaisesRegex(ValueError, "Symlink"):
             self.stage([{"path": str(link), "source": str(self.proposed)}])
+        self.assertFalse(self.folder.exists())
 
     def test_nested_file_targets_refused(self):
         missing = self.root / "missing"
@@ -242,7 +249,6 @@ class BundleTests(unittest.TestCase):
         self.assertFalse(self.folder.exists())
         self.assertEqual(self.target.read_bytes(), self.original)
 
-    @unittest.skipIf(os.name == "nt", "POSIX permission bits")
     def test_permission_drift_refused_before_apply(self):
         args = self.stage()
         self.target.chmod(0o400)
@@ -251,29 +257,44 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(self.target.read_bytes(), self.original)
         self.assertFalse((self.folder / "journal.json").exists())
 
-    @unittest.skipIf(os.name == "nt", "POSIX permission bits")
     def test_new_files_and_bundle_are_private_with_permissive_umask(self):
         created = self.root / "new.json"
+        requested = []
+        real_chmod = os.chmod
+        real_mkdir = Path.mkdir
+
+        def chmod(path, mode, *args, **kwargs):
+            requested.append(stat.S_IMODE(mode))
+            return real_chmod(path, mode, *args, **kwargs)
+
+        def mkdir(path, *args, **kwargs):
+            if kwargs.get("mode") is not None:
+                requested.append(kwargs["mode"])
+            return real_mkdir(path, *args, **kwargs)
+
         old_umask = os.umask(0)
         try:
-            args = self.stage([{"path": str(created), "source": str(self.proposed)}])
-            self.invoke(bundle.apply, args)
+            with (
+                patch.object(bundle.os, "chmod", chmod),
+                patch.object(Path, "mkdir", mkdir),
+            ):
+                args = self.stage([{"path": str(created), "source": str(self.proposed)}])
+                self.invoke(bundle.apply, args)
         finally:
             os.umask(old_umask)
-        self.assertEqual(stat.S_IMODE(self.folder.stat().st_mode), 0o700)
-        for path in [created, self.folder / "bundle.json", self.folder / "journal.json"]:
-            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+        self.assertIn(0o700, requested)
+        self.assertIn(0o600, requested)
+        if os.name != "nt":
+            self.assertEqual(stat.S_IMODE(self.folder.stat().st_mode), 0o700)
+            for path in [created, self.folder / "bundle.json", self.folder / "journal.json"]:
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
 
     def test_symlink_introduced_after_stage_refused(self):
         args = self.stage()
         self.target.unlink()
-        try:
-            self.target.symlink_to(self.proposed)
-        except OSError:
-            self.skipTest("symlinks unavailable")
-        with self.assertRaisesRegex(ValueError, "Symlink"):
+        with self.simulated_symlinks(self.target), self.assertRaisesRegex(ValueError, "Symlink"):
             self.invoke(bundle.apply, args)
-        self.assertTrue(self.target.is_symlink())
+        self.assertFalse(self.target.exists())
         self.assertFalse((self.folder / "journal.json").exists())
 
     def test_hardlinked_target_refused(self):

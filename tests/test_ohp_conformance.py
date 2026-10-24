@@ -41,6 +41,7 @@ class OHPConformanceTests(unittest.TestCase):
             "cases.schema.json",
             "policy.schema.json",
             "lock.schema.json",
+            "context.schema.json",
         ]
         for s_name in schemas:
             schema_file = SCHEMAS_DIR / s_name
@@ -379,7 +380,7 @@ class ProtocolSeriesConformanceTests(unittest.TestCase):
 
     def test_rfc_series_is_complete_and_indexed(self):
         index = self.read("docs/standards/README.md")
-        for number in range(1, 17):
+        for number in range(1, 18):
             label = f"rfc-{number:04d}"
             self.assertEqual(
                 len(list((ROOT / "docs" / "standards").glob(f"{label}-*.md"))),

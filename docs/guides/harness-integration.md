@@ -104,7 +104,7 @@ still requires a probe receipt for the exact harness state (RFC-0009). The lockf
 the accepted state so a later edit becomes an attributed drift line (RFC-0016).
 
 The adapter command exposes one sub-mode per command. The commands implement RFC-0009
-through RFC-0016 and all ship inside the installed skill; without a console script, use
+through RFC-0017 and all ship inside the installed skill; without a console script, use
 `python <skill>/scripts/openharness_cli.py <command>`:
 
 | Command | Question | RFC |

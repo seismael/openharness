@@ -9,6 +9,7 @@ It is not an agent runtime, a model gateway, a security scanner, or a benchmark.
 | Question | Command | Artifact |
 | :--- | :--- | :--- |
 | What is my harness, and is it coherent? | `openharness audit` | Bounded audit receipt |
+| Where does the context budget go? | `openharness context` | Layered token receipt |
 | Did it change, and exactly where? | `openharness lock` / `plan` | `harness.lock`, attributed drift |
 | Does a change actually help? | `openharness cases` / `verify` / `telemetry` | Case and journal receipts |
 | Which capabilities are missing, and why did work fail? | `openharness inventory` / `failures` | Gap and failure receipts |
@@ -60,6 +61,7 @@ The action writes a report, gates on audit findings, inventory gaps, and drift, 
 
 ```sh
 openharness audit --manifest harness.json
+openharness context --manifest harness.json --check
 openharness inventory --manifest harness.json --requirements requirements.json
 openharness cases --cases cases.json --workdir .
 openharness lock --check
@@ -74,6 +76,7 @@ openharness plan --check
 | `lock` | Record the fingerprint, per-file hashes, tokens, budget, and declaration hashes. |
 | `plan` | Attribute drift (`~` modified, `+` added, `-` removed) between state and lock. |
 | `audit` | Measure components and report missing files, broken links, orphans, duplication, budget. |
+| `context` | Split tokens into resident, loadable, and executable layers with named levers. |
 | `verify` | Validate journal entries against the iteration contract. |
 | `select` | Anonymize candidates and record an evidence-gated choice. |
 | `cases` | Run declared evaluation cases as deterministic predicates. |
@@ -128,9 +131,9 @@ Where an existing standard owns a concern, the project emits or ingests rather t
 
 ## Standards
 
-The protocol is specified as a modular RFC series with normative JSON schemas: **[docs/standards/README.md](docs/standards/README.md)**. RFC-0009 defines the harness surface and audit; RFC-0010 through RFC-0016 define contrastive iteration, telemetry, cases, inventory, failure taxonomy, portable policy, and the lockfile.
+The protocol is specified as a modular RFC series with normative JSON schemas: **[docs/standards/README.md](docs/standards/README.md)**. RFC-0009 defines the harness surface and audit; RFC-0010 through RFC-0017 define contrastive iteration, telemetry, cases, inventory, failure taxonomy, portable policy, the lockfile, and the context budget.
 
-The repository applies the protocol to itself: `harness.json`, `requirements.json`, `cases.json`, `policy.json`, and `harness.lock` are committed, and CI runs the audit, inventory, cases, lock check, and drift check on every platform.
+The repository applies the protocol to itself: `harness.json`, `requirements.json`, `cases.json`, `policy.json`, and `harness.lock` are committed, and CI runs the audit, context budget, inventory, cases, lock check, and drift check on every platform.
 
 ## Compatibility and honesty
 
@@ -141,7 +144,7 @@ OpenHarness supports Python 3.10 and later on Linux, macOS, and Windows. The CLI
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — how to propose and verify a change.
 - **[SECURITY.md](SECURITY.md)** — private reporting and the threat model.
 - **[GOVERNANCE.md](GOVERNANCE.md)** — decision rules, compatibility, and releases.
-- **[ROADMAP.md](ROADMAP.md)** — lock and drift now; context ledger, rendering, and transfer evidence next.
+- **[ROADMAP.md](ROADMAP.md)** — context budget now; rendering and transfer evidence next.
 - **[CHANGELOG.md](CHANGELOG.md)** — what changed in 0.2.0.
 
 ## License

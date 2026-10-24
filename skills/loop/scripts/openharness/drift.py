@@ -8,13 +8,14 @@ content question, never a timestamp or an environment question.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 from . import __version__, jsonio
-from .digest import relative_path, sha256_file
-from .manifest import audit, estimate_tokens
+from .digest import sha256_file
+from .manifest import estimate_tokens, measure
 from .schemas import LOCK
 
 DECLARATION_NAMES = ("policy", "cases", "requirements")
@@ -26,15 +27,30 @@ DEFAULT_DECLARATIONS = {
 
 
 def _display(path: Path, base: Path) -> str:
+    """Manifest-relative POSIX path; an absolute path is never recorded."""
     try:
-        return relative_path(path.resolve(), base)
+        return Path(os.path.relpath(path.resolve(), base)).as_posix()
     except ValueError:
-        return str(path).replace("\\", "/")
+        return path.name
 
 
-def _file_records(root: Path, paths: list[str]) -> list[dict[str, Any]]:
+def _file_records(
+    root: Path,
+    paths: list[str],
+    stats: Mapping[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     for relative in sorted(paths):
+        measured = (stats or {}).get(relative)
+        if measured is not None:
+            records.append(
+                {
+                    "path": relative,
+                    "sha256": measured["sha256"],
+                    "tokens": measured["tokens"],
+                }
+            )
+            continue
         path = root / relative
         if not path.is_file():
             continue
@@ -52,8 +68,15 @@ def _file_records(root: Path, paths: list[str]) -> list[dict[str, Any]]:
     return records
 
 
-def component_records(receipt: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Turn audit rows into lock components with per-file identity."""
+def component_records(
+    receipt: Mapping[str, Any],
+    stats: Mapping[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Turn audit rows into lock components with per-file identity.
+
+    ``stats`` is the measurement pass that produced the receipt; when present it
+    removes the second read of every file.
+    """
     root = Path(str(receipt["root"]))
     records: list[dict[str, Any]] = []
     for row in receipt["components"]:
@@ -64,7 +87,7 @@ def component_records(receipt: Mapping[str, Any]) -> list[dict[str, Any]]:
                 "enabled": row["enabled"],
                 "always_on": row["always_on"],
                 "tokens": row["tokens"],
-                "files": _file_records(root, list(row["files"])),
+                "files": _file_records(root, list(row["files"]), stats),
             }
         )
     return records
@@ -92,16 +115,26 @@ def build_lock(
     manifest: Mapping[str, Any],
     manifest_path: str | Path,
     overrides: Mapping[str, str | None] | None = None,
+    measured: tuple[Mapping[str, Any], Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Compute the lock document for the current state."""
-    receipt = audit(dict(manifest), manifest_path)
+    """Compute the lock document for the current state.
+
+    ``measured`` is an existing ``(receipt, stats)`` pair from :func:`measure`,
+    so a caller that already measured the tree does not read it again.
+    """
+    receipt: Mapping[str, Any]
+    stats: Mapping[str, Any]
+    if measured is None:
+        receipt, stats = measure(dict(manifest), manifest_path)
+    else:
+        receipt, stats = measured
     return {
         "schema": LOCK,
         "manifest": receipt["manifest"],
         "fingerprint": receipt["fingerprint"],
         "budget": dict(sorted(dict(manifest.get("budget", {})).items())),
         "totals": receipt["totals"],
-        "components": component_records(receipt),
+        "components": component_records(receipt, stats),
         "declarations": declaration_records(manifest_path, overrides),
         "generator": {"name": "openharness", "version": __version__},
     }

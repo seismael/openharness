@@ -60,6 +60,9 @@ package-dir = { "" = "skills/loop/scripts" }
 where = ["skills/loop/scripts"]
 include = ["openharness", "openharness.*"]
 
+[tool.setuptools.package-data]
+openharness = ["py.typed"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "-q --import-mode=importlib"

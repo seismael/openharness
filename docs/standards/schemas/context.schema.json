@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/context.schema.json",
+  "title": "Open Harness Protocol - Context Budget Receipt Schema",
+  "description": "Deterministic split of harness tokens into resident, loadable, and executable context, with named levers and declared-budget verdicts (RFC-0017).",
+  "type": "object",
+  "required": [
+    "schema",
+    "manifest",
+    "fingerprint",
+    "tokens",
+    "components",
+    "kinds",
+    "largest",
+    "levers",
+    "budget",
+    "truncated",
+    "ok"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["openharness.context.v1"]
+    },
+    "manifest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fingerprint": {
+      "$ref": "#/$defs/hash"
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["resident", "loadable", "executable", "total"],
+      "properties": {
+        "resident": { "type": "integer", "minimum": 0 },
+        "loadable": { "type": "integer", "minimum": 0 },
+        "executable": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kinds": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/kind" }
+    },
+    "largest": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "levers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lever" }
+    },
+    "budget": {
+      "type": "object",
+      "propertyNames": { "enum": ["always_on_tokens", "total_tokens"] },
+      "additionalProperties": { "$ref": "#/$defs/budget" }
+    },
+    "truncated": { "type": "boolean" },
+    "ok": { "type": "boolean" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "object",
+      "required": ["kind", "components", "tokens", "resident"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "system_prompt",
+            "guardrails",
+            "memory",
+            "tool_guidance",
+            "subagents",
+            "skills",
+            "scripts",
+            "plugins"
+          ]
+        },
+        "components": { "type": "integer", "minimum": 0 },
+        "tokens": { "type": "integer", "minimum": 0 },
+        "resident": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": ["id", "kind", "layer", "tokens", "share"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "layer": { "type": "string", "enum": ["resident", "loadable", "executable"] },
+        "tokens": { "type": "integer", "minimum": 0 },
+        "share": { "type": "integer", "minimum": 0, "maximum": 100 }
+      },
+      "additionalProperties": false
+    },
+    "lever": {
+      "type": "object",
+      "required": ["action", "component", "tokens", "share"],
+      "properties": {
+        "action": { "type": "string", "enum": ["trim", "defer"] },
+        "component": { "type": "string", "minLength": 1 },
+        "tokens": { "type": "integer", "minimum": 0 },
+        "share": { "type": "integer", "minimum": 0, "maximum": 100 }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": ["limit", "actual", "headroom", "ok"],
+      "properties": {
+        "limit": { "type": "integer", "minimum": 0 },
+        "actual": { "type": "integer", "minimum": 0 },
+        "headroom": { "type": "integer" },
+        "ok": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 
@@ -24,20 +24,28 @@ def relative_path(path: Path, root: Path) -> str:
     return str(path.relative_to(root)).replace("\\", "/")
 
 
+def fingerprint_from_hashes(hashes: Mapping[str, str]) -> str:
+    """Identity from precomputed ``relative path -> sha256`` content hashes.
+
+    This is the single definition of the harness fingerprint: callers that
+    already read the tree pass their hash map instead of hashing it again.
+    """
+    digest = hashlib.sha256()
+    for relative in sorted(hashes):
+        digest.update(f"{relative}\0{hashes[relative]}\n".encode())
+    return digest.hexdigest()
+
+
 def state_fingerprint(files: Iterable[Path], root: Path) -> str:
     """Identity of the exact harness state: sha256 over sorted (path, content).
 
     Duplicate paths are hashed once, so the identity depends on harness content
     and not on how components happen to overlap.
     """
-    digest = hashlib.sha256()
-    seen: set[str] = set()
-    ordered = sorted(files, key=lambda path: relative_path(path, root))
-    for path in ordered:
+    hashes: dict[str, str] = {}
+    for path in files:
         relative = relative_path(path, root)
-        if relative in seen:
+        if relative in hashes:
             continue
-        seen.add(relative)
-        content = sha256_file(path)
-        digest.update(f"{relative}\0{content}\n".encode())
-    return digest.hexdigest()
+        hashes[relative] = sha256_file(path)
+    return fingerprint_from_hashes(hashes)

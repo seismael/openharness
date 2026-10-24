@@ -31,9 +31,10 @@ class CaseError(OpenHarnessError):
 
 def bounded(payload: dict[str, Any]) -> str:
     """Keep the verdict inside 2500 bytes; detail is droppable, totals are not."""
-    text = jsonio.compact(payload)
-    if jsonio.byte_size(text) <= jsonio.MAX_BYTES:
-        return text
+    return jsonio.bounded(payload, (_drop_results,))
+
+
+def _drop_results(payload: dict[str, Any]) -> dict[str, Any]:
     trimmed = dict(payload)
     results = trimmed.pop("results", None)
     if results is not None:
@@ -41,8 +42,7 @@ def bounded(payload: dict[str, Any]) -> str:
             :12
         ]
         trimmed["truncated"] = True
-        text = jsonio.compact(trimmed)
-    return text
+    return trimmed
 
 
 def load_cases(path: str | Path) -> list[Any]:
@@ -213,20 +213,26 @@ def evaluate(case: dict[str, Any], workdir: Path) -> dict[str, Any]:
     return record
 
 
+def select_cases(cases: list[dict[str, Any]], only: str | None = None) -> list[dict[str, Any]]:
+    """Apply ``--only``, refusing unknown ids so a typo cannot silently skip a case."""
+    if not only:
+        return cases
+    wanted = [item.strip() for item in only.split(",") if item.strip()]
+    known = {case["id"] for case in cases}
+    missing = [item for item in wanted if item not in known]
+    if missing:
+        raise CaseError(f"unknown case ids: {', '.join(missing)}")
+    chosen = set(wanted)
+    return [case for case in cases if case["id"] in chosen]
+
+
 def execute_cases(
     cases: list[dict[str, Any]],
     workdir: Path,
     only: str | None = None,
     fingerprint: str = "",
 ) -> dict[str, Any]:
-    selected = cases
-    if only:
-        wanted = [item.strip() for item in only.split(",") if item.strip()]
-        known = {case["id"] for case in cases}
-        missing = [item for item in wanted if item not in known]
-        if missing:
-            raise CaseError(f"unknown case ids: {', '.join(missing)}")
-        selected = [case for case in cases if case["id"] in set(wanted)]
+    selected = select_cases(cases, only)
     results = [evaluate(case, workdir) for case in selected]
     passed = sum(1 for item in results if item["status"] == "pass")
     receipt: dict[str, Any] = {
@@ -287,6 +293,11 @@ def run(args: argparse.Namespace) -> int:
         return EXIT_USAGE
 
     if args.dry_run:
+        try:
+            selected = select_cases(cases, args.only)
+        except CaseError as error:
+            print(jsonio.spaced({"schema": CONTRACT, "ok": False, "error": str(error)}))
+            return EXIT_USAGE
         payload = {
             "schema": CONTRACT,
             "mode": "dry-run",
@@ -296,9 +307,9 @@ def run(args: argparse.Namespace) -> int:
                     "command": case["command"],
                     "timeout_s": case.get("timeout_s", DEFAULT_TIMEOUT),
                 }
-                for case in cases
+                for case in selected
             ],
-            "count": len(cases),
+            "count": len(selected),
             "ok": True,
         }
         print(bounded(payload))

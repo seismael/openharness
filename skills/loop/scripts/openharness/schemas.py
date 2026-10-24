@@ -19,6 +19,7 @@ REPORT = "openharness.report.v1"
 REPORT_RECEIPT = "openharness.report.receipt.v1"
 INIT = "openharness.init.v1"
 REQUIREMENTS = "openharness.requirements.v1"
+CONTEXT = "openharness.context.v1"
 
 KINDS = (
     "system_prompt",

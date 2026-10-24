@@ -26,6 +26,9 @@ from openharness.commands import (
     cases as cases_command,
 )
 from openharness.commands import (
+    context as context_command,
+)
+from openharness.commands import (
     failures as failures_command,
 )
 from openharness.commands import (
@@ -125,6 +128,14 @@ class JsonIOTests(unittest.TestCase):
         big = {"a": "x" * 4000}
         reduced = jsonio.bounded(big, [lambda payload: {"a": "y"}, lambda p: p])
         self.assertEqual(reduced, '{"a":"y"}')
+
+    def test_bounded_hard_caps_a_hostile_payload(self) -> None:
+        hostile = {"schema": "s" * 4000, "ok": False, "detail": "x" * 4000}
+        text = jsonio.bounded(hostile, [lambda p: p])
+        self.assertLessEqual(jsonio.byte_size(text), jsonio.MAX_BYTES)
+        payload = json.loads(text)
+        self.assertTrue(payload["truncated"])
+        self.assertFalse(payload["ok"])
 
     def test_read_json_reports_stable_errors(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -572,7 +583,8 @@ class CasesTests(HarnessCase):
             ),
         )
         self.assertEqual(code, errors.EXIT_OK)
-        self.assertEqual(json.loads(output)["count"], 2)
+        self.assertEqual(json.loads(output)["count"], 1)
+        self.assertEqual(json.loads(output)["cases"][0]["id"], "one")
 
         code, output = capture(
             cases_command.run,
@@ -580,7 +592,8 @@ class CasesTests(HarnessCase):
                 cases_command, ["--cases", self.path("cases.json"), "--dry-run", "--only", "absent"]
             ),
         )
-        self.assertEqual(code, errors.EXIT_OK)
+        self.assertEqual(code, errors.EXIT_USAGE)
+        self.assertIn("unknown case ids", output)
 
         payload = {
             "schema": schemas.CASES_RECEIPT,
@@ -1446,6 +1459,7 @@ class CommandLineTests(unittest.TestCase):
                 "lock",
                 "plan",
                 "audit",
+                "context",
                 "verify",
                 "select",
                 "cases",
@@ -1492,6 +1506,117 @@ class CommandLineTests(unittest.TestCase):
             )
             self.assertEqual(code, errors.EXIT_OK)
             self.assertIn("fingerprint", output)
+
+    def test_version_is_consistent_across_declarations(self) -> None:
+        import openharness
+
+        pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        declared = pyproject.split('version = "', 1)[1].split('"', 1)[0]
+        citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
+        marketplace = json.loads((ROOT / "marketplace.json").read_text(encoding="utf-8"))
+        self.assertEqual(openharness.__version__, declared)
+        self.assertIn(f"version: {declared}", citation)
+        self.assertEqual(marketplace["plugins"][0]["version"], declared)
+
+
+class ContextTests(HarnessCase):
+    def context(self, *extra: str) -> tuple[int, str]:
+        return capture(
+            context_command.run,
+            parse(
+                context_command,
+                ["--manifest", self.path("harness.json"), *extra],
+            ),
+        )
+
+    def test_layers_partition_the_audit_total(self) -> None:
+        receipt, _ = manifest.measure(
+            manifest.require_manifest(self.path("harness.json")), self.path("harness.json")
+        )
+        payload = context_command.build(
+            manifest.require_manifest(self.path("harness.json")), receipt
+        )
+        tokens = payload["tokens"]
+        self.assertEqual(tokens["total"], receipt["totals"]["total_tokens"])
+        self.assertEqual(
+            tokens["total"],
+            tokens["resident"] + tokens["loadable"] + tokens["executable"],
+        )
+        self.assertEqual(tokens["resident"], 16)
+        self.assertEqual(payload["fingerprint"], receipt["fingerprint"])
+        self.assertEqual(len(payload["levers"]), 2)
+        self.assertEqual(payload["levers"][0]["action"], "trim")
+
+    def test_run_reports_text_and_json(self) -> None:
+        code, output = self.context()
+        self.assertEqual(code, errors.EXIT_OK)
+        payload = json.loads(output)
+        self.assertEqual(payload["schema"], schemas.CONTEXT)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["budget"]["always_on_tokens"]["headroom"], 984)
+
+        code, text = self.context("--format", "text")
+        self.assertEqual(code, errors.EXIT_OK)
+        self.assertIn("resident", text)
+        self.assertIn("budget always_on_tokens: 16/1000", text)
+        self.assertLessEqual(jsonio.byte_size(text), jsonio.MAX_BYTES)
+        self.assertEqual(
+            context_command.render_text(payload),
+            text,
+        )
+
+    def test_budget_overrun_only_fails_in_check_mode(self) -> None:
+        document = self.manifest(budget={"always_on_tokens": 1, "total_tokens": 5000})
+        self.write_json("harness.json", document)
+        code, output = self.context()
+        self.assertEqual(code, errors.EXIT_OK)
+        self.assertFalse(json.loads(output)["ok"])
+        self.assertEqual(json.loads(output)["budget"]["always_on_tokens"]["headroom"], -15)
+
+        code, output = self.context("--check")
+        self.assertEqual(code, errors.EXIT_FINDINGS)
+        self.assertFalse(json.loads(output)["ok"])
+
+    def test_usage_errors(self) -> None:
+        code, _ = self.context("--top", "0")
+        self.assertEqual(code, errors.EXIT_USAGE)
+        code, _ = capture(
+            context_command.run, parse(context_command, ["--manifest", self.path("absent.json")])
+        )
+        self.assertEqual(code, errors.EXIT_USAGE)
+
+    def test_oversized_receipt_stays_bounded_and_valid(self) -> None:
+        document = self.manifest(
+            components=[
+                {
+                    "id": "x" * 4000,
+                    "kind": "skills",
+                    "paths": ["AGENTS.md"],
+                }
+            ]
+        )
+        self.write_json("harness.json", document)
+        code, output = self.context()
+        self.assertEqual(code, errors.EXIT_OK)
+        self.assertLessEqual(jsonio.byte_size(output), jsonio.MAX_BYTES)
+        payload = json.loads(output)
+        self.assertTrue(payload["truncated"])
+        self.assertEqual(
+            set(payload),
+            {
+                "schema",
+                "manifest",
+                "fingerprint",
+                "tokens",
+                "components",
+                "kinds",
+                "largest",
+                "levers",
+                "budget",
+                "truncated",
+                "ok",
+            },
+        )
 
 
 class AuditCommandTests(HarnessCase):

@@ -20,10 +20,11 @@ CONTRACT = SELECTION
 
 
 def bounded(payload: dict[str, Any]) -> str:
-    text = jsonio.compact(payload)
-    if jsonio.byte_size(text) <= jsonio.MAX_BYTES:
-        return text
-    trimmed = {
+    return jsonio.bounded(payload, (_drop_candidates,))
+
+
+def _drop_candidates(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
         "schema": payload.get("schema"),
         "candidates": payload.get("candidates", [])[:8],
         "count": payload.get("count"),
@@ -31,7 +32,6 @@ def bounded(payload: dict[str, Any]) -> str:
         "ok": payload.get("ok"),
         "truncated": True,
     }
-    return jsonio.compact(trimmed)
 
 
 def discover(directory: Path) -> list[Path]:
@@ -101,7 +101,7 @@ def run(args: argparse.Namespace) -> int:
     if not selection_path.is_file():
         anon = anonymize(files)
         mapping = {label: str(entry["path"].name) for label, entry in anon.items()}
-        mapping_path.write_text(jsonio.pretty(mapping) + "\n", encoding="utf-8", newline="\n")
+        jsonio.write_text(mapping_path, jsonio.pretty(mapping) + "\n")
         selection: dict[str, Any] = {
             "schema": CONTRACT,
             "count": len(anon),
@@ -118,7 +118,7 @@ def run(args: argparse.Namespace) -> int:
             "mode": "existing-output",
             "ok": True,
         }
-        selection_path.write_text(jsonio.pretty(selection) + "\n", encoding="utf-8", newline="\n")
+        jsonio.write_text(selection_path, jsonio.pretty(selection) + "\n")
         print(bounded(selection))
         return EXIT_OK
 

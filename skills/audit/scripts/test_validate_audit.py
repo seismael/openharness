@@ -8,8 +8,22 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 from validate_audit import HEADINGS, LIMIT, MAX_ERRORS, Validator, has_placeholder, main
+
+
+def resolve_as(mapping):
+    """Simulate following a link without needing an OS symlink privilege."""
+    real = Path.resolve
+
+    def fake(path, *args, **kwargs):
+        target = mapping.get(str(path))
+        if target is not None:
+            return target
+        return real(path, *args, **kwargs)
+
+    return fake
 
 
 def finding(identity="F-001"):
@@ -74,7 +88,7 @@ class ValidateAuditTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name) / "audit"
+        self.root = (Path(self.temp.name) / "audit").resolve()
         (self.root / "findings").mkdir(parents=True)
         for name in ("README.md", "CONTEXT.md"):
             (self.root / name).write_text("# Concrete audit context\n", encoding="utf-8")
@@ -210,23 +224,16 @@ class ValidateAuditTests(unittest.TestCase):
         outside = Path(self.temp.name) / "outside.md"
         outside.write_text(packet(), encoding="utf-8")
         link = self.root / "findings" / "escape.md"
-        try:
-            link.symlink_to(outside)
-        except (OSError, NotImplementedError):
-            self.skipTest("symlinks unavailable")
         self.data["findings"][0]["path"] = "findings/escape.md"
-        self.assert_invalid("escapes audit root")
+        with patch.object(Path, "resolve", resolve_as({str(link): outside})):
+            self.assert_invalid("escapes audit root")
 
     def test_manifest_symlink_escape(self):
         manifest = self.root / "audit.json"
         outside = Path(self.temp.name) / "outside.json"
         outside.write_bytes(manifest.read_bytes())
-        manifest.unlink()
-        try:
-            manifest.symlink_to(outside)
-        except (OSError, NotImplementedError):
-            self.skipTest("symlinks unavailable")
-        self.assertTrue(any("escapes audit root" in e for e in Validator(self.root).validate()))
+        with patch.object(Path, "resolve", resolve_as({str(manifest): outside})):
+            self.assertTrue(any("escapes audit root" in e for e in Validator(self.root).validate()))
 
     def test_unknown_and_self_dependency(self):
         self.data["findings"][0]["depends_on"] = ["F-999"]

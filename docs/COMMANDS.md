@@ -60,6 +60,31 @@ openharness audit --manifest harness.json [--fingerprint-only]
 
 Reports components, files, token totals, findings, severity counts, and the fingerprint. `--fingerprint-only` prints `{"fingerprint": "..."}`, which is the cheap identity check to store in a journal entry.
 
+## context
+
+Split harness tokens by the way a host spends them (RFC-0017).
+
+```sh
+openharness context [--manifest harness.json] [--format json|text] [--top 8] [--check]
+```
+
+- `resident` is always-on text paid on every turn; `loadable` is enabled text paid only when activated; `executable` is scripts and plugins that never enter the context window.
+- `largest` lists the biggest components with their share; `levers` names the action per component (`trim` for resident, `defer` for the rest).
+- `budget` reports declared limit, actual tokens, and headroom per limit.
+- `--check` exits `1` when a declared budget is exceeded; without it the command is informational and exits `0`.
+- `--format text` prints the same receipt as a deterministic human projection.
+
+```text
+openharness context: example
+resident         511 tokens
+loadable        2048 tokens
+executable         0 tokens
+total           2559 tokens
+budget always_on_tokens: 511/4000 (3489 headroom, ok)
+largest:
+  skills [loadable] 1200 (46%)
+```
+
 ## verify
 
 Validate journal entries against the iteration contract (RFC-0010).

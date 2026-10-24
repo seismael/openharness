@@ -46,6 +46,7 @@ The standard is organized as a modular series of Request for Comments (RFCs):
 | **[RFC-0014](rfc-0014-failure-taxonomy.md)** | **Failure Taxonomy** | Closed nine-class cause vocabulary, recurrence as harness gap, separated failure rate | **Proposed Standard** |
 | **[RFC-0015](rfc-0015-portable-policy-and-enforcement.md)** | **Portable Action Policy and Adapter Enforcement** | Last-match-wins policy evaluation, allow/ask/deny verdicts, adapter enforcement matrix | **Proposed Standard** |
 | **[RFC-0016](rfc-0016-harness-lockfile-and-drift-plan.md)** | **Harness Lockfile and Drift Plan** | Content-addressed lock, per-file attribution, declaration hashes, check-mode gating | **Proposed Standard** |
+| **[RFC-0017](rfc-0017-context-budget.md)** | **Context Budget** | Resident, loadable, and executable token layers, named levers, declared-budget verdicts | **Proposed Standard** |
 
 ---
 
@@ -61,6 +62,7 @@ Formal machine-readable JSON schemas validating OHP compliant repositories:
 - [`schemas/cases.schema.json`](schemas/cases.schema.json): Schema for a declared evaluation case set consumed by a deterministic runner.
 - [`schemas/policy.schema.json`](schemas/policy.schema.json): Schema for a portable, last-match-wins action policy.
 - [`schemas/lock.schema.json`](schemas/lock.schema.json): Schema for the content-addressed harness lockfile and its drift inputs.
+- [`schemas/context.schema.json`](schemas/context.schema.json): Schema for the context-budget receipt with layer totals and named levers.
 
 ---
 

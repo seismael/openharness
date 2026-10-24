@@ -12,7 +12,7 @@ itself changes.
 2. **Proposed Standard.** The RFC is indexed in
    [docs/standards/README.md](standards/README.md), a normative schema exists,
    the reference implementation conforms, and the conformance tests pass. This
-   is the current status of RFC-0001 through RFC-0016.
+   is the current status of RFC-0001 through RFC-0017.
 3. **Standard.** At least one independent implementation, other than the
    reference implementation, passes the conformance suite, and no unresolved
    erratum is open.

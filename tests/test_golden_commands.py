@@ -22,6 +22,9 @@ sys.path.insert(0, str(ROOT / "tests"))
 from golden_specs import FIXTURES, GOLDEN, SPECS  # noqa: E402
 
 SCRIPTS = ROOT / "skills" / "loop" / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+
+from openharness import __version__  # noqa: E402
 
 
 def normalize(text: str, root: Path) -> str:
@@ -81,6 +84,11 @@ class GoldenCommandTests(unittest.TestCase):
                         (0, 1, 3),
                         f"{mode}: {completed.stderr}",
                     )
+                    self.assertNotIn(
+                        "Traceback (most recent call last)",
+                        completed.stderr,
+                        f"{mode} raised an exception for {name}",
+                    )
                     self.assertEqual(
                         normalize(completed.stdout, workdir),
                         expected,
@@ -91,7 +99,7 @@ class GoldenCommandTests(unittest.TestCase):
         fixture = FIXTURES["harness"]
         version = self.invoke(["-m", "openharness", "--version"], fixture)
         self.assertEqual(version.returncode, 0, version.stderr)
-        self.assertEqual(version.stdout.strip(), "openharness 0.2.0")
+        self.assertEqual(version.stdout.strip(), f"openharness {__version__}")
 
         usage = self.invoke(["-m", "openharness"], fixture)
         self.assertEqual(usage.returncode, 2)

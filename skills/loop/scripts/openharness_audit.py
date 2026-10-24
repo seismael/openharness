@@ -17,13 +17,13 @@ from openharness.commands.audit import (
     main,
     serialize,
 )
+from openharness.digest import state_fingerprint
 from openharness.manifest import (
     KINDS,
     MANIFEST_SCHEMA,
     RECEIPT_SCHEMA,
     estimate_tokens,
     matched_files,
-    state_fingerprint,
 )
 from openharness.schemas import MANIFEST, RECEIPT
 

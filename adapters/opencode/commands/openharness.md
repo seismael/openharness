@@ -2,7 +2,7 @@
 description: Declare, lock, measure, and gate a harness change with OpenHarness
 ---
 
-Operate the OpenHarness protocol (OHP RFC-0009 through RFC-0016) on $ARGUMENTS.
+Operate the OpenHarness protocol (OHP RFC-0009 through RFC-0017) on $ARGUMENTS.
 
 Load the `loop` skill and read its `references/openharness.md`,
 `references/contrastive-iteration.md`, `references/measurement.md`, and
@@ -20,6 +20,7 @@ Read the first word of `$ARGUMENTS` as the sub-mode. With no sub-mode, run steps
 | `lock` | `openharness lock`. Lock only an audited state; commit the lock with the change that produced it. |
 | `plan` | `openharness plan --check`. Report each `~`, `+`, and `-` line; a lock mismatch blocks adoption. |
 | `audit` | Steps 1–6. |
+| `context` | `openharness context --check`. Report the resident, loadable, and executable totals, the headroom per limit, and the first lever. Never raise a budget to make a check pass. |
 | `inventory [requirements.json]` | `openharness inventory --manifest harness.json [--requirements ...]`. Report `kinds_missing`, each gap with its reason, and `coverage` with its denominator. |
 | `cases <cases.json>` | `openharness cases --cases <cases.json> --dry-run`, then run it. Never widen a predicate to make a case pass. |
 | `measure` | `openharness telemetry --journal .agents/loop/journal.jsonl`. Report gain and regression separately; `cost_per_gain` only when gain is positive. |

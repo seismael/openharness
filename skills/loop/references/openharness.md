@@ -111,6 +111,7 @@ bytes, and answers one question:
 | Command | Question | Contract |
 | :--- | :--- | :--- |
 | `openharness audit` | What is the surface, and does it hold together? | RFC-0009 |
+| `openharness context` | Where does the context budget go, and what is recoverable? | RFC-0017 |
 | `openharness verify` | Is this journal entry coherent? | RFC-0010 |
 | `openharness select` | Which output wins, without knowing its author? | RFC-0010 |
 | `openharness cases` | Did the declared cases behave as expected? | RFC-0012 |

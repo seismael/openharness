@@ -15,6 +15,7 @@ from . import __version__
 from .commands import (
     audit,
     cases,
+    context,
     failures,
     init,
     inventory,
@@ -33,6 +34,7 @@ COMMANDS = (
     ("lock", lock),
     ("plan", plan),
     ("audit", audit),
+    ("context", context),
     ("verify", verify),
     ("select", select),
     ("cases", cases),

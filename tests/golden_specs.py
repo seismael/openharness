@@ -35,6 +35,14 @@ SPECS = {
         "script": ("openharness_audit.py", "--manifest", "harness-broken.json"),
         "cli": ("audit", "--manifest", "harness-broken.json"),
     },
+    "context": {
+        "script": None,
+        "cli": ("context", "--manifest", "harness.json"),
+    },
+    "context-text": {
+        "script": None,
+        "cli": ("context", "--manifest", "harness.json", "--format", "text"),
+    },
     "verify": {
         "script": ("openharness_verify.py", "--journal", "journal.jsonl"),
         "cli": ("verify", "--journal", "journal.jsonl"),

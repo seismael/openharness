@@ -177,6 +177,12 @@ Determinism rules:
 - `generator.version` is excluded from drift comparison, so a tool upgrade alone does not fail CI.
 - Absent declarations are omitted, not recorded as null.
 
+## Context budget receipt
+
+Schema: `openharness.context.v1` · [context.schema.json](standards/schemas/context.schema.json)
+
+`openharness context` reuses the audit's measurement pass and splits enabled tokens into three layers: `resident` (always on), `loadable` (enabled, loaded on demand), and `executable` (`scripts` and `plugins`, which never enter context). Disabled components are excluded. It lists the largest components, one lever per non-zero component (`trim` or `defer`), and a headroom verdict for each declared budget. `tokens.total` always equals the audit total.
+
 ## Receipts
 
 Every command emits one of these, canonically serialized and capped at 2500 bytes:
@@ -184,6 +190,7 @@ Every command emits one of these, canonically serialized and capped at 2500 byte
 | Schema | Command |
 | :--- | :--- |
 | `openharness.receipt.v1` | audit |
+| `openharness.context.v1` | context |
 | `openharness.verify.v1` | verify |
 | `openharness.selection.v1` | select |
 | `openharness.cases.v1` / `.cases.receipt.v1` | cases (declaration / execution) |

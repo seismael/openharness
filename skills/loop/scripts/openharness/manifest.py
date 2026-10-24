@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .digest import relative_path, state_fingerprint
+from .digest import fingerprint_from_hashes, relative_path, sha256_bytes
 from .errors import DeclarationError
 from .receipts import count_severities, finding
 from .schemas import KINDS, MANIFEST, RECEIPT
@@ -130,14 +130,27 @@ def markdown_links(text: str) -> list[str]:
     return targets
 
 
-def declared_names(component: dict[str, Any], files: list[Path]) -> list[str]:
+def declared_names(
+    component: dict[str, Any],
+    files: list[Path],
+    texts: list[tuple[Path, str]] | None = None,
+) -> list[str]:
+    """Trigger names declared in the manifest plus names derived from content.
+
+    ``texts`` lets a caller that already read the files avoid a second read;
+    the fallback keeps the helper usable on its own.
+    """
     names = list(component.get("trigger_names") or [])
-    for path in files:
-        try:
-            head = path.read_text(encoding="utf-8-sig", errors="replace")[:800]
-        except OSError:
-            continue
-        match = FRONTMATTER_NAME.search(head)
+    entries = list(texts) if texts is not None else []
+    if texts is None:
+        for path in files:
+            try:
+                text = path.read_text(encoding="utf-8-sig", errors="replace")
+            except OSError:
+                continue
+            entries.append((path, text))
+    for path, text in entries:
+        match = FRONTMATTER_NAME.search(text[:800])
         if match:
             names.append(match.group(1).strip())
         names.append(path.parent.name)
@@ -148,12 +161,20 @@ def declared_names(component: dict[str, Any], files: list[Path]) -> list[str]:
     return unique
 
 
-def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]:
-    """Measure every declared component and return the audit receipt."""
+def measure(
+    manifest: dict[str, Any], manifest_path: str | Path
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    """Measure the harness once and return ``(receipt, file_stats)``.
+
+    ``file_stats`` maps every measured repository-relative path to its
+    exact-byte sha256 and token estimate. Lock and drift consume it instead of
+    walking and hashing the tree again, so one measurement pass feeds every
+    command.
+    """
     manifest_file = Path(manifest_path).resolve()
     root = (manifest_file.parent / manifest.get("root", ".")).resolve()
     always_on_text: list[str] = []
-    state_files: list[Path] = []
+    stats: dict[str, dict[str, Any]] = {}
     rows: list[dict[str, Any]] = []
     findings: list[dict[str, Any]] = []
     normalized_index: dict[str, set[str]] = {}
@@ -164,18 +185,20 @@ def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]
         enabled = component.get("enabled", True)
         always_on = bool(component.get("always_on", False))
         files = matched_files(root, component["paths"]) if enabled else []
-        state_files.extend(files)
         tokens = 0
         texts: list[tuple[Path, str]] = []
 
         for path in files:
+            relative = relative_path(path, root)
             try:
-                text = path.read_text(encoding="utf-8-sig", errors="replace")
+                data = path.read_bytes()
             except OSError:
-                findings.append(finding("component.unreadable", "error", identifier, str(path)))
+                findings.append(finding("component.unreadable", "error", identifier, relative))
                 continue
+            text = data.decode("utf-8-sig", errors="replace")
+            stats[relative] = {"sha256": sha256_bytes(data), "tokens": estimate_tokens(text)}
             if not text.strip():
-                findings.append(finding("component.empty", "warn", identifier, str(path)))
+                findings.append(finding("component.empty", "warn", identifier, relative))
                 continue
             tokens += estimate_tokens(text)
             texts.append((path, text))
@@ -223,7 +246,9 @@ def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]
                 "always_on": always_on,
                 "files": [relative_path(path, root) for path in files],
                 "tokens": tokens,
-                "_names": declared_names(component, files) if kind in REACHABILITY_KINDS else [],
+                "_names": (
+                    declared_names(component, files, texts) if kind in REACHABILITY_KINDS else []
+                ),
             }
         )
 
@@ -266,12 +291,7 @@ def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]
         )
     if total_budget is not None and total_tokens > total_budget:
         findings.append(
-            finding(
-                "budget.total_exceeded",
-                "error",
-                "-",
-                f"{total_tokens} > {total_budget}",
-            )
+            finding("budget.total_exceeded", "error", "-", f"{total_tokens} > {total_budget}")
         )
 
     for row in rows:
@@ -279,11 +299,13 @@ def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]
 
     counts = count_severities(findings)
 
-    return {
+    receipt = {
         "schema": RECEIPT,
         "manifest": manifest.get("name", manifest_file.stem),
         "root": str(root),
-        "fingerprint": state_fingerprint(state_files, root),
+        "fingerprint": fingerprint_from_hashes(
+            {path: item["sha256"] for path, item in stats.items()}
+        ),
         "components": rows,
         "totals": {
             "always_on_tokens": always_on_tokens,
@@ -297,3 +319,10 @@ def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]
         "dropped_findings": 0,
         "ok": counts["error"] == 0,
     }
+    return receipt, stats
+
+
+def audit(manifest: dict[str, Any], manifest_path: str | Path) -> dict[str, Any]:
+    """Measure every declared component and return the audit receipt."""
+    receipt, _ = measure(manifest, manifest_path)
+    return receipt

@@ -1,0 +1,11 @@
+openharness context: fixture
+fingerprint f30bb76f751b5dfd
+resident          16 tokens
+loadable          16 tokens
+executable         0 tokens
+total             32 tokens
+budget always_on_tokens: 16/1000 (984 headroom, ok)
+budget total_tokens: 32/5000 (4968 headroom, ok)
+largest:
+  agents [resident] 16 (50%)
+  skills [loadable] 16 (50%)

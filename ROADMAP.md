@@ -15,16 +15,17 @@ the question it answers and the artifact that proves it.
 **Proof:** editing one line of an always-on instruction produces a correct,
 attributed drift failure; the action is green on this repository.
 
-## v0.3 — context ledger and rendering
+## v0.3 — context budget and rendering
 
 **Question:** where does the context budget actually go, and can one declaration
 drive several hosts?
 
-- Context ledger: always-on, on-demand bodies, tool surface, tool-output
-  ceilings, compaction policy, and per-class budgets with named levers.
-- `openharness context` and `openharness render --target claude,codex,cursor,gemini,opencode`.
+- Context budget: resident, loadable, and executable layers with per-kind
+  totals, largest components, and named levers — shipped as `openharness
+  context` (RFC-0017).
+- `openharness render --target claude,codex,cursor,gemini,opencode`.
 - Byte-stable rendered configuration and `--check` to catch hand edits.
-- JUnit/SARIF enrichment from the ledger.
+- JUnit/SARIF enrichment from the context receipt.
 
 **Proof:** a three-host fixture renders byte-stable configuration, and a hand
 edit is caught by `--check`.
@@ -37,7 +38,7 @@ edit is caught by `--check`.
 - Paired repeats, minimum detectable effect, sequential stopping for binary
   cases, and a Pareto archive over quality, cost, and latency.
 - A compounding metric in telemetry.
-- RFC-0017 (context), RFC-0018 (transfer and validity), RFC-0019 (rendering).
+- RFC-0018 (transfer and validity), RFC-0019 (rendering).
 
 **Proof:** a published cross-host transfer study with reproducible receipts.
 
