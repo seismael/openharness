@@ -10,7 +10,7 @@ For changes to either skill:
 2. Explain the expected input/output, total-cost, latency, and maintenance effect. Preserve required correctness and reliability.
 3. Keep global, shared-project, private-project, role, and task scope distinct; respect native permissions and explicit authorization.
 4. Use current official documentation for host-specific behavior and update the checked date. Label runtime support according to evidence.
-5. Run the release checker and relevant tests from [Validation](docs/VALIDATION.md), including Characterize's change-bundle suite for file-change/recovery behavior. Add a meaningful regression for a deterministic bug; do not create redundant test suites for wording changes.
+5. Run the release checker, the relevant tests, and `python -B tools/e2e_check.py` from [Validation](docs/VALIDATION.md), including Characterize's change-bundle suite for file-change/recovery behavior. Add a meaningful regression for a deterministic bug; do not create redundant test suites for wording changes.
 6. Use synthetic or redacted fixtures and keep all runtime state out of the repository.
 
 Do not promise universal host compatibility, exact savings, or runtime enforcement from instructions alone. Avoid copying host-specific configuration keys into the generic skill. Prefer on-demand references over expanding always-loaded descriptions or instructions.
