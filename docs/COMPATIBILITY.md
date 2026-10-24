@@ -1,6 +1,26 @@
 # Compatibility and evidence
 
-Documentation checked: **2026-10-04**. This table describes the shared directory format used by Characterize, Enhance, and Audit Project. These are documented installation targets, not a claim that every current or future version has passed a live integration test. In invocation examples, replace `<skill>` with `characterize`, `enhance`, or `audit-project`.
+Documentation checked: **2026-10-24**.
+
+## The CLI
+
+| Surface | Documented support | Evidence |
+| :--- | :--- | :--- |
+| Python 3.10–3.13 | Installed package and editable install | CI matrix on Ubuntu 3.10 and 3.13, macOS 3.13, Windows 3.13 |
+| Linux, macOS, Windows | Console script, `python -m openharness`, skill launcher | CI matrix; golden snapshots normalize paths only |
+| Wheel and sdist | `python -m build`, clean-venv install, CLI smoke test | CI `package` job |
+| Installed skill | `scripts/` contains the package, shims, and launcher | Installer tests and release checker |
+| GitHub Actions | Composite action at the repository root | CI `action` job on Ubuntu |
+
+The CLI is deterministic across platforms: receipts contain no absolute paths except
+the audit's `root` field, and the lockfile stores repository-relative POSIX paths.
+
+## Host surfaces
+
+This table describes the shared directory format used by the bundled skills. These are
+documented installation targets, not a claim that every current or future version has
+passed a live integration test. In invocation examples, replace `<skill>` with
+`characterize`, `enhance`, `audit`, `knowledge`, or `loop`.
 
 | Surface | Package/discovery evidence | Live runtime verification for this release |
 |---|---|---|
@@ -18,14 +38,29 @@ The development environment did not provide these local CLI executables. [Valida
 
 - Each `skills/<skill>/SKILL.md` contains standard `name` and `description` frontmatter matching its directory. Descriptions stay within the common 1,024-character limit.
 - Relative references and Python scripts remain inside the skill directory. There are no embedded developer-machine paths, account-specific settings, or API keys. Installation adds no service or subscription; task access requirements still depend on the host and requested work.
+- The `loop` skill ships the complete `openharness` package in `scripts/`, so the audit, lock, plan, and every other command work without a separate install. The console script is a convenience, not a requirement.
 - Optional `agents/openai.yaml` provides OpenAI UI metadata only. Other hosts do not need it; it is not a replacement for their native agent configuration.
-- The instruction workflow uses the host's existing model and tools. Python 3.10+ and its standard library are needed only for the installer and optional helpers.
+- The instruction workflow uses the host's existing model and tools. Python 3.10+ and its standard library are needed only for the installer and the deterministic commands.
 - Enhance discovers native histories at execution time. Its ledger consumes normalized metadata supplied by the agent; it is not a universal parser for all proprietary session formats.
 - Characterize discovers target capabilities at execution time. Its file-change helper checks drift and supports recovery; it does not generate or validate a universal configuration schema.
-- Audit Project uses the host's authorized source-reading, research, and GitHub/git capabilities. Its optional read-only helper validates the audit artifact contract, not source-code correctness or implementation quality. Repository writes, branch rules, and remote commit verification depend on the available connection; unavailable operations remain blocked.
+- Audit uses the host's authorized source-reading, research, and GitHub/git capabilities. Its optional read-only helper validates the audit artifact contract, not source-code correctness or implementation quality. Repository writes, branch rules, and remote commit verification depend on the available connection; unavailable operations remain blocked.
 - Instructions can guide behavior but cannot create unsupported runtime capabilities or bypass the host's permissions.
 
 OpenCode V2 relaxes some metadata constraints compared with the unversioned documentation. This package retains the common strict format. Antigravity has older documentation for flat skill files; this release follows its canonical surface-specific directory guide. Check the actual installed version if documentation and discovery differ.
+
+## Policy evaluation versus enforcement
+
+RFC-0015 separates three claims, and this release makes only the first two:
+
+| Claim | Status in 0.2.0 |
+| :--- | :--- |
+| The policy document parses and validates deterministically | Tested |
+| Evaluation produces the declared verdict and exit code | Tested |
+| A named host version actually blocks a denied action | Not observed; recorded per adapter |
+
+The OpenCode adapter documents which of its native permission surfaces can express
+`allow`, `ask`, and `deny`. It does not claim that the host reads `policy.json`, and no
+adapter may claim enforcement without a recorded runtime observation.
 
 ## Verification levels
 

@@ -1,0 +1,1 @@
+{"bytes":681,"changes":0,"counts":{"error":0,"info":0,"warn":0},"fingerprint":"f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf","format":"markdown","ok":true,"output":"report.md","schema":"openharness.report.receipt.v1"}

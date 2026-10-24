@@ -1,0 +1,1 @@
+{"counts":{"error":1,"info":0,"warn":0},"direction":"maximize","dropped_findings":0,"entries":1,"findings":[{"code":"fingerprint.stale","detail":"recorded harness state does not match the audited manifest state","iteration":1,"severity":"error"}],"ok":false,"schema":"openharness.verify.v1","tolerance":0.0,"truncated":false}

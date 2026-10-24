@@ -41,9 +41,7 @@ class IterationContractTests(unittest.TestCase):
 
     def journal(self, *entries):
         path = self.root / "journal.jsonl"
-        path.write_text(
-            "\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8"
-        )
+        path.write_text("\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8")
         return path
 
     def run_verify(self, path, *extra):
@@ -64,9 +62,7 @@ class IterationContractTests(unittest.TestCase):
     def test_adoption_without_scope_is_error(self):
         result = self.run_verify(self.journal(entry(scope=None)))
         self.assertEqual(result.returncode, 1)
-        self.assertIn(
-            "scope.missing", [f["code"] for f in json.loads(result.stdout)["findings"]]
-        )
+        self.assertIn("scope.missing", [f["code"] for f in json.loads(result.stdout)["findings"]])
 
     def test_invariant_needs_two_cases(self):
         result = self.run_verify(self.journal(entry(cases=["unit"])))
@@ -77,9 +73,7 @@ class IterationContractTests(unittest.TestCase):
         )
 
     def test_local_evidence_cannot_be_global(self):
-        result = self.run_verify(
-            self.journal(entry(scope="local", promote_global=True))
-        )
+        result = self.run_verify(self.journal(entry(scope="local", promote_global=True)))
         self.assertEqual(result.returncode, 1)
         self.assertIn(
             "scope.promotion",
@@ -96,9 +90,7 @@ class IterationContractTests(unittest.TestCase):
 
     def test_contrast_mismatch_is_warning(self):
         result = self.run_verify(
-            self.journal(
-                entry(metric_before=0.7, metric_after=0.5, contrast="mitigated")
-            )
+            self.journal(entry(metric_before=0.7, metric_after=0.5, contrast="mitigated"))
         )
         self.assertEqual(result.returncode, 0, result.stdout)
         payload = json.loads(result.stdout)
@@ -107,9 +99,7 @@ class IterationContractTests(unittest.TestCase):
 
     def test_minimize_direction_flips_the_verdict(self):
         result = self.run_verify(
-            self.journal(
-                entry(metric_before=0.5, metric_after=0.3, contrast="mitigated")
-            ),
+            self.journal(entry(metric_before=0.5, metric_after=0.3, contrast="mitigated")),
             "--direction",
             "minimize",
         )
@@ -125,9 +115,7 @@ class IterationContractTests(unittest.TestCase):
         )
 
     def test_preserved_requires_observation(self):
-        result = self.run_verify(
-            self.journal(entry(decision="preserved", rationale=""))
-        )
+        result = self.run_verify(self.journal(entry(decision="preserved", rationale="")))
         self.assertEqual(result.returncode, 1)
         codes = [f["code"] for f in json.loads(result.stdout)["findings"]]
         self.assertIn("preserve.justification", codes)
@@ -139,10 +127,7 @@ class IterationContractTests(unittest.TestCase):
 
     def test_output_is_bounded_and_deterministic(self):
         path = self.journal(
-            *[
-                entry(iteration=i, scope="invariant", cases=["one"])
-                for i in range(1, 60)
-            ]
+            *[entry(iteration=i, scope="invariant", cases=["one"]) for i in range(1, 60)]
         )
         first = self.run_verify(path)
         second = self.run_verify(path)

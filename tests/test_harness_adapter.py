@@ -58,9 +58,7 @@ class AdapterConformanceTests(unittest.TestCase):
 
     def test_documented_level_states_the_host_limitation(self):
         body, rows = self.matrix_rows()
-        documented = [
-            name for name, cells in rows.items() if cells[2].strip("`") == "documented"
-        ]
+        documented = [name for name, cells in rows.items() if cells[2].strip("`") == "documented"]
         self.assertTrue(documented, "no mechanism is honestly marked documented")
         self.assertIn("host limitation", body)
 
@@ -83,11 +81,7 @@ class AdapterConformanceTests(unittest.TestCase):
         command = self.read(ADAPTER / "commands" / "openharness.md")
         self.assertTrue(command.startswith("---\n"))
         frontmatter = command.split("---", 2)[1]
-        keys = [
-            line.split(":", 1)[0].strip()
-            for line in frontmatter.splitlines()
-            if line.strip()
-        ]
+        keys = [line.split(":", 1)[0].strip() for line in frontmatter.splitlines() if line.strip()]
         self.assertEqual(keys, ["description"])
 
     def test_agent_is_read_only_and_may_run_only_projections(self):

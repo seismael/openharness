@@ -1,0 +1,17 @@
+{
+  "schema": "openharness.cases.v1",
+  "cases": [
+    {
+      "id": "one",
+      "description": "The interpreter is available",
+      "command": "python -c \"print(1)\"",
+      "expect": { "exit_code": 0, "stdout_contains": "1" }
+    },
+    {
+      "id": "two",
+      "description": "The fixture manifest exists",
+      "command": "python -c \"print(2)\"",
+      "expect": { "exit_code": 0 }
+    }
+  ]
+}

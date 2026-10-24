@@ -3,9 +3,9 @@
 
 import argparse
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 try:
     import yaml
@@ -70,7 +70,16 @@ def validate_loop(project_dir: Path) -> list[str]:
                 if key not in data:
                     errors.append(f"{loop_dir.name}/loop.json missing required key: '{key}'")
             status_val = data.get("status", "")
-            valid_statuses = {"ACTIVE", "DONE", "STOPPED", "PAUSED", "BLOCKED", "in_progress", "completed", "blocked"}
+            valid_statuses = {
+                "ACTIVE",
+                "DONE",
+                "STOPPED",
+                "PAUSED",
+                "BLOCKED",
+                "in_progress",
+                "completed",
+                "blocked",
+            }
             if status_val not in valid_statuses:
                 errors.append(f"{loop_dir.name}/loop.json invalid status: {status_val}")
         except Exception as e:
@@ -82,7 +91,9 @@ def validate_loop(project_dir: Path) -> list[str]:
         # Fallback check
         alt_coverage = project_dir / "docs" / "knowledge" / "coverage.json"
         if not alt_coverage.is_file():
-            errors.append(f"Missing coverage ledger (expected {loop_dir.name}/coverage.json or docs/knowledge/coverage.json)")
+            errors.append(
+                f"Missing coverage ledger (expected {loop_dir.name}/coverage.json or docs/knowledge/coverage.json)"
+            )
     else:
         try:
             json.loads(coverage_file.read_text(encoding="utf-8"))
@@ -94,7 +105,9 @@ def validate_loop(project_dir: Path) -> list[str]:
     if not profile_file.is_file():
         alt_profile = project_dir / "docs" / "knowledge" / "profile.yaml"
         if not alt_profile.is_file():
-            errors.append(f"Missing profile.yaml (expected {loop_dir.name}/knowledge/profile.yaml or docs/knowledge/profile.yaml)")
+            errors.append(
+                f"Missing profile.yaml (expected {loop_dir.name}/knowledge/profile.yaml or docs/knowledge/profile.yaml)"
+            )
         else:
             profile_file = alt_profile
 
@@ -104,7 +117,17 @@ def validate_loop(project_dir: Path) -> list[str]:
             if not isinstance(pdata, dict):
                 errors.append(f"{profile_file}: profile must be a YAML mapping")
             else:
-                for req in ["schema", "project", "target", "metric", "paths", "boundaries", "pipeline", "gates", "completion"]:
+                for req in [
+                    "schema",
+                    "project",
+                    "target",
+                    "metric",
+                    "paths",
+                    "boundaries",
+                    "pipeline",
+                    "gates",
+                    "completion",
+                ]:
                     if req not in pdata:
                         errors.append(f"{profile_file} missing required section: '{req}'")
         except Exception as e:
@@ -124,9 +147,13 @@ def validate_loop(project_dir: Path) -> list[str]:
 
     # Check root scratch contamination (INV-09 / AP-TOKEN-01)
     for p in project_dir.glob("_tmp_*.py"):
-        errors.append(f"Root scratch contamination detected: {p.name} must be moved to {loop_dir.name}/scratch/")
+        errors.append(
+            f"Root scratch contamination detected: {p.name} must be moved to {loop_dir.name}/scratch/"
+        )
     for p in project_dir.glob("scratch*.py"):
-        errors.append(f"Root scratch contamination detected: {p.name} must be moved to {loop_dir.name}/scratch/")
+        errors.append(
+            f"Root scratch contamination detected: {p.name} must be moved to {loop_dir.name}/scratch/"
+        )
 
     # Check .agents subagents if directory exists
     if agents_dir.is_dir():
@@ -145,7 +172,9 @@ def validate_loop(project_dir: Path) -> list[str]:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--project-dir", type=Path, default=Path.cwd(), help="Target repository directory")
+    parser.add_argument(
+        "--project-dir", type=Path, default=Path.cwd(), help="Target repository directory"
+    )
     args = parser.parse_args(argv)
 
     errors = validate_loop(args.project_dir.resolve())

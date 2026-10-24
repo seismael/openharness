@@ -7,13 +7,15 @@ Automates the lifecycle:
 
 import argparse
 import json
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 
-def promote_tool(source_file: Path, target_dir: Path | None = None, command_alias: str | None = None) -> int:
+def promote_tool(
+    source_file: Path, target_dir: Path | None = None, command_alias: str | None = None
+) -> int:
     source_file = source_file.resolve()
     if not source_file.exists():
         print(f"Error: Source file does not exist: {source_file}", file=sys.stderr)
@@ -48,7 +50,10 @@ def promote_tool(source_file: Path, target_dir: Path | None = None, command_alia
             timeout=10,
         )
         if proc.returncode != 0:
-            print(f"Warning: Script returned exit code {proc.returncode} on --help. Continuing...", file=sys.stderr)
+            print(
+                f"Warning: Script returned exit code {proc.returncode} on --help. Continuing...",
+                file=sys.stderr,
+            )
     except Exception as e:
         print(f"Warning: Failed to execute {source_file.name} with --help: {e}", file=sys.stderr)
 
@@ -76,7 +81,12 @@ def promote_tool(source_file: Path, target_dir: Path | None = None, command_alia
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("script", type=Path, help="Path to scratch script to promote")
-    parser.add_argument("--alias", type=str, default=None, help="Command alias name (defaults to script filename stem)")
+    parser.add_argument(
+        "--alias",
+        type=str,
+        default=None,
+        help="Command alias name (defaults to script filename stem)",
+    )
     parser.add_argument("--target-dir", type=Path, default=None, help="Root project directory")
     args = parser.parse_args(argv)
 

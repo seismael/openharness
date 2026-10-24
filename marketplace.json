@@ -4,8 +4,8 @@
   "plugins": [
     {
       "name": "openharness",
-      "description": "Deterministic, dual-gated autonomous loop protocol (OHP) and portable skills for continuous AI engineering.",
-      "version": "1.0.0",
+      "description": "Deterministic control plane for agent harnesses, plus portable skills for the Open Harness Protocol.",
+      "version": "0.2.0",
       "source": "./"
     }
   ]

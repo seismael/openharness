@@ -27,13 +27,29 @@ Declare the surface once, in `harness.json` at the project root:
 Run the deterministic audit:
 
 ```sh
-python skills/loop/scripts/openharness_audit.py --manifest harness.json
+openharness audit --manifest harness.json
 ```
 
 Exit `0` means no error-severity finding, `1` means at least one, `2` means the manifest
 itself is invalid. The receipt is capped at 2500 bytes and reports totals, per-component
 token estimates, and findings. It never calls a model and never writes, so two runs on an
-unchanged tree are byte-identical.
+unchanged tree are byte-identical. In a skill-only installation without the console
+script, use `python <loop-skill-dir>/scripts/openharness_cli.py audit --manifest harness.json`.
+
+## 1a. Lock the accepted state
+
+Once the surface is clean, record it and gate later edits:
+
+```sh
+openharness lock
+openharness plan --check
+```
+
+`harness.lock` stores the fingerprint, every file's SHA-256 and token estimate, the
+budget, and the hashes of the policy, cases, and requirements declarations. `plan
+--check` exits `1` on any difference and attributes it to a file or declaration, so a
+review sees the harness change rather than a regenerated artifact. Re-lock only as part
+of an intentional change, and commit the lock with that change.
 
 ## 2. Two proposal scopes
 
@@ -59,7 +75,7 @@ expressible as a scalar, not a replacement for the metric.
 Record the state identity with the receipt:
 
 ```sh
-python skills/loop/scripts/openharness_audit.py --manifest harness.json --fingerprint-only
+openharness audit --manifest harness.json --fingerprint-only
 ```
 
 The fingerprint is a SHA-256 digest over the sorted component paths and contents. A receipt
@@ -89,19 +105,24 @@ maintenance and buys nothing.
 
 ## 6. The rest of the mechanism set
 
-The audit is the first of eight deterministic helpers. Each is a local script, bounded at
-2500 bytes, and each answers one question:
+The audit is the first of the deterministic commands. Each is local, bounded at 2500
+bytes, and answers one question:
 
-| Script | Question | Contract |
+| Command | Question | Contract |
 | :--- | :--- | :--- |
-| `openharness_audit.py` | What is the surface, and does it hold together? | RFC-0009 |
-| `openharness_verify.py` | Is this journal entry coherent? | RFC-0010 |
-| `openharness_select.py` | Which output wins, without knowing its author? | RFC-0010 |
-| `openharness_cases.py` | Did the declared cases behave as expected? | RFC-0012 |
-| `openharness_telemetry.py` | What did the effort cost and what did it buy? | RFC-0011 |
-| `openharness_inventory.py` | Which declared capabilities actually exist? | RFC-0013 |
-| `openharness_failures.py` | Why did iterations fail, and is a class recurring? | RFC-0014 |
-| `openharness_policy.py` | Is this action allowed, denied, or undecided? | RFC-0015 |
+| `openharness audit` | What is the surface, and does it hold together? | RFC-0009 |
+| `openharness verify` | Is this journal entry coherent? | RFC-0010 |
+| `openharness select` | Which output wins, without knowing its author? | RFC-0010 |
+| `openharness cases` | Did the declared cases behave as expected? | RFC-0012 |
+| `openharness telemetry` | What did the effort cost and what did it buy? | RFC-0011 |
+| `openharness inventory` | Which declared capabilities actually exist? | RFC-0013 |
+| `openharness failures` | Why did iterations fail, and is a class recurring? | RFC-0014 |
+| `openharness policy` | Is this action allowed, denied, or undecided? | RFC-0015 |
+| `openharness lock` | What state did we accept? | RFC-0016 |
+| `openharness plan` | What changed since we accepted it? | RFC-0016 |
+
+The historical `openharness_*.py` script paths remain as compatibility shims and print
+exactly what the matching subcommand prints.
 
 Read [contrastive iteration](contrastive-iteration.md) for the adoption contract,
 [measurement](measurement.md) for cases and cost, and

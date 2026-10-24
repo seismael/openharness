@@ -1,0 +1,15 @@
+# Normalize every text file to LF in the repository and in every checkout.
+# The harness fingerprint is SHA-256 over exact bytes, so a checkout that
+# rewrites line endings would report drift on one platform and not another.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.whl binary
+*.gz binary
+*.pyc binary

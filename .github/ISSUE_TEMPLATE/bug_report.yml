@@ -1,0 +1,46 @@
+name: Bug report
+description: Something produced a wrong verdict, wrong bytes, or a crash.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Do not include secrets, customer data, or private
+        repository contents. For a suspected vulnerability, use the private
+        advisory channel described in SECURITY.md instead.
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened
+      description: The exact output, exit code, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: The command and the smallest declaration or fixture that shows it.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OpenHarness version
+      description: Output of `openharness --version`, or the commit SHA.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Operating system, Python version, and install method.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Logs, related findings, or a hypothesis. Keep it synthetic or redacted.
+    validations:
+      required: false

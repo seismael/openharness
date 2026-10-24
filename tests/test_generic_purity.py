@@ -8,9 +8,9 @@ Enforces strict domain-agnostic separation:
 """
 
 import os
-from pathlib import Path
 import re
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -52,7 +52,7 @@ class GenericPurityTests(unittest.TestCase):
         self.assertEqual(
             violations,
             [],
-            f"Domain leakage detected in core skills:\n" + "\n".join(violations),
+            "Domain leakage detected in core skills:\n" + "\n".join(violations),
         )
 
     def test_normative_standards_are_domain_agnostic(self):
@@ -79,8 +79,7 @@ class GenericPurityTests(unittest.TestCase):
                         ):
                             in_non_normative = True
                         elif (
-                            re.match(r"^#{1,3}\s+\d+", line)
-                            and "non-normative" not in line.lower()
+                            re.match(r"^#{1,3}\s+\d+", line) and "non-normative" not in line.lower()
                         ):
                             in_non_normative = False
 
@@ -97,8 +96,7 @@ class GenericPurityTests(unittest.TestCase):
         self.assertEqual(
             violations,
             [],
-            f"Domain leakage detected in normative RFC specifications:\n"
-            + "\n".join(violations),
+            "Domain leakage detected in normative RFC specifications:\n" + "\n".join(violations),
         )
 
     def test_starter_templates_are_domain_agnostic(self):
@@ -119,7 +117,7 @@ class GenericPurityTests(unittest.TestCase):
         self.assertEqual(
             violations,
             [],
-            f"Domain leakage detected in templates:\n" + "\n".join(violations),
+            "Domain leakage detected in templates:\n" + "\n".join(violations),
         )
 
 

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/seismael/openharness/security/advisories/new
+    about: Report a vulnerability privately; do not open a public issue.
+  - name: Protocol questions
+    url: https://github.com/seismael/openharness/discussions
+    about: Ask about a schema, a verdict, or an integration before proposing a change.

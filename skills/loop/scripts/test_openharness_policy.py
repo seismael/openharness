@@ -51,9 +51,7 @@ class PolicyTests(unittest.TestCase):
             ],
             default="deny",
         )
-        result = self.run_policy(
-            path, "--tool", "shell", "--command", "python -m pytest -q"
-        )
+        result = self.run_policy(path, "--tool", "shell", "--command", "python -m pytest -q")
         self.assertEqual(result.returncode, 0, result.stdout)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["rule"], "tests")
@@ -140,9 +138,7 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
 
     def test_unknown_match_key_is_refused(self):
-        path = self.policy(
-            [{"id": "x", "match": {"tool_name": "a"}, "verdict": "deny"}]
-        )
+        path = self.policy([{"id": "x", "match": {"tool_name": "a"}, "verdict": "deny"}])
         result = self.run_policy(path, "--tool", "a")
         self.assertEqual(result.returncode, 2)
 
@@ -157,16 +153,12 @@ class PolicyTests(unittest.TestCase):
 
     def test_wrong_schema_is_refused(self):
         path = self.root / "policy.json"
-        path.write_text(
-            json.dumps({"schema": "other.v1", "rules": []}), encoding="utf-8"
-        )
+        path.write_text(json.dumps({"schema": "other.v1", "rules": []}), encoding="utf-8")
         result = self.run_policy(path, "--tool", "a")
         self.assertEqual(result.returncode, 2)
 
     def test_output_is_deterministic(self):
-        path = self.policy(
-            [{"id": "a", "match": {"tool": "shell"}, "verdict": "allow"}]
-        )
+        path = self.policy([{"id": "a", "match": {"tool": "shell"}, "verdict": "allow"}])
         first = self.run_policy(path, "--tool", "shell")
         second = self.run_policy(path, "--tool", "shell")
         self.assertEqual(first.stdout, second.stdout)

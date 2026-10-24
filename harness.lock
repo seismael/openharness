@@ -1,0 +1,303 @@
+{
+  "budget": {
+    "always_on_tokens": 4000,
+    "total_tokens": 150000
+  },
+  "components": [
+    {
+      "always_on": true,
+      "enabled": true,
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "952ac9a124005f5f572947561392378be15aa1a2a95b813dff14905e8f361537",
+          "tokens": 762
+        }
+      ],
+      "id": "agents",
+      "kind": "system_prompt",
+      "tokens": 762
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "eb8c35670e6e112c07a9dc30d609f52cdbd0bcc1efddfd4bf89edbac99fc7895",
+          "tokens": 1735
+        }
+      ],
+      "id": "readme",
+      "kind": "system_prompt",
+      "tokens": 1735
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "skills/audit/SKILL.md",
+          "sha256": "2e6d789476dd2e29f139ceec1e06f99d2866c49366896c57ee2e3ea5bde6fc4a",
+          "tokens": 4314
+        },
+        {
+          "path": "skills/characterize/SKILL.md",
+          "sha256": "6e8aa4ffb717bd65173ec6a4600190255228ffe800572556cd73abbb44cef4ae",
+          "tokens": 2576
+        },
+        {
+          "path": "skills/enhance/SKILL.md",
+          "sha256": "59a9f35817d9be212545dbc07879ae5630b1c6164537739cafac9bf26cce2604",
+          "tokens": 4220
+        },
+        {
+          "path": "skills/knowledge/SKILL.md",
+          "sha256": "e874095091c257080a247b75815d333ceab950237dede227b48d982154c3c456",
+          "tokens": 1412
+        },
+        {
+          "path": "skills/loop/SKILL.md",
+          "sha256": "92ee7f208733e129034bc91eb81cccfde93c13210610614e19e91f633a47bdad",
+          "tokens": 3396
+        }
+      ],
+      "id": "skills",
+      "kind": "skills",
+      "tokens": 15918
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "adapters/opencode/commands/openharness.md",
+          "sha256": "24355df796601f9f49ffd51b414574dbf806ce5b61dad89770faf8918056272c",
+          "tokens": 1093
+        }
+      ],
+      "id": "commands",
+      "kind": "tool_guidance",
+      "tokens": 1093
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "adapters/opencode/agents/harness-editor.md",
+          "sha256": "7ed496adf2d8af7ccc6f490a204983ca9dcb2e0d1b9af42a9b27a3db9086c66a",
+          "tokens": 555
+        }
+      ],
+      "id": "adapter-agents",
+      "kind": "subagents",
+      "tokens": 555
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "skills/audit/scripts/test_validate_audit.py",
+          "sha256": "dce2a410684b930343a3aa5d9bb023f07c6c3888cd69ba512e3143d472659bf7",
+          "tokens": 6918
+        },
+        {
+          "path": "skills/audit/scripts/validate_audit.py",
+          "sha256": "7d35c96acc984390e47476fb9610b4d411fc9eb0a3e16a3f3df9c0ce23e952b3",
+          "tokens": 5159
+        },
+        {
+          "path": "skills/characterize/scripts/change_bundle.py",
+          "sha256": "fb1b08e750032c57c9aad55e60111ba8f7299088a76cc8538e04a5fc8dd77f96",
+          "tokens": 3173
+        },
+        {
+          "path": "skills/characterize/scripts/test_change_bundle.py",
+          "sha256": "1c7e37a5d27491794adc64ca12a236b6e7d86b4d96f2e99fdb7f24887369e57c",
+          "tokens": 3808
+        },
+        {
+          "path": "skills/enhance/scripts/review_ledger.py",
+          "sha256": "dabddd1ba8d90b690a8aae5afe882938471e01abf114e909724c9d003de2dbb6",
+          "tokens": 3381
+        },
+        {
+          "path": "skills/enhance/scripts/test_review_ledger.py",
+          "sha256": "ee92067bed02510973b62abecd74d9beeb21a62f5e78aff52e0cb7e10f16dada",
+          "tokens": 3663
+        },
+        {
+          "path": "skills/knowledge/scripts/test_validate_knowledge.py",
+          "sha256": "fa0f16e96e373cd50bdf75ae05df4e4dce0dfe926b36f80cfba1ea27557a2b80",
+          "tokens": 1541
+        },
+        {
+          "path": "skills/knowledge/scripts/validate_knowledge.py",
+          "sha256": "01ed97c4e821a7770731946a2cce321718c24bed64968aefc2949a9f511f0504",
+          "tokens": 1541
+        },
+        {
+          "path": "skills/loop/scripts/ast_slice.py",
+          "sha256": "d280a1d637ce948f8f9298165e8481be8a477b34f5eb51e220a7f22546dba753",
+          "tokens": 1366
+        },
+        {
+          "path": "skills/loop/scripts/init_loop.py",
+          "sha256": "2588529dc43a1281523b7657e49d56eed7db2a9483661c0d5c70068d90bf3b21",
+          "tokens": 3002
+        },
+        {
+          "path": "skills/loop/scripts/openharness_audit.py",
+          "sha256": "0c428822fc9cea943e54259e1160bc8a2d36524f05c96f42946d900a7afc19fb",
+          "tokens": 239
+        },
+        {
+          "path": "skills/loop/scripts/openharness_cases.py",
+          "sha256": "6bbceb9ea6cfbd1a30d1d063c755331ad47db1e39c3486825206e15c29623959",
+          "tokens": 177
+        },
+        {
+          "path": "skills/loop/scripts/openharness_cli.py",
+          "sha256": "ec8f67b6df48901cb56f18ca40c595898ed9e9a825ebe995afca543b923a0a7a",
+          "tokens": 77
+        },
+        {
+          "path": "skills/loop/scripts/openharness_failures.py",
+          "sha256": "b801d3757351bff2177b1be6acaf4bbb2fe9e656bceb889dce7dca870050bc4e",
+          "tokens": 102
+        },
+        {
+          "path": "skills/loop/scripts/openharness_inventory.py",
+          "sha256": "6549f2f83428fdb65a3c00845d3039a29da05299350cf0f0407a13e854969b4f",
+          "tokens": 149
+        },
+        {
+          "path": "skills/loop/scripts/openharness_policy.py",
+          "sha256": "777472ab0ad752a60b581c6cf5a02378ec4aa413d76d71521441ea1fbe7ee8de",
+          "tokens": 123
+        },
+        {
+          "path": "skills/loop/scripts/openharness_select.py",
+          "sha256": "dba4ceb05adfd0332627f9fd430ce58871903cf8b967a54988b30bce4dd55ae4",
+          "tokens": 110
+        },
+        {
+          "path": "skills/loop/scripts/openharness_telemetry.py",
+          "sha256": "2e67099333cb4539b4de41cda26b76d909fb1023483f02f4e634b6690ef216da",
+          "tokens": 128
+        },
+        {
+          "path": "skills/loop/scripts/openharness_verify.py",
+          "sha256": "b0108e07e01052b4296a7697415a82a67e27a7577f80fd65b5ca2e82fdc22191",
+          "tokens": 146
+        },
+        {
+          "path": "skills/loop/scripts/promote_tool.py",
+          "sha256": "345978816aa465d8c6343457327d681e99bf3e54b5e6fd842d64c99c1d87ad96",
+          "tokens": 805
+        },
+        {
+          "path": "skills/loop/scripts/test_ast_slice.py",
+          "sha256": "9ce6d265c171b609fe0620bf00071acc2ea268c9e990f79b4bac09ffc2548d2c",
+          "tokens": 647
+        },
+        {
+          "path": "skills/loop/scripts/test_loop_scripts.py",
+          "sha256": "aa29397a092a6a9c779e50711a121201094585c869a1dae2ae5eee94f9f79f68",
+          "tokens": 989
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_audit.py",
+          "sha256": "d85f6d21e2ae1abb08253e80dbeb1b800a5cf2be11a0a8bf8e3af8a65fe46c27",
+          "tokens": 2258
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_cases.py",
+          "sha256": "4b07b3447db72956b9db05f5dd363f61b3e494d4c6fad15c5fb613b1cbe6e03e",
+          "tokens": 2181
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_failures.py",
+          "sha256": "e9914690606ba41364edffc525d26e91383003a3cf5029a7da67fe0c144436f2",
+          "tokens": 1245
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_inventory.py",
+          "sha256": "cef48629bbb3aa5166830e2dedf6c89cf1e669edeb6777264af240c275923eb6",
+          "tokens": 1711
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_policy.py",
+          "sha256": "4286386d4467e364a2ff95c6595d2ab2663f14f3d7d02fcbff0ac27f8703adcf",
+          "tokens": 1572
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_select.py",
+          "sha256": "cf06256f74b3241cf1206496596f5c935206cbd27dd7b4c47ec0a85b83aad53e",
+          "tokens": 1119
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_telemetry.py",
+          "sha256": "7221c9c37892eea9403d75a3d54a99a0e28c6e8fb46ebb6c5c11d87ed80f28ec",
+          "tokens": 1609
+        },
+        {
+          "path": "skills/loop/scripts/test_openharness_verify.py",
+          "sha256": "30d2746a3cc8911114f58f3a49836c3898a0d5893a8e9fad076530f38986d47c",
+          "tokens": 1313
+        },
+        {
+          "path": "skills/loop/scripts/validate_loop.py",
+          "sha256": "1079c950d3170a64b78619c2a584187faa418c7b46d7a67a8672d0f63def710d",
+          "tokens": 1738
+        }
+      ],
+      "id": "scripts",
+      "kind": "scripts",
+      "tokens": 51990
+    },
+    {
+      "always_on": false,
+      "enabled": true,
+      "files": [
+        {
+          "path": "tools/mcp_server.py",
+          "sha256": "8ad01fb1bba14dfffaa15b90db636ec94a73144ffd4c3e7a7f431495816fea91",
+          "tokens": 1629
+        }
+      ],
+      "id": "mcp",
+      "kind": "plugins",
+      "tokens": 1629
+    }
+  ],
+  "declarations": {
+    "cases": {
+      "path": "cases.json",
+      "sha256": "1a48f60d15330ac1bb0722c640ac8f15d2c8c692da0f9a4d4f2efe706fa28d7f"
+    },
+    "policy": {
+      "path": "policy.json",
+      "sha256": "e0af8f952603b5d422ff44daf69476ff1296854f0c1120bd35c74479f34034bb"
+    },
+    "requirements": {
+      "path": "requirements.json",
+      "sha256": "adc82347235660af82f0a1e54ece6753a9c14d806489fa30f49125c668201993"
+    }
+  },
+  "fingerprint": "c15dda3924009247d9b30afdb54a12695ced36aa275bdfed378d07616edaf783",
+  "generator": {
+    "name": "openharness",
+    "version": "0.2.0"
+  },
+  "manifest": "openharness",
+  "schema": "openharness.lock.v1",
+  "totals": {
+    "always_on_tokens": 762,
+    "components": 7,
+    "files": 41,
+    "total_tokens": 73682
+  }
+}

@@ -3,15 +3,21 @@
 
 import argparse
 import json
-from pathlib import Path
 import re
 import shutil
 import sys
+from pathlib import Path
 
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "assets" / "templates"
 
 
-def init_project(target_dir: Path, target: str = "", force: bool = False, use_legacy_dual: bool = False, template: str = "python") -> int:
+def init_project(
+    target_dir: Path,
+    target: str = "",
+    force: bool = False,
+    use_legacy_dual: bool = False,
+    template: str = "python",
+) -> int:
     agents_dir = target_dir / ".agents"
     if use_legacy_dual:
         loop_dir = target_dir / ".loop"
@@ -101,7 +107,9 @@ def init_project(target_dir: Path, target: str = "", force: bool = False, use_le
         if tpl_prof.exists():
             content = tpl_prof.read_text(encoding="utf-8")
             if target:
-                content = content.replace("<one-sentence target description the loop is working on / optimizing>", target)
+                content = content.replace(
+                    "<one-sentence target description the loop is working on / optimizing>", target
+                )
                 content = re.sub(r'target:\s*".*?"', f'target: "{target}"', content)
             profile_path.write_text(content, encoding="utf-8")
             print(f"Created {profile_path.relative_to(target_dir)}")
@@ -122,9 +130,24 @@ def init_project(target_dir: Path, target: str = "", force: bool = False, use_le
     moves_path = loop_dir / "plans" / "next_moves.json"
     if not moves_path.exists() or force:
         initial_moves = [
-            {"id": "M01", "front": "orient", "description": "Establish ground truth and verify clean baseline", "ev": 10.0},
-            {"id": "M02", "front": "audit", "description": "Audit system interfaces and boundary assertions", "ev": 8.5},
-            {"id": "M03", "front": "diagnose", "description": "Run diagnostic probes to locate dominant loss vectors", "ev": 8.0},
+            {
+                "id": "M01",
+                "front": "orient",
+                "description": "Establish ground truth and verify clean baseline",
+                "ev": 10.0,
+            },
+            {
+                "id": "M02",
+                "front": "audit",
+                "description": "Audit system interfaces and boundary assertions",
+                "ev": 8.5,
+            },
+            {
+                "id": "M03",
+                "front": "diagnose",
+                "description": "Run diagnostic probes to locate dominant loss vectors",
+                "ev": 8.0,
+            },
         ]
         moves_path.write_text(json.dumps(initial_moves, indent=2) + "\n", encoding="utf-8")
         print(f"Created {moves_path.relative_to(target_dir)}")
@@ -217,20 +240,35 @@ def init_project(target_dir: Path, target: str = "", force: bool = False, use_le
             pdest.write_text(pcontent, encoding="utf-8")
             print(f"Created {pdest.relative_to(target_dir)}")
 
-    print(f"Project initialized successfully at {target_dir} (loop state at {loop_dir.relative_to(target_dir)})")
+    print(
+        f"Project initialized successfully at {target_dir} (loop state at {loop_dir.relative_to(target_dir)})"
+    )
     return 0
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target-dir", type=Path, default=Path.cwd(), help="Target repository directory")
-    parser.add_argument("--template", choices=["python", "rust", "go", "node"], default="python", help="Starter template profile")
+    parser.add_argument(
+        "--target-dir", type=Path, default=Path.cwd(), help="Target repository directory"
+    )
+    parser.add_argument(
+        "--template",
+        choices=["python", "rust", "go", "node"],
+        default="python",
+        help="Starter template profile",
+    )
     parser.add_argument("--target", type=str, default="", help="High-level loop target objective")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
-    parser.add_argument("--legacy-dual", action="store_true", help="Initialize separate root .loop directory instead of unified .agents/loop")
+    parser.add_argument(
+        "--legacy-dual",
+        action="store_true",
+        help="Initialize separate root .loop directory instead of unified .agents/loop",
+    )
     args = parser.parse_args(argv)
 
-    return init_project(args.target_dir.resolve(), args.target, args.force, args.legacy_dual, args.template)
+    return init_project(
+        args.target_dir.resolve(), args.target, args.force, args.legacy_dual, args.template
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use OpenHarness in research or production, cite this repository."
+title: OpenHarness
+abstract: >-
+  OpenHarness is the deterministic control plane for agent harnesses. It
+  declares an agent harness, records it in a content-addressed lockfile, checks
+  drift before merge, and emits bounded receipts that compose across audit,
+  evaluation, telemetry, inventory, failure classification, and policy.
+type: software
+authors:
+  - name: seismael
+repository-code: https://github.com/seismael/openharness
+url: https://github.com/seismael/openharness
+license: MIT
+version: 0.2.0
+date-released: 2026-10-24
+keywords:
+  - agent harness
+  - ai agents
+  - context engineering
+  - evaluation
+  - reproducibility
+  - governance

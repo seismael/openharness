@@ -10,9 +10,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent / "openharness_audit.py"
-LONG_LINE = (
-    "Always re-run the declared pipeline before claiming that a metric has improved."
-)
+LONG_LINE = "Always re-run the declared pipeline before claiming that a metric has improved."
 
 
 class HarnessAuditTests(unittest.TestCase):
@@ -63,9 +61,7 @@ class HarnessAuditTests(unittest.TestCase):
         return components
 
     def test_clean_surface_passes(self):
-        result = self.run_audit(
-            self.manifest(self.surface(), {"always_on_tokens": 1000})
-        )
+        result = self.run_audit(self.manifest(self.surface(), {"always_on_tokens": 1000}))
         self.assertEqual(result.returncode, 0, result.stdout)
         receipt = json.loads(result.stdout)
         self.assertEqual(receipt["schema"], "openharness.receipt.v1")
@@ -81,9 +77,7 @@ class HarnessAuditTests(unittest.TestCase):
 
     def test_orphan_component_is_error(self):
         result = self.run_audit(
-            self.manifest(
-                self.surface(instruction="When deploying, read the runbook.\n")
-            )
+            self.manifest(self.surface(instruction="When deploying, read the runbook.\n"))
         )
         self.assertEqual(result.returncode, 1)
         codes = [item["code"] for item in json.loads(result.stdout)["findings"]]
@@ -94,9 +88,7 @@ class HarnessAuditTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
 
     def test_duplicate_instruction_is_warned(self):
-        self.write(
-            "AGENTS.md", LONG_LINE + "\nWhen building, load the `build` skill.\n"
-        )
+        self.write("AGENTS.md", LONG_LINE + "\nWhen building, load the `build` skill.\n")
         self.write("guardrails.md", LONG_LINE + "\n")
         self.write(
             "skills/build/SKILL.md",
@@ -120,9 +112,7 @@ class HarnessAuditTests(unittest.TestCase):
         result = self.run_audit(self.manifest(components))
         receipt = json.loads(result.stdout)
         self.assertEqual(result.returncode, 0)
-        self.assertIn(
-            "duplication.line", [item["code"] for item in receipt["findings"]]
-        )
+        self.assertIn("duplication.line", [item["code"] for item in receipt["findings"]])
         self.assertEqual(receipt["counts"]["warn"], 1)
 
     def test_missing_markdown_link_is_warned(self):
@@ -187,17 +177,14 @@ class HarnessAuditTests(unittest.TestCase):
         self.assertIn("error", json.loads(result.stdout))
 
     def test_receipt_is_deterministic(self):
-        path = self.manifest(
-            self.surface(instruction="When deploying, read the runbook.\n")
-        )
+        path = self.manifest(self.surface(instruction="When deploying, read the runbook.\n"))
         first = self.run_audit(path).stdout
         second = self.run_audit(path).stdout
         self.assertEqual(first, second)
 
     def test_receipt_stays_bounded_under_many_findings(self):
         components = [
-            {"id": f"ghost{i}", "kind": "memory", "paths": [f"absent{i}/*.md"]}
-            for i in range(120)
+            {"id": f"ghost{i}", "kind": "memory", "paths": [f"absent{i}/*.md"]} for i in range(120)
         ]
         result = self.run_audit(self.manifest(components))
         self.assertEqual(result.returncode, 1)
@@ -235,9 +222,7 @@ class HarnessAuditTests(unittest.TestCase):
         original = json.loads(self.run_audit(path).stdout)["fingerprint"]
         relabeled = self.surface()
         relabeled[0]["id"] = "prompt-renamed"
-        relabeled.insert(
-            0, {"id": "overlap", "kind": "system_prompt", "paths": ["AGENTS.md"]}
-        )
+        relabeled.insert(0, {"id": "overlap", "kind": "system_prompt", "paths": ["AGENTS.md"]})
         self.assertEqual(
             original,
             json.loads(self.run_audit(self.manifest(relabeled)).stdout)["fingerprint"],

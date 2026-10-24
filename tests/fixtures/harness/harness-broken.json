@@ -1,0 +1,18 @@
+{
+  "schema": "harness.manifest.v1",
+  "name": "broken",
+  "root": ".",
+  "components": [
+    {
+      "id": "agents",
+      "kind": "system_prompt",
+      "paths": ["AGENTS.md"],
+      "always_on": true
+    },
+    {
+      "id": "skills",
+      "kind": "skills",
+      "paths": ["missing/*.md"]
+    }
+  ]
+}

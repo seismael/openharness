@@ -5,18 +5,27 @@ Locators are never opened. Callers supply stable identities and fingerprints,
 exclude secrets/transcripts, and review actual content before recording coverage.
 Each inventory is authoritative for revisions it includes, never for deletions.
 """
+
 import argparse
-from contextlib import contextmanager
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import sqlite3
 import sys
 import unicodedata
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
 
 VERSION = 1
 REVIEW_STATUSES = ("partial", "reviewed", "blocked")
-DECISION_STATUSES = ("proposed", "applied", "verified", "rejected", "deferred", "reverted", "failed")
+DECISION_STATUSES = (
+    "proposed",
+    "applied",
+    "verified",
+    "rejected",
+    "deferred",
+    "reverted",
+    "failed",
+)
 SCHEMA = (
     "CREATE TABLE sessions (source TEXT, id TEXT, revision TEXT NOT NULL, "
     "locator TEXT NOT NULL, project TEXT, first_seen TEXT NOT NULL, "
@@ -49,8 +58,9 @@ def note(value, field="note"):
         return None
     if not isinstance(value, str):
         raise ValueError(f"{field} must be a string")
-    value = " ".join("".join(" " if unicodedata.category(c).startswith("C") else c
-                             for c in value).split())
+    value = " ".join(
+        "".join(" " if unicodedata.category(c).startswith("C") else c for c in value).split()
+    )
     if len(value) > 512:
         raise ValueError(f"{field} exceeds 512 sanitized characters")
     return value or None
@@ -90,8 +100,11 @@ def manifest(path):
 
 def decision(path):
     obj = read_json(path)
-    fields(obj, ("id", "scope", "evidence", "status"),
-           ("rationale", "target", "before_hash", "after_hash", "verification"))
+    fields(
+        obj,
+        ("id", "scope", "evidence", "status"),
+        ("rationale", "target", "before_hash", "after_hash", "verification"),
+    )
     for key in ("id", "scope", "status", "before_hash", "after_hash", "target"):
         if key in obj:
             string(obj[key], key, 2048 if key == "target" else 512)
@@ -138,16 +151,23 @@ def inventory(db, obj):
     counts = dict(added=0, changed=0, unchanged=0)
     now = stamp()
     for row in obj["sessions"]:
-        old = db.execute("SELECT revision,locator,project FROM sessions WHERE source=? AND id=?",
-                         (obj["source"], row["id"])).fetchone()
+        old = db.execute(
+            "SELECT revision,locator,project FROM sessions WHERE source=? AND id=?",
+            (obj["source"], row["id"]),
+        ).fetchone()
         values = (row["revision"], row["locator"], row["project"])
         if old is None:
-            db.execute("INSERT INTO sessions VALUES (?,?,?,?,?,?,?)",
-                       (obj["source"], row["id"], *values, now, now))
+            db.execute(
+                "INSERT INTO sessions VALUES (?,?,?,?,?,?,?)",
+                (obj["source"], row["id"], *values, now, now),
+            )
             counts["added"] += 1
         elif tuple(old) != values:
-            db.execute("UPDATE sessions SET revision=?,locator=?,project=?,last_changed=? "
-                       "WHERE source=? AND id=?", (*values, now, obj["source"], row["id"]))
+            db.execute(
+                "UPDATE sessions SET revision=?,locator=?,project=?,last_changed=? "
+                "WHERE source=? AND id=?",
+                (*values, now, obj["source"], row["id"]),
+            )
             counts["changed"] += 1
         else:
             counts["unchanged"] += 1
@@ -176,21 +196,27 @@ def coverage(db, source=None, pending_only=False, limit=None, offset=0):
         "AND r.revision=s.revision "
         "LEFT JOIN reviews p ON p.source=s.source AND p.session=s.id AND p.revision="
         "(SELECT revision FROM reviews WHERE source=s.source AND session=s.id AND revision<>s.revision "
-        "ORDER BY updated DESC,revision DESC LIMIT 1) " + where +
-        "ORDER BY s.source,s.id LIMIT ? OFFSET ?", params).fetchall()
+        "ORDER BY updated DESC,revision DESC LIMIT 1) "
+        + where
+        + "ORDER BY s.source,s.id LIMIT ? OFFSET ?",
+        params,
+    ).fetchall()
     return [dict(row) for row in rows]
 
 
 def summary(db):
     counts = dict.fromkeys(("unreviewed", *REVIEW_STATUSES), 0)
     for row in db.execute(
-            "SELECT COALESCE(r.status,'unreviewed') AS status,count(*) AS n "
-            "FROM sessions s LEFT JOIN reviews r ON r.source=s.source AND r.session=s.id "
-            "AND r.revision=s.revision GROUP BY COALESCE(r.status,'unreviewed')"):
+        "SELECT COALESCE(r.status,'unreviewed') AS status,count(*) AS n "
+        "FROM sessions s LEFT JOIN reviews r ON r.source=s.source AND r.session=s.id "
+        "AND r.revision=s.revision GROUP BY COALESCE(r.status,'unreviewed')"
+    ):
         counts[row["status"]] = row["n"]
     total = sum(counts.values())
-    return {"schema_version": VERSION, "counts": {
-        "total": total, "pending": total - counts["reviewed"], **counts}}
+    return {
+        "schema_version": VERSION,
+        "counts": {"total": total, "pending": total - counts["reviewed"], **counts},
+    }
 
 
 def record(db, args):
@@ -198,19 +224,26 @@ def record(db, args):
         string(getattr(args, key), key)
     cursor = string(args.cursor, "cursor", 2048, nullable=True)
     clean_note = note(args.note)
-    current = db.execute("SELECT revision FROM sessions WHERE source=? AND id=?",
-                         (args.source, args.session)).fetchone()
+    current = db.execute(
+        "SELECT revision FROM sessions WHERE source=? AND id=?", (args.source, args.session)
+    ).fetchone()
     if current is None or current[0] != args.revision:
-        raise ValueError("unknown session or stale revision; inventory and review latest content first")
-    old = db.execute("SELECT status,cursor,note FROM reviews WHERE source=? AND session=? AND revision=?",
-                     (args.source, args.session, args.revision)).fetchone()
+        raise ValueError(
+            "unknown session or stale revision; inventory and review latest content first"
+        )
+    old = db.execute(
+        "SELECT status,cursor,note FROM reviews WHERE source=? AND session=? AND revision=?",
+        (args.source, args.session, args.revision),
+    ).fetchone()
     values = (args.status, cursor, clean_note)
     if old is not None and tuple(old) == values:
         return {"changed": False, "status": args.status}
-    db.execute("INSERT INTO reviews VALUES (?,?,?,?,?,?,?) ON CONFLICT(source,session,revision) "
-               "DO UPDATE SET status=excluded.status,cursor=excluded.cursor,note=excluded.note,"
-               "updated=excluded.updated",
-               (args.source, args.session, args.revision, *values, stamp()))
+    db.execute(
+        "INSERT INTO reviews VALUES (?,?,?,?,?,?,?) ON CONFLICT(source,session,revision) "
+        "DO UPDATE SET status=excluded.status,cursor=excluded.cursor,note=excluded.note,"
+        "updated=excluded.updated",
+        (args.source, args.session, args.revision, *values, stamp()),
+    )
     return {"changed": True, "status": args.status}
 
 
@@ -219,8 +252,11 @@ def save_decision(db, obj):
     old = db.execute("SELECT data FROM decisions WHERE id=?", (obj["id"],)).fetchone()
     if old and old[0] == data:
         return {"id": obj["id"], "changed": False}
-    db.execute("INSERT INTO decisions VALUES (?,?,?) ON CONFLICT(id) DO UPDATE "
-               "SET data=excluded.data,updated=excluded.updated", (obj["id"], data, stamp()))
+    db.execute(
+        "INSERT INTO decisions VALUES (?,?,?) ON CONFLICT(id) DO UPDATE "
+        "SET data=excluded.data,updated=excluded.updated",
+        (obj["id"], data, stamp()),
+    )
     return {"id": obj["id"], "changed": True}
 
 
@@ -229,16 +265,19 @@ def integer_at_least(minimum):
         try:
             number = int(value)
         except ValueError:
-            raise argparse.ArgumentTypeError("must be an integer")
+            raise argparse.ArgumentTypeError("must be an integer") from None
         if number < minimum:
             raise argparse.ArgumentTypeError(f"must be at least {minimum}")
         return number
+
     return parse
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--db", required=True, help="SQLite metadata ledger; parent directory must exist")
+    parser.add_argument(
+        "--db", required=True, help="SQLite metadata ledger; parent directory must exist"
+    )
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("inventory").add_argument("--manifest", required=True)
     pending_parser = sub.add_parser("pending")
@@ -257,8 +296,11 @@ def main(argv=None):
         paginated.add_argument("--offset", type=integer_at_least(0), default=0)
     args = parser.parse_args(argv)
     try:
-        obj = manifest(args.manifest) if args.command == "inventory" else (
-            decision(args.file) if args.command == "decision" else None)
+        obj = (
+            manifest(args.manifest)
+            if args.command == "inventory"
+            else (decision(args.file) if args.command == "decision" else None)
+        )
         with database(args.db) as db:
             if args.command == "inventory":
                 result = inventory(db, obj)
@@ -267,17 +309,23 @@ def main(argv=None):
             elif args.command == "decision":
                 result = save_decision(db, obj)
             elif args.command == "decisions":
-                result = [{"decision": json.loads(row["data"]), "updated": row["updated"]}
-                          for row in db.execute("SELECT data,updated FROM decisions ORDER BY id LIMIT ? OFFSET ?",
-                                                (args.limit if args.limit is not None else -1, args.offset))]
+                result = [
+                    {"decision": json.loads(row["data"]), "updated": row["updated"]}
+                    for row in db.execute(
+                        "SELECT data,updated FROM decisions ORDER BY id LIMIT ? OFFSET ?",
+                        (args.limit if args.limit is not None else -1, args.offset),
+                    )
+                ]
             elif args.command == "pending":
                 result = coverage(db, args.source, True, args.limit, args.offset)
             else:
                 result = summary(db)
                 if not args.summary:
                     rows = coverage(db)
-                    result.update(pending=[row for row in rows if row["latest_status"] != "reviewed"],
-                                  sessions=rows)
+                    result.update(
+                        pending=[row for row in rows if row["latest_status"] != "reviewed"],
+                        sessions=rows,
+                    )
         print(json.dumps(result, ensure_ascii=True, indent=2))
         return 0
     except (ValueError, OSError, sqlite3.Error) as exc:

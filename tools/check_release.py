@@ -2,13 +2,12 @@
 """Validate the public skill bundles and their documented release surface."""
 
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from install_skill import IGNORED_DIRS, ignored, reject_symlink_ancestors
-
 
 ROOT = Path(__file__).resolve().parent.parent
 TEXT_SUFFIXES = {".md", ".py", ".sh", ".json", ".yaml", ".yml", ".toml", ".txt"}
@@ -43,8 +42,7 @@ def flat_string(value):
         value[0] not in "|>[{&*!%@`"
         and ": " not in value
         and " #" not in value
-        and value.lower()
-        not in {"true", "false", "null", "~", "yes", "no", "on", "off"}
+        and value.lower() not in {"true", "false", "null", "~", "yes", "no", "on", "off"}
         and not re.fullmatch(r"[-+]?\d+(?:\.\d+)?|\d{4}-\d\d-\d\d", value)
     ):
         return value
@@ -80,9 +78,7 @@ def check_frontmatter(skill, errors):
     for line in lines[1:end]:
         match = re.fullmatch(r"(name|description):[ \t]+(.+)", line)
         if not match or match.group(1) in fields:
-            errors.append(
-                f"{skill.name}: frontmatter permits only one name and description string"
-            )
+            errors.append(f"{skill.name}: frontmatter permits only one name and description string")
             continue
         key, value = match.groups()
         try:
@@ -91,16 +87,12 @@ def check_frontmatter(skill, errors):
             errors.append(f"{skill.name}: {key} must be a flat string")
         fields[key] = value
     name = fields.get("name", "")
-    if (
-        not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name)
-        or len(name) > 64
-        or name != skill.name
-    ):
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) or len(name) > 64 or name != skill.name:
         errors.append(
             f"{skill.name}: name must match the directory and use lowercase hyphenated text"
         )
     if not 1 <= len(fields.get("description", "")) <= 1024:
-        errors.append(f"{skill.name}: description must contain 1–1024 characters")
+        errors.append(f"{skill.name}: description must contain 1-1024 characters")
     if len(lines[end + 1 :]) > 500:
         errors.append(f"{skill.name}: SKILL.md body exceeds 500 lines")
 
@@ -123,9 +115,7 @@ def inspect_path(base, errors, skill=None):
         ):
             errors.append(f"{relative}: runtime or private path in release content")
             continue
-        if not path.is_file() or (
-            path.suffix not in TEXT_SUFFIXES and path.name != "LICENSE"
-        ):
+        if not path.is_file() or (path.suffix not in TEXT_SUFFIXES and path.name != "LICENSE"):
             continue
         text = path.read_text(encoding="utf-8")
         if PRIVATE_MARKERS.search(text):

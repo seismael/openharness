@@ -1,0 +1,1 @@
+{"candidates":[{"id":"cand-a","sha256":"58be3dfc53e7c852d0c2dad8ad160aa906388961a0abd3f01d47e664814b95b3","size":23},{"id":"cand-b","sha256":"5b01c94d5a76cf0a00486ce6ae12d809b864260d97ff65518f472c9568c275cb","size":23}],"chosen":null,"count":2,"mode":"existing-output","ok":true,"reason":"","schema":"openharness.selection.v1"}

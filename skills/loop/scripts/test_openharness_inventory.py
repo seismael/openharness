@@ -40,9 +40,7 @@ class InventoryTests(unittest.TestCase):
     def write_manifest(self, components):
         path = self.root / "harness.json"
         path.write_text(
-            json.dumps(
-                {"schema": "harness.manifest.v1", "name": "t", "components": components}
-            ),
+            json.dumps({"schema": "harness.manifest.v1", "name": "t", "components": components}),
             encoding="utf-8",
         )
         return path
@@ -50,9 +48,7 @@ class InventoryTests(unittest.TestCase):
     def write_requirements(self, requirements):
         path = self.root / "requirements.json"
         path.write_text(
-            json.dumps(
-                {"schema": "openharness.requirements.v1", "requirements": requirements}
-            ),
+            json.dumps({"schema": "openharness.requirements.v1", "requirements": requirements}),
             encoding="utf-8",
         )
         return path
@@ -97,14 +93,10 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         payload = json.loads(result.stdout)
         self.assertFalse(payload["ok"])
-        self.assertEqual(
-            payload["gaps"][0]["reason"], "no enabled component of kind plugins"
-        )
+        self.assertEqual(payload["gaps"][0]["reason"], "no enabled component of kind plugins")
 
     def test_optional_gap_does_not_block(self):
-        path = self.write_requirements(
-            [{"id": "extensions", "kind": "plugins", "required": False}]
-        )
+        path = self.write_requirements([{"id": "extensions", "kind": "plugins", "required": False}])
         result = self.run_inventory("--requirements", str(path))
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertFalse(json.loads(result.stdout)["gaps"][0]["required"])
@@ -120,17 +112,13 @@ class InventoryTests(unittest.TestCase):
         )
 
     def test_wrong_kind_for_named_component_is_a_gap(self):
-        path = self.write_requirements(
-            [{"id": "x", "kind": "memory", "component": "prompt"}]
-        )
+        path = self.write_requirements([{"id": "x", "kind": "memory", "component": "prompt"}])
         result = self.run_inventory("--requirements", str(path))
         self.assertEqual(result.returncode, 1)
         self.assertIn("not memory", json.loads(result.stdout)["gaps"][0]["reason"])
 
     def test_unknown_component_is_a_gap(self):
-        path = self.write_requirements(
-            [{"id": "x", "kind": "memory", "component": "ghost"}]
-        )
+        path = self.write_requirements([{"id": "x", "kind": "memory", "component": "ghost"}])
         result = self.run_inventory("--requirements", str(path))
         self.assertEqual(result.returncode, 1)
         self.assertIn("not declared", json.loads(result.stdout)["gaps"][0]["reason"])

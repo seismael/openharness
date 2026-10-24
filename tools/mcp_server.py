@@ -7,9 +7,8 @@ IDEs and agents (Cursor, Windsurf, Claude Desktop, Antigravity).
 
 import json
 import os
-from pathlib import Path
-import subprocess
 import sys
+from pathlib import Path
 
 
 def get_loop_dir(root: Path) -> Path:
@@ -163,9 +162,7 @@ def handle_request(request: dict, root: Path) -> dict:
         return {
             "jsonrpc": "2.0",
             "id": msg_id,
-            "result": {
-                "content": [{"type": "text", "text": json.dumps(result, indent=2)}]
-            },
+            "result": {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]},
         }
 
     return {
@@ -177,9 +174,7 @@ def handle_request(request: dict, root: Path) -> dict:
 
 def main():
     root = Path(
-        os.environ.get(
-            "AGENTIC_LOOP_ROOT", os.environ.get("OPENLOOP_ROOT", os.getcwd())
-        )
+        os.environ.get("AGENTIC_LOOP_ROOT", os.environ.get("OPENLOOP_ROOT", os.getcwd()))
     ).resolve()
     for raw_line in sys.stdin:
         line = raw_line.strip()

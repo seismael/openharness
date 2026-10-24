@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Unit tests for ast_slice.py."""
 
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ast_slice import slice_symbol
@@ -23,7 +23,7 @@ class TestAstSlice(unittest.TestCase):
         py_file.write_text(
             "import os\n\n"
             "def target_func(a: int) -> int:\n"
-            "    \"\"\"Docstring.\"\"\"\n"
+            '    """Docstring."""\n'
             "    return a * 2\n\n"
             "def other_func():\n"
             "    pass\n",
@@ -41,9 +41,7 @@ class TestAstSlice(unittest.TestCase):
     def test_extract_python_class(self):
         py_file = self.dir / "example_class.py"
         py_file.write_text(
-            "class MyService:\n"
-            "    def __init__(self):\n"
-            "        self.val = 1\n",
+            "class MyService:\n    def __init__(self):\n        self.val = 1\n",
             encoding="utf-8",
         )
 
@@ -56,8 +54,7 @@ class TestAstSlice(unittest.TestCase):
     def test_list_python_symbols(self):
         py_file = self.dir / "symbols.py"
         py_file.write_text(
-            "class A: pass\n\n"
-            "def b(): pass\n",
+            "class A: pass\n\ndef b(): pass\n",
             encoding="utf-8",
         )
 

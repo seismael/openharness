@@ -1,0 +1,1 @@
+{"matched":["no-destructive"],"ok":false,"reason":"destructive","rule":"no-destructive","schema":"openharness.policy.v1","verdict":"deny"}

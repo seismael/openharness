@@ -17,10 +17,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 MAX_INDEX_BYTES = 2048
 MAX_LEAF_BYTES = 3072
@@ -145,9 +144,7 @@ def validate_knowledge_base(directory: Path | str) -> list[str]:
         targets = extract_links(content)
         for target in targets:
             if target not in known_targets:
-                errors.append(
-                    f"Broken link in {name}: target '{target}' does not exist"
-                )
+                errors.append(f"Broken link in {name}: target '{target}' does not exist")
 
     errors.extend(validate_loop_artifacts(kb_dir))
 
@@ -166,9 +163,7 @@ def main() -> int:
             print(f"  - ERROR: {err}", file=sys.stderr)
         return 1
 
-    print(
-        "VALID: Knowledge base adheres to token-efficient MOC structure and link integrity."
-    )
+    print("VALID: Knowledge base adheres to token-efficient MOC structure and link integrity.")
     return 0
 
 

@@ -1,42 +1,72 @@
+# ruff: noqa: RUF001 -- unicode delimiters are deliberate test data
 """Regression tests: python -m unittest discover -s scripts -p 'test_*.py'."""
 
-from contextlib import redirect_stderr, redirect_stdout
-from copy import deepcopy
 import io
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from copy import deepcopy
+from pathlib import Path
 
 from validate_audit import HEADINGS, LIMIT, MAX_ERRORS, Validator, has_placeholder, main
 
 
 def finding(identity="F-001"):
     return {
-        "id": identity, "title": "Preserve ordered retries",
-        "kind": "defect", "severity": "high", "priority": "P1",
-        "confidence": "confirmed", "status": "accepted", "plan_status": "ready",
-        "decision": {"by": "user", "summary": "Plan the bounded retry fix.", "reference": "conversation:message-7"},
-        "depends_on": [], "path": f"findings/{identity}.md",
-        "evidence": [{"kind": "source", "reference": "src/queue.py:submit", "summary": "Retry bypasses sequence assignment."}],
+        "id": identity,
+        "title": "Preserve ordered retries",
+        "kind": "defect",
+        "severity": "high",
+        "priority": "P1",
+        "confidence": "confirmed",
+        "status": "accepted",
+        "plan_status": "ready",
+        "decision": {
+            "by": "user",
+            "summary": "Plan the bounded retry fix.",
+            "reference": "conversation:message-7",
+        },
+        "depends_on": [],
+        "path": f"findings/{identity}.md",
+        "evidence": [
+            {
+                "kind": "source",
+                "reference": "src/queue.py:submit",
+                "summary": "Retry bypasses sequence assignment.",
+            }
+        ],
     }
 
 
 def packet(identity="F-001"):
-    return f"# {identity}: Preserve ordered retries\n\n" + "\n\n".join(
-        f"## {heading}\n"
-        + (f"### {identity}-T1 — Preserve sequence assignment\n" if heading == "Implementation plan" else "")
-        + f"Concrete {heading.lower()} detail for the local agent."
-        for heading in HEADINGS
-    ) + "\n"
+    return (
+        f"# {identity}: Preserve ordered retries\n\n"
+        + "\n\n".join(
+            f"## {heading}\n"
+            + (
+                f"### {identity}-T1 — Preserve sequence assignment\n"
+                if heading == "Implementation plan"
+                else ""
+            )
+            + f"Concrete {heading.lower()} detail for the local agent."
+            for heading in HEADINGS
+        )
+        + "\n"
+    )
 
 
 def completion():
     return {
         "reference": "commit:" + "b" * 40,
         "summary": "Preserved the assigned sequence across retries.",
-        "checks": [{"reference": "python -m unittest tests.test_queue", "result": "passed",
-                    "summary": "The retry regression and queue tests passed."}],
+        "checks": [
+            {
+                "reference": "python -m unittest tests.test_queue",
+                "result": "passed",
+                "summary": "The retry regression and queue tests passed.",
+            }
+        ],
     }
 
 
@@ -49,11 +79,19 @@ class ValidateAuditTests(unittest.TestCase):
         for name in ("README.md", "CONTEXT.md"):
             (self.root / name).write_text("# Concrete audit context\n", encoding="utf-8")
         self.data = {
-            "version": 2, "repository": "https://github.com/example/project",
-            "baseline_commit": "a" * 40, "focus": "Queue correctness and recovery",
-            "coverage": [{"id": "C-001", "domain": "Correctness", "status": "reviewed",
-                          "basis": "Traced submit/retry behavior and consumers.",
-                          "evidence": deepcopy(finding()["evidence"])}],
+            "version": 2,
+            "repository": "https://github.com/example/project",
+            "baseline_commit": "a" * 40,
+            "focus": "Queue correctness and recovery",
+            "coverage": [
+                {
+                    "id": "C-001",
+                    "domain": "Correctness",
+                    "status": "reviewed",
+                    "basis": "Traced submit/retry behavior and consumers.",
+                    "evidence": deepcopy(finding()["evidence"]),
+                }
+            ],
             "findings": [finding()],
         }
         self.write()
@@ -62,7 +100,9 @@ class ValidateAuditTests(unittest.TestCase):
         (self.root / "audit.json").write_text(json.dumps(self.data), encoding="utf-8")
         for item in self.data["findings"]:
             if isinstance(item, dict) and isinstance(item.get("id"), str):
-                (self.root / "findings" / (item["id"] + ".md")).write_text(packet(item["id"]), encoding="utf-8")
+                (self.root / "findings" / (item["id"] + ".md")).write_text(
+                    packet(item["id"]), encoding="utf-8"
+                )
 
     def errors(self):
         self.write()
@@ -72,20 +112,29 @@ class ValidateAuditTests(unittest.TestCase):
         self.assertTrue(any(needle in error for error in self.errors()), needle)
 
     def test_valid_bundle_is_read_only(self):
-        before = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+        before = {
+            p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()
+        }
         self.assertEqual([], Validator(self.root).validate())
-        after = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+        after = {
+            p.relative_to(self.root): p.read_bytes() for p in self.root.rglob("*") if p.is_file()
+        }
         self.assertEqual(before, after)
 
     def test_empty_findings_and_pending_coverage_are_valid(self):
         self.data["findings"] = []
-        self.data["coverage"][0].update(status="unreviewed", evidence=[], next_step="Inspect consumers.")
+        self.data["coverage"][0].update(
+            status="unreviewed", evidence=[], next_step="Inspect consumers."
+        )
         self.assertEqual([], self.errors())
 
     def test_pin_and_version(self):
-        for field, value, message in (("version", True, "version"), ("version", 1, "explicit revalidation"),
-                                      ("baseline_commit", "main", "baseline_commit"),
-                                      ("baseline_commit", "a" * 39, "baseline_commit")):
+        for field, value, message in (
+            ("version", True, "version"),
+            ("version", 1, "explicit revalidation"),
+            ("baseline_commit", "main", "baseline_commit"),
+            ("baseline_commit", "a" * 39, "baseline_commit"),
+        ):
             with self.subTest(field=field, value=value):
                 old = self.data[field]
                 self.data[field] = value
@@ -93,17 +142,34 @@ class ValidateAuditTests(unittest.TestCase):
                 self.data[field] = old
 
     def test_repository_rejects_credentials_and_nonrepository_urls(self):
-        for url in ("http://github.com/o/r", "https://user:secret@github.com/o/r", "https://github.com/o/r?token=x",
-                    "https://github.com/o/r/tree/main", "https://github.com/o/..", "https://[broken/o/r",
-                    "https://@github.com/o/r", "https://bad host/o/r", "https://github.com/o/re\npo",
-                    " https://github.com/o/r", "https://github.com/o/r\x00", "https://bad%host/o/r",
-                    "https://github.com//o/r", "https://github.com/o/r?", "https://github.com/o/r#",
-                    "https://[2001:db8::1]junk/o/r", "https://github.com:/o/r"):
+        for url in (
+            "http://github.com/o/r",
+            "https://user:secret@github.com/o/r",
+            "https://github.com/o/r?token=x",
+            "https://github.com/o/r/tree/main",
+            "https://github.com/o/..",
+            "https://[broken/o/r",
+            "https://@github.com/o/r",
+            "https://bad host/o/r",
+            "https://github.com/o/re\npo",
+            " https://github.com/o/r",
+            "https://github.com/o/r\x00",
+            "https://bad%host/o/r",
+            "https://github.com//o/r",
+            "https://github.com/o/r?",
+            "https://github.com/o/r#",
+            "https://[2001:db8::1]junk/o/r",
+            "https://github.com:/o/r",
+        ):
             with self.subTest(url=url):
                 self.data["repository"] = url
                 self.assert_invalid("repository")
-        for url in ("https://git.enterprise.example/org/repo", "https://git.enterprise.example:8443/org/repo/",
-                    "https://192.0.2.1/org/repo", "https://[2001:db8::1]/org/repo"):
+        for url in (
+            "https://git.enterprise.example/org/repo",
+            "https://git.enterprise.example:8443/org/repo/",
+            "https://192.0.2.1/org/repo",
+            "https://[2001:db8::1]/org/repo",
+        ):
             with self.subTest(url=url):
                 self.data["repository"] = url
                 self.assertEqual([], self.errors())
@@ -126,8 +192,16 @@ class ValidateAuditTests(unittest.TestCase):
         self.assert_invalid("duplicate packet path")
 
     def test_safe_paths(self):
-        for path in ("../outside.md", "/etc/passwd", "findings/../../outside.md", "C:\\outside.md",
-                     "findings\\F-001.md", "findings/./F-001.md", "findings//F-001.md", "findings/x\x00.md"):
+        for path in (
+            "../outside.md",
+            "/etc/passwd",
+            "findings/../../outside.md",
+            "C:\\outside.md",
+            "findings\\F-001.md",
+            "findings/./F-001.md",
+            "findings//F-001.md",
+            "findings/x\x00.md",
+        ):
             with self.subTest(path=path):
                 self.data["findings"][0]["path"] = path
                 self.assert_invalid("path")
@@ -180,7 +254,9 @@ class ValidateAuditTests(unittest.TestCase):
 
     def test_done_requires_completed_dependencies(self):
         self.data["findings"].append(finding("F-002"))
-        self.data["findings"][0].update(plan_status="done", depends_on=["F-002"], completion=completion())
+        self.data["findings"][0].update(
+            plan_status="done", depends_on=["F-002"], completion=completion()
+        )
         self.assert_invalid("must be done")
         self.data["findings"][1].update(plan_status="done", completion=completion())
         self.assertEqual([], self.errors())
@@ -189,8 +265,13 @@ class ValidateAuditTests(unittest.TestCase):
         item = self.data["findings"][0]
         item["plan_status"] = "done"
         self.assert_invalid("completion object")
-        for value in (None, [], {}, {"reference": "commit:abc", "summary": "Implemented", "checks": []},
-                      {"reference": "commit:abc", "summary": "Implemented", "checks": [None]}):
+        for value in (
+            None,
+            [],
+            {},
+            {"reference": "commit:abc", "summary": "Implemented", "checks": []},
+            {"reference": "commit:abc", "summary": "Implemented", "checks": [None]},
+        ):
             with self.subTest(value=value):
                 item["completion"] = value
                 self.assert_invalid("completion")
@@ -209,7 +290,9 @@ class ValidateAuditTests(unittest.TestCase):
         item["completion"] = completion()
         item["completion"]["checks"][0].update(result="not_applicable", summary="")
         self.assert_invalid("summary")
-        item["completion"]["checks"][0]["summary"] = "No network integration changed, so the integration check does not apply."
+        item["completion"]["checks"][0]["summary"] = (
+            "No network integration changed, so the integration check does not apply."
+        )
         self.assertEqual([], self.errors())
 
     def test_blocked_requires_reason_and_next_action(self):
@@ -223,9 +306,15 @@ class ValidateAuditTests(unittest.TestCase):
 
     def test_withdrawn_records_keep_attribution_without_requiring_user_provenance(self):
         item = self.data["findings"][0]
-        item.update(status="withdrawn", plan_status="none",
-                    decision={"by": "auditor", "summary": "The additional caller disproves the initial premise.",
-                              "reference": "src/queue.py:drain"})
+        item.update(
+            status="withdrawn",
+            plan_status="none",
+            decision={
+                "by": "auditor",
+                "summary": "The additional caller disproves the initial premise.",
+                "reference": "src/queue.py:drain",
+            },
+        )
         self.assertEqual([], self.errors())
         item["plan_status"] = "draft"
         self.assert_invalid("plan_status=none")
@@ -235,11 +324,20 @@ class ValidateAuditTests(unittest.TestCase):
 
     def test_revalidation_is_optional_but_structured_when_present(self):
         baseline = self.data["baseline_commit"]
-        for value in (None, [], {}, {"commit": "main", "reference": "review:8", "summary": "Checked new callers."}):
+        for value in (
+            None,
+            [],
+            {},
+            {"commit": "main", "reference": "review:8", "summary": "Checked new callers."},
+        ):
             with self.subTest(value=value):
                 self.data["findings"][0]["revalidation"] = value
                 self.assert_invalid("revalidation")
-        self.data["findings"][0]["revalidation"] = {"commit": "b" * 40, "reference": "review:8", "summary": "Checked compatibility after prerequisite completion."}
+        self.data["findings"][0]["revalidation"] = {
+            "commit": "b" * 40,
+            "reference": "review:8",
+            "summary": "Checked compatibility after prerequisite completion.",
+        }
         self.assertEqual([], self.errors())
         self.assertEqual(baseline, self.data["baseline_commit"])
         self.data["findings"][0]["revalidation"]["reference"] = ""
@@ -249,8 +347,13 @@ class ValidateAuditTests(unittest.TestCase):
         second = finding("F-002")
         self.data["findings"].append(second)
         self.data["findings"][0]["depends_on"] = ["F-002"]
-        for status, plan in (("accepted", "draft"), ("accepted", "blocked"), ("deferred", "draft"),
-                             ("rejected", "none"), ("undecided", "draft")):
+        for status, plan in (
+            ("accepted", "draft"),
+            ("accepted", "blocked"),
+            ("deferred", "draft"),
+            ("rejected", "none"),
+            ("undecided", "draft"),
+        ):
             with self.subTest(status=status, plan=plan):
                 second.update(status=status, plan_status=plan, revisit_trigger="Next milestone")
                 self.assert_invalid("blocks readiness")
@@ -270,7 +373,11 @@ class ValidateAuditTests(unittest.TestCase):
     def test_decision_attribution_is_required(self):
         self.data["findings"][0]["decision"]["reference"] = ""
         self.assert_invalid("reference")
-        self.data["findings"][0].update(status="undecided", plan_status="draft", decision={"by": "", "summary": "", "reference": ""})
+        self.data["findings"][0].update(
+            status="undecided",
+            plan_status="draft",
+            decision={"by": "", "summary": "", "reference": ""},
+        )
         self.assertEqual([], self.errors())
 
     def test_deferred_and_rejected_records(self):
@@ -296,8 +403,17 @@ class ValidateAuditTests(unittest.TestCase):
 
     def test_ready_requires_source_evidence(self):
         item = self.data["findings"][0]
-        for entries in ([], [{"kind": "external", "reference": "https://example.org/paper", "summary": "Background"}],
-                        [{"kind": "source", "reference": "", "summary": "Missing reference"}]):
+        for entries in (
+            [],
+            [
+                {
+                    "kind": "external",
+                    "reference": "https://example.org/paper",
+                    "summary": "Background",
+                }
+            ],
+            [{"kind": "source", "reference": "", "summary": "Missing reference"}],
+        ):
             with self.subTest(entries=entries):
                 item["evidence"] = entries
                 self.assert_invalid("requires source evidence")
@@ -309,14 +425,21 @@ class ValidateAuditTests(unittest.TestCase):
     def test_headings_inside_code_fence_do_not_count(self):
         path = self.root / "findings" / "F-001.md"
         path.write_text("```markdown\n" + packet() + "```\n", encoding="utf-8")
-        self.assertTrue(any("missing heading" in error for error in Validator(self.root).validate()))
+        self.assertTrue(
+            any("missing heading" in error for error in Validator(self.root).validate())
+        )
 
     def test_fence_closing_requires_matching_marker_and_no_suffix(self):
         path = self.root / "findings" / "F-001.md"
         for false_close in ("```not-a-close", "~~~", "``"):
             with self.subTest(false_close=false_close):
-                path.write_text("# F-001: Example\n```markdown\n" + false_close + "\n" + packet() + "```\n", encoding="utf-8")
-                self.assertTrue(any("missing heading" in error for error in Validator(self.root).validate()))
+                path.write_text(
+                    "# F-001: Example\n```markdown\n" + false_close + "\n" + packet() + "```\n",
+                    encoding="utf-8",
+                )
+                self.assertTrue(
+                    any("missing heading" in error for error in Validator(self.root).validate())
+                )
         path.write_text("```markdown\nA fenced example.\n````   \n" + packet(), encoding="utf-8")
         self.assertEqual([], Validator(self.root).validate())
         path.write_text("```example <!--\nLiteral code.\n```\n" + packet(), encoding="utf-8")
@@ -325,18 +448,32 @@ class ValidateAuditTests(unittest.TestCase):
     def test_comment_headings_do_not_count(self):
         path = self.root / "findings" / "F-001.md"
         path.write_text("# F-001: Example\n<!--\n" + packet() + "-->\n", encoding="utf-8")
-        self.assertTrue(any("missing heading" in error for error in Validator(self.root).validate()))
-        path.write_text(packet().replace("## Evidence", "<!-- comment -->## Evidence"), encoding="utf-8")
-        self.assertTrue(any("missing heading '## Evidence'" in error for error in Validator(self.root).validate()))
+        self.assertTrue(
+            any("missing heading" in error for error in Validator(self.root).validate())
+        )
+        path.write_text(
+            packet().replace("## Evidence", "<!-- comment -->## Evidence"), encoding="utf-8"
+        )
+        self.assertTrue(
+            any(
+                "missing heading '## Evidence'" in error
+                for error in Validator(self.root).validate()
+            )
+        )
 
     def test_title_is_first_real_h1(self):
         path = self.root / "findings" / "F-001.md"
         body = packet().split("\n", 1)[1]
-        for prefix in ("```markdown\n# F-001: Example\n```\n", "<!-- # F-001: Example -->\n",
-                       "# Unrelated title\n# F-001: Example\n"):
+        for prefix in (
+            "```markdown\n# F-001: Example\n```\n",
+            "<!-- # F-001: Example -->\n",
+            "# Unrelated title\n# F-001: Example\n",
+        ):
             with self.subTest(prefix=prefix):
                 path.write_text(prefix + body, encoding="utf-8")
-                self.assertTrue(any("packet title" in error for error in Validator(self.root).validate()))
+                self.assertTrue(
+                    any("packet title" in error for error in Validator(self.root).validate())
+                )
 
     def test_markdown_heading_indentation_and_closing_markers_are_valid(self):
         path = self.root / "findings" / "F-001.md"
@@ -352,26 +489,57 @@ class ValidateAuditTests(unittest.TestCase):
             with self.subTest(empty=empty):
                 content = packet()
                 for heading in HEADINGS:
-                    content = content.replace(f"Concrete {heading.lower()} detail for the local agent.", empty)
+                    content = content.replace(
+                        f"Concrete {heading.lower()} detail for the local agent.", empty
+                    )
                 path.write_text(content, encoding="utf-8")
                 self.assertTrue(any("empty" in error for error in Validator(self.root).validate()))
-        path.write_text(packet().replace("Concrete evidence detail for the local agent.", "```python\n# An actual line of source evidence.\n```"), encoding="utf-8")
+        path.write_text(
+            packet().replace(
+                "Concrete evidence detail for the local agent.",
+                "```python\n# An actual line of source evidence.\n```",
+            ),
+            encoding="utf-8",
+        )
         self.assertEqual([], Validator(self.root).validate())
 
     def test_ready_requires_real_task_heading_in_implementation_section(self):
         path = self.root / "findings" / "F-001.md"
         task = "### F-001-T1 — Preserve sequence assignment"
-        for replacement in ("", "```markdown\n" + task + "\n```", "<!-- " + task + " -->", "### F-002-T1 — Wrong finding"):
+        for replacement in (
+            "",
+            "```markdown\n" + task + "\n```",
+            "<!-- " + task + " -->",
+            "### F-002-T1 — Wrong finding",
+        ):
             with self.subTest(replacement=replacement):
                 path.write_text(packet().replace(task, replacement), encoding="utf-8")
-                self.assertTrue(any("requires a task heading" in error for error in Validator(self.root).validate()))
+                self.assertTrue(
+                    any(
+                        "requires a task heading" in error
+                        for error in Validator(self.root).validate()
+                    )
+                )
         for delimiter in (":", "-", "–", ""):
-            path.write_text(packet().replace(task, "### F-001-T1 " + delimiter + " Preserve sequence assignment"), encoding="utf-8")
+            path.write_text(
+                packet().replace(
+                    task, "### F-001-T1 " + delimiter + " Preserve sequence assignment"
+                ),
+                encoding="utf-8",
+            )
             self.assertEqual([], Validator(self.root).validate())
-        path.write_text(packet().replace(task, "").replace("## Validation", task + "\n## Validation"), encoding="utf-8")
+        path.write_text(
+            packet().replace(task, "").replace("## Validation", task + "\n## Validation"),
+            encoding="utf-8",
+        )
         self.assertEqual([], Validator(self.root).validate())
-        path.write_text(packet().replace(task, "").replace("## Evidence", task + "\n## Evidence"), encoding="utf-8")
-        self.assertTrue(any("requires a task heading" in error for error in Validator(self.root).validate()))
+        path.write_text(
+            packet().replace(task, "").replace("## Evidence", task + "\n## Evidence"),
+            encoding="utf-8",
+        )
+        self.assertTrue(
+            any("requires a task heading" in error for error in Validator(self.root).validate())
+        )
 
     def test_packet_title_id_matches_manifest(self):
         (self.root / "findings" / "F-001.md").write_text(packet("F-002"), encoding="utf-8")
@@ -381,11 +549,21 @@ class ValidateAuditTests(unittest.TestCase):
         path = self.root / "findings" / "F-001.md"
         path.write_text("\n".join("## " + heading for heading in HEADINGS), encoding="utf-8")
         self.assertTrue(any("empty" in error for error in Validator(self.root).validate()))
-        for marker in ("TODO", "TBD", "TODO: add acceptance checks", "- TBD", "AUDIT_TODO",
-                       "AUDIT_TODO_TITLE", "AUDIT_TODO_FULL_SHA", "AUDIT_TODO_OR_NOT_GRANTED"):
+        for marker in (
+            "TODO",
+            "TBD",
+            "TODO: add acceptance checks",
+            "- TBD",
+            "AUDIT_TODO",
+            "AUDIT_TODO_TITLE",
+            "AUDIT_TODO_FULL_SHA",
+            "AUDIT_TODO_OR_NOT_GRANTED",
+        ):
             with self.subTest(marker=marker):
                 path.write_text(packet() + marker, encoding="utf-8")
-                self.assertTrue(any("placeholder" in error for error in Validator(self.root).validate()))
+                self.assertTrue(
+                    any("placeholder" in error for error in Validator(self.root).validate())
+                )
 
     def test_draft_allows_placeholders(self):
         self.data["findings"][0]["plan_status"] = "draft"
@@ -416,7 +594,19 @@ class ValidateAuditTests(unittest.TestCase):
 
     def test_malformed_shapes_do_not_raise(self):
         original = deepcopy(self.data)
-        for field in ("kind", "severity", "priority", "confidence", "status", "plan_status", "id", "decision", "depends_on", "evidence", "path"):
+        for field in (
+            "kind",
+            "severity",
+            "priority",
+            "confidence",
+            "status",
+            "plan_status",
+            "id",
+            "decision",
+            "depends_on",
+            "evidence",
+            "path",
+        ):
             for value in (None, 1, [], {}):
                 if field == "depends_on" and value == []:
                     continue
@@ -429,7 +619,13 @@ class ValidateAuditTests(unittest.TestCase):
         self.assertTrue(self.errors())
 
     def test_json_errors_are_clean(self):
-        for raw in ('{"version":1,"version":1}', '{"version": NaN}', '[1,2]', '{', '[' * 1100 + ']' * 1100):
+        for raw in (
+            '{"version":1,"version":1}',
+            '{"version": NaN}',
+            "[1,2]",
+            "{",
+            "[" * 1100 + "]" * 1100,
+        ):
             with self.subTest(raw=raw[:40]):
                 (self.root / "audit.json").write_text(raw, encoding="utf-8")
                 output = io.StringIO()

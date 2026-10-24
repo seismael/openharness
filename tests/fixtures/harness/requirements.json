@@ -1,0 +1,8 @@
+{
+  "schema": "openharness.requirements.v1",
+  "requirements": [
+    { "id": "entry", "kind": "system_prompt", "component": "agents" },
+    { "id": "procedures", "kind": "skills" },
+    { "id": "memory", "kind": "memory", "required": false }
+  ]
+}

@@ -23,9 +23,7 @@ class CaseRunnerTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
 
     def declare(self, cases, document=False):
-        payload = (
-            {"schema": "openharness.cases.v1", "cases": cases} if document else cases
-        )
+        payload = {"schema": "openharness.cases.v1", "cases": cases} if document else cases
         path = self.root / "cases.json"
         path.write_text(json.dumps(payload), encoding="utf-8")
         return path
@@ -84,9 +82,7 @@ class CaseRunnerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["failed"], 1)
-        self.assertEqual(
-            payload["results"][0]["detail"], "expected output text not found"
-        )
+        self.assertEqual(payload["results"][0]["detail"], "expected output text not found")
 
     def test_wrong_exit_code_is_reported(self):
         path = self.declare(
@@ -100,9 +96,7 @@ class CaseRunnerTests(unittest.TestCase):
         )
         result = self.run_cases(path)
         self.assertEqual(result.returncode, 1)
-        self.assertIn(
-            "exit 3, expected 0", json.loads(result.stdout)["results"][0]["detail"]
-        )
+        self.assertIn("exit 3, expected 0", json.loads(result.stdout)["results"][0]["detail"])
 
     def test_timeout_is_distinct_from_failure(self):
         path = self.declare(
@@ -144,19 +138,13 @@ class CaseRunnerTests(unittest.TestCase):
         )
         result = self.run_cases(path)
         self.assertEqual(result.returncode, 1)
-        self.assertIn(
-            "artifact missing", json.loads(result.stdout)["results"][0]["detail"]
-        )
+        self.assertIn("artifact missing", json.loads(result.stdout)["results"][0]["detail"])
 
     def test_unknown_expect_key_is_a_declaration_error(self):
-        path = self.declare(
-            [{"id": "bad", "command": py("pass"), "expect": {"latency_ms": 5}}]
-        )
+        path = self.declare([{"id": "bad", "command": py("pass"), "expect": {"latency_ms": 5}}])
         result = self.run_cases(path)
         self.assertEqual(result.returncode, 2)
-        self.assertEqual(
-            json.loads(result.stdout)["problems"][0]["code"], "case.expect_unknown"
-        )
+        self.assertEqual(json.loads(result.stdout)["problems"][0]["code"], "case.expect_unknown")
 
     def test_duplicate_ids_are_refused(self):
         path = self.declare(
@@ -167,17 +155,13 @@ class CaseRunnerTests(unittest.TestCase):
         )
         result = self.run_cases(path)
         self.assertEqual(result.returncode, 2)
-        self.assertEqual(
-            json.loads(result.stdout)["problems"][0]["code"], "case.id_duplicate"
-        )
+        self.assertEqual(json.loads(result.stdout)["problems"][0]["code"], "case.id_duplicate")
 
     def test_missing_command_is_refused(self):
         path = self.declare([{"id": "hollow"}])
         result = self.run_cases(path)
         self.assertEqual(result.returncode, 2)
-        self.assertEqual(
-            json.loads(result.stdout)["problems"][0]["code"], "case.command_missing"
-        )
+        self.assertEqual(json.loads(result.stdout)["problems"][0]["code"], "case.command_missing")
 
     def test_dry_run_does_not_execute(self):
         path = self.declare(
@@ -229,9 +213,7 @@ class CaseRunnerTests(unittest.TestCase):
     def test_unknown_document_key_is_refused(self):
         path = self.root / "cases.json"
         path.write_text(
-            json.dumps(
-                {"cases": [{"id": "one", "command": py("pass")}], "extra": True}
-            ),
+            json.dumps({"cases": [{"id": "one", "command": py("pass")}], "extra": True}),
             encoding="utf-8",
         )
         result = self.run_cases(path)

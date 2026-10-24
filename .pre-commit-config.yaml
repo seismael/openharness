@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: release-structure
+        name: release structure
+        entry: python -B tools/check_release.py
+        language: system
+        pass_filenames: false
+      - id: lockfile
+        name: harness lockfile is current
+        entry: python -B skills/loop/scripts/openharness_cli.py lock --check
+        language: system
+        pass_filenames: false

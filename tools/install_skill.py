@@ -3,15 +3,21 @@
 
 import argparse
 import os
-from pathlib import Path
 import re
 import shutil
 import sys
-
+from pathlib import Path
 
 IGNORED_DIRS = {
-    "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
-    ".cache", "node_modules", ".git", "logs", "state",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".cache",
+    "node_modules",
+    ".git",
+    "logs",
+    "state",
 }
 IGNORED_SUFFIXES = (".pyc", ".pyo", ".log", ".sqlite", ".sqlite3", ".db")
 
@@ -54,13 +60,19 @@ def inspect_source(source):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill", required=True, help="Bundled skill directory name")
-    parser.add_argument("--to", required=True, metavar="EXACT_DESTINATION",
-                        help="New directory that will contain SKILL.md")
+    parser.add_argument(
+        "--to",
+        required=True,
+        metavar="EXACT_DESTINATION",
+        help="New directory that will contain SKILL.md",
+    )
     parser.add_argument("--check", action="store_true", help="Validate and report; write nothing")
     args = parser.parse_args(argv)
     try:
         if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", args.skill) or len(args.skill) > 64:
-            raise ValueError("Skill must be a lowercase, hyphen-separated name (up to 64 characters)")
+            raise ValueError(
+                "Skill must be a lowercase, hyphen-separated name (up to 64 characters)"
+            )
         repository = Path(os.path.abspath(__file__)).parent.parent
         source = repository / "skills" / args.skill
         requested_destination = Path(os.path.expanduser(args.to)).absolute()
@@ -78,8 +90,11 @@ def main(argv=None):
         if args.check:
             report(f"Check passed: would copy {len(files)} files from {source} to {destination}")
             return 0
-        shutil.copytree(source, destination,
-                        ignore=lambda directory, names: [name for name in names if ignored(name)])
+        shutil.copytree(
+            source,
+            destination,
+            ignore=lambda directory, names: [name for name in names if ignored(name)],
+        )
         report(f"Installed {args.skill}: {len(files)} files copied to {destination}")
         return 0
     except (OSError, ValueError) as error:

@@ -1,0 +1,19 @@
+{
+  "schema": "openharness.policy.v1",
+  "description": "Fixture policy for the golden snapshots.",
+  "default": "ask",
+  "rules": [
+    {
+      "id": "declared-verification",
+      "match": { "tool": "shell", "command_regex": "^python -B" },
+      "verdict": "allow",
+      "reason": "declared verification"
+    },
+    {
+      "id": "no-destructive",
+      "match": { "tool": "shell", "command_regex": "rm -rf" },
+      "verdict": "deny",
+      "reason": "destructive"
+    }
+  ]
+}

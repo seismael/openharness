@@ -93,30 +93,39 @@ subagent, bound to the native V2 surfaces (`AGENTS.md`, `.opencode/agents/`,
 mkdir -p .opencode/commands .opencode/agents
 cp adapters/opencode/commands/openharness.md .opencode/commands/openharness.md
 cp adapters/opencode/agents/harness-editor.md .opencode/agents/harness-editor.md
-python skills/loop/scripts/openharness_audit.py --manifest harness.json
+openharness init
+openharness audit --manifest harness.json
+openharness lock
 ```
 
 See **[adapters/opencode/README.md](../../adapters/opencode/README.md)** for the kind
 bindings and a starter `harness.json`. The audit is deterministic and model-free; adoption
-still requires a probe receipt for the exact harness state (RFC-0009).
+still requires a probe receipt for the exact harness state (RFC-0009). The lockfile records
+the accepted state so a later edit becomes an attributed drift line (RFC-0016).
 
-The adapter command exposes one sub-mode per helper. The same eight helpers implement
-RFC-0009 through RFC-0015 and all live in the installed skill's `scripts/` directory:
+The adapter command exposes one sub-mode per command. The commands implement RFC-0009
+through RFC-0016 and all ship inside the installed skill; without a console script, use
+`python <skill>/scripts/openharness_cli.py <command>`:
 
-| Helper | Question | RFC |
+| Command | Question | RFC |
 | :--- | :--- | :--- |
-| `openharness_audit.py` | What is the surface, and does it hold together? | 0009 |
-| `openharness_verify.py` | Is this journal entry coherent? | 0010 |
-| `openharness_select.py` | Which output wins, without knowing its author? | 0010 |
-| `openharness_cases.py` | Did the declared cases behave as expected? | 0012 |
-| `openharness_telemetry.py` | What did the effort cost and what did it buy? | 0011 |
-| `openharness_inventory.py` | Which declared capabilities actually exist? | 0013 |
-| `openharness_failures.py` | Why did iterations fail, and is a class recurring? | 0014 |
-| `openharness_policy.py` | Is this action allowed, denied, or undecided? | 0015 |
+| `init` | What harness already exists here? | — |
+| `lock` | What state did we accept? | 0016 |
+| `plan` | What changed since we accepted it? | 0016 |
+| `audit` | What is the surface, and does it hold together? | 0009 |
+| `verify` | Is this journal entry coherent? | 0010 |
+| `select` | Which output wins, without knowing its author? | 0010 |
+| `cases` | Did the declared cases behave as expected? | 0012 |
+| `telemetry` | What did the effort cost and what did it buy? | 0011 |
+| `inventory` | Which declared capabilities actually exist? | 0013 |
+| `failures` | Why did iterations fail, and is a class recurring? | 0014 |
+| `policy` | Is this action allowed, denied, or undecided? | 0015 |
+| `report` | What is the whole picture in one artifact? | — |
 
 Declare the surface in `harness.json`, the required kinds in `requirements.json`, the
 evaluation inputs in `cases.json`, and the guardrails in `policy.json`. The repository runs
-all four against itself in CI, so the declarations cannot drift from the tree.
+all four, plus the committed `harness.lock`, against itself in CI, so the declarations
+cannot drift from the tree.
 
 ---
 

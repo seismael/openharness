@@ -1,4 +1,4 @@
-name: Validate skills
+name: Validate
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           - os: macos-latest
             python: '3.13'
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -36,22 +36,66 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: ${{ matrix.python }}
+      - name: Install the package with development tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
       - name: Check portable release structure
         run: python -B tools/check_release.py
-      - name: Test staged configuration changes and recovery
-        run: python -B -m unittest discover -s skills/characterize/scripts -p "test_*.py" -v
-      - name: Test incremental review ledger
-        run: python -B -m unittest discover -s skills/enhance/scripts -p "test_*.py" -v
-      - name: Test audit artifact contract
-        run: python -B -m unittest discover -s skills/audit/scripts -p "test_*.py" -v
-      - name: Test knowledge base validator
-        run: python -B -m unittest discover -s skills/knowledge/scripts -p "test_*.py" -v
-      - name: Test explicit installation and OHP conformance
-        run: python -B -m unittest discover -s tests -p "test_*.py" -v
-      - name: Test autonomous loop engine scripts
-        run: python -B -m unittest discover -s skills/loop/scripts -p "test_*.py" -v
+      - name: Lint
+        run: ruff check .
+      - name: Check formatting
+        run: ruff format --check .
+      - name: Type-check the package
+        run: mypy
+      - name: Run every test lane with coverage
+        run: pytest --cov=openharness --cov-report=term-missing --cov-fail-under=85
       - name: Check the protocol against this repository
         run: |
-          python -B skills/loop/scripts/openharness_audit.py --manifest harness.json
-          python -B skills/loop/scripts/openharness_inventory.py --manifest harness.json --requirements requirements.json
-          python -B skills/loop/scripts/openharness_cases.py --cases cases.json --workdir .
+          openharness audit --manifest harness.json
+          openharness inventory --manifest harness.json --requirements requirements.json
+          openharness cases --cases cases.json --workdir .
+          openharness lock --check
+          openharness plan --check
+
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - name: Build the distribution
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+      - name: Install the wheel in a clean environment
+        run: |
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install dist/*.whl
+          "$RUNNER_TEMP/venv/bin/openharness" --version
+      - name: Smoke-test the installed wheel
+        working-directory: tests/fixtures/harness
+        run: |
+          "$RUNNER_TEMP/venv/bin/openharness" audit --manifest harness.json
+          "$RUNNER_TEMP/venv/bin/openharness" lock --output installed.lock
+          "$RUNNER_TEMP/venv/bin/openharness" plan --check --lock installed.lock
+
+  action:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Run the composite action on this repository
+        uses: ./
+        with:
+          manifest: harness.json
+          requirements: requirements.json
+          lock: harness.lock
+          report-format: markdown
+          report-path: harness-report.md

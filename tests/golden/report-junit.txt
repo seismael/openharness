@@ -1,0 +1,1 @@
+{"bytes":182,"changes":0,"counts":{"error":0,"info":0,"warn":0},"fingerprint":"f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf","format":"junit","ok":true,"output":"report.xml","schema":"openharness.report.receipt.v1"}

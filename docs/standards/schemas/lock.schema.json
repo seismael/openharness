@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/lock.schema.json",
+  "title": "Open Harness Protocol - Harness Lockfile Schema",
+  "description": "Content-addressed record of an accepted agent harness and the inputs a drift plan compares (RFC-0016).",
+  "type": "object",
+  "required": ["schema", "manifest", "fingerprint", "budget", "totals", "components", "declarations", "generator"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["openharness.lock.v1"]
+    },
+    "manifest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fingerprint": {
+      "$ref": "#/$defs/hash",
+      "description": "SHA-256 over sorted (relative path, content hash) pairs."
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "always_on_tokens": { "type": "integer", "minimum": 0 },
+        "total_tokens": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "totals": {
+      "type": "object",
+      "required": ["always_on_tokens", "total_tokens", "files", "components"],
+      "properties": {
+        "always_on_tokens": { "type": "integer", "minimum": 0 },
+        "total_tokens": { "type": "integer", "minimum": 0 },
+        "files": { "type": "integer", "minimum": 0 },
+        "components": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/component" }
+    },
+    "declarations": {
+      "type": "object",
+      "propertyNames": { "enum": ["policy", "cases", "requirements"] },
+      "additionalProperties": { "$ref": "#/$defs/declaration" }
+    },
+    "generator": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "file": {
+      "type": "object",
+      "required": ["path", "sha256", "tokens"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" },
+        "tokens": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "kind", "enabled", "always_on", "tokens", "files"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["system_prompt", "guardrails", "memory", "tool_guidance", "subagents", "skills", "scripts", "plugins"]
+        },
+        "enabled": { "type": "boolean" },
+        "always_on": { "type": "boolean" },
+        "tokens": { "type": "integer", "minimum": 0 },
+        "files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/file" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "declaration": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

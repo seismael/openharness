@@ -7,16 +7,16 @@ and AST semantic code extraction under complete isolation.
 """
 
 import json
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
-from skills.loop.scripts.ast_slice import extract_python_symbol, extract_polyglot_symbol
+from skills.loop.scripts.ast_slice import extract_polyglot_symbol, extract_python_symbol
 from skills.loop.scripts.init_loop import init_project
-from skills.loop.scripts.validate_loop import validate_loop, _load_yaml
+from skills.loop.scripts.validate_loop import _load_yaml, validate_loop
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS_DIR = ROOT / "docs" / "standards" / "schemas"
@@ -40,6 +40,7 @@ class OHPConformanceTests(unittest.TestCase):
             "openharness.schema.json",
             "cases.schema.json",
             "policy.schema.json",
+            "lock.schema.json",
         ]
         for s_name in schemas:
             schema_file = SCHEMAS_DIR / s_name
@@ -74,9 +75,7 @@ class OHPConformanceTests(unittest.TestCase):
             content = t_file.read_text(encoding="utf-8")
             data = _load_yaml(content)
             for req in required_fields:
-                self.assertIn(
-                    req, data, f"Template {t_name} missing required field '{req}'"
-                )
+                self.assertIn(req, data, f"Template {t_name} missing required field '{req}'")
             self.assertEqual(data["schema"], "loop.profile.v1")
 
     def test_init_project_and_validate_all_templates(self):
@@ -85,9 +84,7 @@ class OHPConformanceTests(unittest.TestCase):
             proj_dir = self.temp_dir / f"proj_{tmpl}"
             proj_dir.mkdir(parents=True)
 
-            rc = init_project(
-                proj_dir, target=f"Optimize {tmpl} service", template=tmpl
-            )
+            rc = init_project(proj_dir, target=f"Optimize {tmpl} service", template=tmpl)
             self.assertEqual(rc, 0)
 
             # Validate directory structure
@@ -101,9 +98,7 @@ class OHPConformanceTests(unittest.TestCase):
 
             # Validate using internal validator
             errors = validate_loop(proj_dir)
-            self.assertEqual(
-                errors, [], f"Template {tmpl} produced validation errors: {errors}"
-            )
+            self.assertEqual(errors, [], f"Template {tmpl} produced validation errors: {errors}")
 
     def test_polyglot_archetype_deep_conformance(self):
         """Verify 4 distinct polyglot project archetypes initialize with exact target semantics."""
@@ -148,9 +143,7 @@ class OHPConformanceTests(unittest.TestCase):
             self.assertEqual(loop_data["status"], "ACTIVE")
 
             # Check profile.yaml target substitution
-            profile_content = (loop_dir / "knowledge" / "profile.yaml").read_text(
-                encoding="utf-8"
-            )
+            profile_content = (loop_dir / "knowledge" / "profile.yaml").read_text(encoding="utf-8")
             self.assertIn(target_str, profile_content)
 
             # Check subagent personas are created in both .agents/subagents/ and .opencode/agent/
@@ -240,9 +233,7 @@ class OHPConformanceTests(unittest.TestCase):
         """Verify validate_loop reports an error when profile.yaml is missing."""
         loop_dir = self.temp_dir / ".agents" / "loop"
         loop_dir.mkdir(parents=True)
-        (loop_dir / "loop.json").write_text(
-            '{"target": "t", "status": "ACTIVE"}', encoding="utf-8"
-        )
+        (loop_dir / "loop.json").write_text('{"target": "t", "status": "ACTIVE"}', encoding="utf-8")
         (loop_dir / "coverage.json").write_text("{}", encoding="utf-8")
 
         errors = validate_loop(self.temp_dir)
@@ -321,9 +312,7 @@ class HarnessOptimizationConformanceTests(unittest.TestCase):
 
     def test_invalid_manifest_is_refused_without_receipt(self):
         path = self.manifest(self.fixture())
-        path.write_text(
-            '{"schema": "harness.manifest.v0", "components": []}', encoding="utf-8"
-        )
+        path.write_text('{"schema": "harness.manifest.v0", "components": []}', encoding="utf-8")
         result = self.audit(path)
         self.assertEqual(result.returncode, 2)
         payload = json.loads(result.stdout)
@@ -353,12 +342,12 @@ class HarnessOptimizationConformanceTests(unittest.TestCase):
 
     def test_opencode_adapter_uses_current_frontmatter(self):
         """V2 rejects the legacy `tools`/`permission` keys; keep the adapter loadable."""
-        agent = (
-            ROOT / "adapters" / "opencode" / "agents" / "harness-editor.md"
-        ).read_text(encoding="utf-8")
-        command = (
-            ROOT / "adapters" / "opencode" / "commands" / "openharness.md"
-        ).read_text(encoding="utf-8")
+        agent = (ROOT / "adapters" / "opencode" / "agents" / "harness-editor.md").read_text(
+            encoding="utf-8"
+        )
+        command = (ROOT / "adapters" / "opencode" / "commands" / "openharness.md").read_text(
+            encoding="utf-8"
+        )
         self.assertTrue(agent.startswith("---\n"))
         self.assertIn("mode: subagent", agent)
         self.assertIn("permissions:", agent)
@@ -368,9 +357,7 @@ class HarnessOptimizationConformanceTests(unittest.TestCase):
         self.assertNotIn("template:", command.split("---", 2)[1])
 
     def test_adapter_declares_every_component_kind(self):
-        readme = (ROOT / "adapters" / "opencode" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        readme = (ROOT / "adapters" / "opencode" / "README.md").read_text(encoding="utf-8")
         for kind in (
             "system_prompt",
             "guardrails",
@@ -392,7 +379,7 @@ class ProtocolSeriesConformanceTests(unittest.TestCase):
 
     def test_rfc_series_is_complete_and_indexed(self):
         index = self.read("docs/standards/README.md")
-        for number in range(1, 16):
+        for number in range(1, 17):
             label = f"rfc-{number:04d}"
             self.assertEqual(
                 len(list((ROOT / "docs" / "standards").glob(f"{label}-*.md"))),
@@ -435,16 +422,14 @@ class ProtocolSeriesConformanceTests(unittest.TestCase):
 
     def test_policy_schema_matches_the_evaluator_contract(self):
         schema = json.loads(self.read("docs/standards/schemas/policy.schema.json"))
-        script = self.read("skills/loop/scripts/openharness_policy.py")
-        self.assertEqual(
-            schema["properties"]["schema"]["enum"], ["openharness.policy.v1"]
-        )
-        self.assertIn('CONTRACT = "openharness.policy.v1"', script)
+        script = self.read("skills/loop/scripts/openharness/commands/policy.py")
+        ids = self.read("skills/loop/scripts/openharness/schemas.py")
+        self.assertEqual(schema["properties"]["schema"]["enum"], ["openharness.policy.v1"])
+        self.assertIn('POLICY = "openharness.policy.v1"', ids)
+        self.assertIn("CONTRACT = POLICY", script)
         self.assertEqual(schema["properties"]["default"]["default"], "ask")
         match = schema["$defs"]["rule"]["properties"]["match"]
-        self.assertEqual(
-            set(match["properties"]), {"tool", "path_glob", "command_regex"}
-        )
+        self.assertEqual(set(match["properties"]), {"tool", "path_glob", "command_regex"})
         self.assertEqual(match["minProperties"], 1)
 
     def test_every_protocol_script_has_a_regression_suite(self):
@@ -460,9 +445,7 @@ class ProtocolSeriesConformanceTests(unittest.TestCase):
             "openharness_policy",
         ):
             self.assertTrue((scripts / f"{name}.py").is_file(), f"missing {name}.py")
-            self.assertTrue(
-                (scripts / f"test_{name}.py").is_file(), f"missing test_{name}.py"
-            )
+            self.assertTrue((scripts / f"test_{name}.py").is_file(), f"missing test_{name}.py")
 
     def test_references_are_linked_from_the_skill(self):
         skill = self.read("skills/loop/SKILL.md")

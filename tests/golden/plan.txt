@@ -1,0 +1,4 @@
+openharness plan: fixture
+lock: harness.lock
+fingerprint: locked f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf actual f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf
+no drift

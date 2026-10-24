@@ -33,9 +33,7 @@ class FailureTests(unittest.TestCase):
 
     def journal(self, *entries):
         path = self.root / "journal.jsonl"
-        path.write_text(
-            "\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8"
-        )
+        path.write_text("\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8")
         return path
 
     def run_failures(self, path, *extra):

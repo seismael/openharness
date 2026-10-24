@@ -1,6 +1,41 @@
 # Installation
 
-Install the complete selected directory under `skills/`, including its references and optional scripts. Each is independently installable; the repository root is a collection. Use Characterize for setup from goals and current configuration, Enhance for improvement from actual sessions, and Audit Project for project audits and implementation plans committed to a GitHub repository.
+## The CLI
+
+```sh
+pipx install openharness       # isolated, recommended
+python -m pip install openharness
+```
+
+From a clone, with the development tools:
+
+```sh
+python -m pip install -e ".[dev]"
+openharness --version
+```
+
+Requires Python 3.10 or later. The package uses only the standard library at runtime. A
+wheel and an sdist are published for every tagged release, with build provenance; see
+[SECURITY.md](SECURITY.md) for verification.
+
+Install the GitHub Action by referencing the repository at a major tag:
+
+```yaml
+- uses: seismael/openharness@v1
+  with:
+    manifest: harness.json
+    requirements: requirements.json
+    lock: harness.lock
+```
+
+## The skills
+
+Install the complete selected directory under `skills/`, including its references and
+scripts. Each is independently installable; the repository root is a collection. Use
+Characterize for setup from goals and current configuration, Enhance for improvement from
+actual sessions, and Audit for project audits and implementation plans committed to a
+GitHub repository. The `loop` skill includes the `openharness` package, so its commands
+work in a skill-only installation through `scripts/openharness_cli.py`.
 
 ## Choose a native location
 

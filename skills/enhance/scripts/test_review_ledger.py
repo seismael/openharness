@@ -1,13 +1,15 @@
+# ruff: noqa: RUF001 -- unicode session and source values are deliberate test data
 """Run with python3 -B -m unittest discover -s <skill>/scripts -p test_review_ledger.py."""
+
 import json
-from contextlib import closing
 import os
-from pathlib import Path
 import sqlite3
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import closing
+from pathlib import Path
 
 SCRIPT = Path(__file__).with_name("review_ledger.py").resolve()
 
@@ -20,8 +22,12 @@ class LedgerTest(unittest.TestCase):
         self.db = self.root / "review.sqlite3"
 
     def run_cli(self, *args, ok=True):
-        result = subprocess.run([sys.executable, "-B", str(SCRIPT), "--db", str(self.db), *args],
-                                cwd=self.root, capture_output=True, text=True)
+        result = subprocess.run(
+            [sys.executable, "-B", str(SCRIPT), "--db", str(self.db), *args],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+        )
         self.assertEqual(result.returncode, 0 if ok else 1, result.stderr)
         return json.loads(result.stdout if ok else result.stderr)
 
@@ -35,8 +41,20 @@ class LedgerTest(unittest.TestCase):
         return dict(id=id, revision=revision, locator=f"session:{id}", project="project:one")
 
     def record(self, status="reviewed", revision="r1", session="s2", **kwargs):
-        return self.run_cli("record", "--source", "tool:profile", "--session", session,
-                            "--revision", revision, "--status", status, "--cursor", "message:9", **kwargs)
+        return self.run_cli(
+            "record",
+            "--source",
+            "tool:profile",
+            "--session",
+            session,
+            "--revision",
+            revision,
+            "--status",
+            status,
+            "--cursor",
+            "message:9",
+            **kwargs,
+        )
 
     def test_unchanged_idempotent_and_late_session(self):
         self.assertEqual(self.load([self.session()])["added"], 1)
@@ -57,8 +75,10 @@ class LedgerTest(unittest.TestCase):
         self.load([self.session(revision="r2")])
         result = self.run_cli("show")
         row = result["sessions"][0]
-        self.assertEqual((row["latest_status"], row["last_reviewed_revision"],
-                          row["last_reviewed_cursor"]), ("unreviewed", "r1", "message:9"))
+        self.assertEqual(
+            (row["latest_status"], row["last_reviewed_revision"], row["last_reviewed_cursor"]),
+            ("unreviewed", "r1", "message:9"),
+        )
         self.assertIsNone(row["cursor"])
         self.assertIn("stale", self.record(ok=False)["error"])
         self.assertEqual(self.run_cli("show"), result)
@@ -79,39 +99,75 @@ class LedgerTest(unittest.TestCase):
 
     def test_prior_checkpoint_survives_revision_changes_without_certifying_coverage(self):
         self.load([self.session()])
-        self.run_cli("record", "--source", "tool:profile", "--session", "s2", "--revision", "r1",
-                     "--status", "partial", "--cursor", "event:40", "--note", "Through event 40.")
+        self.run_cli(
+            "record",
+            "--source",
+            "tool:profile",
+            "--session",
+            "s2",
+            "--revision",
+            "r1",
+            "--status",
+            "partial",
+            "--cursor",
+            "event:40",
+            "--note",
+            "Through event 40.",
+        )
         self.assertIsNone(self.run_cli("pending")[0]["prior_checkpoint_revision"])
         self.load([self.session(revision="r2")])
         row = self.run_cli("pending")[0]
-        self.assertEqual((row["latest_revision"], row["latest_status"], row["cursor"], row["note"]),
-                         ("r2", "unreviewed", None, None))
-        self.assertEqual((row["prior_checkpoint_revision"], row["prior_checkpoint_status"],
-                          row["prior_checkpoint_cursor"], row["prior_checkpoint_note"]),
-                         ("r1", "partial", "event:40", "Through event 40."))
+        self.assertEqual(
+            (row["latest_revision"], row["latest_status"], row["cursor"], row["note"]),
+            ("r2", "unreviewed", None, None),
+        )
+        self.assertEqual(
+            (
+                row["prior_checkpoint_revision"],
+                row["prior_checkpoint_status"],
+                row["prior_checkpoint_cursor"],
+                row["prior_checkpoint_note"],
+            ),
+            ("r1", "partial", "event:40", "Through event 40."),
+        )
         self.assertIsNone(row["last_reviewed_revision"])
         self.record(revision="r2")
         row = self.run_cli("show")["sessions"][0]
-        self.assertEqual((row["latest_status"], row["last_reviewed_revision"],
-                          row["prior_checkpoint_revision"]), ("reviewed", "r2", "r1"))
+        self.assertEqual(
+            (row["latest_status"], row["last_reviewed_revision"], row["prior_checkpoint_revision"]),
+            ("reviewed", "r2", "r1"),
+        )
         self.load([self.session(revision="r3")])
         self.record(status="blocked", revision="r3")
         self.load([self.session(revision="r4")])
         row = self.run_cli("pending")[0]
-        self.assertEqual((row["latest_status"], row["cursor"], row["last_reviewed_revision"],
-                          row["prior_checkpoint_revision"], row["prior_checkpoint_status"],
-                          row["prior_checkpoint_cursor"]),
-                         ("unreviewed", None, "r2", "r3", "blocked", "message:9"))
+        self.assertEqual(
+            (
+                row["latest_status"],
+                row["cursor"],
+                row["last_reviewed_revision"],
+                row["prior_checkpoint_revision"],
+                row["prior_checkpoint_status"],
+                row["prior_checkpoint_cursor"],
+            ),
+            ("unreviewed", None, "r2", "r3", "blocked", "message:9"),
+        )
         self.assertEqual(self.run_cli("show", "--summary")["counts"]["pending"], 1)
 
     def test_decision_does_not_change_review_coverage(self):
         self.load([self.session()])
         before = self.run_cli("show")
         path = self.root / "decision.json"
-        decision = dict(id="d1", scope="global:tool:profile", status="proposed",
-                        evidence=[dict(source="tool:profile", session="s2", revision="r1")],
-                        rationale="Compact\n outputs\x00 help.", target="config:global",
-                        before_hash="sha256:before", after_hash="sha256:after")
+        decision = dict(
+            id="d1",
+            scope="global:tool:profile",
+            status="proposed",
+            evidence=[dict(source="tool:profile", session="s2", revision="r1")],
+            rationale="Compact\n outputs\x00 help.",
+            target="config:global",
+            before_hash="sha256:before",
+            after_hash="sha256:after",
+        )
         path.write_text(json.dumps(decision), encoding="utf-8")
         self.assertTrue(self.run_cli("decision", "--file", str(path))["changed"])
         self.assertFalse(self.run_cli("decision", "--file", str(path))["changed"])
@@ -137,28 +193,60 @@ class LedgerTest(unittest.TestCase):
                 with closing(sqlite3.connect(self.db)) as db, db:
                     self.assertEqual(db.execute("PRAGMA user_version").fetchone()[0], version)
                     self.assertEqual(db.execute("SELECT value FROM sentinel").fetchone()[0], "keep")
-                    self.assertEqual(db.execute("SELECT count(*) FROM sqlite_master WHERE type='table'")
-                                     .fetchone()[0], 1)
+                    self.assertEqual(
+                        db.execute(
+                            "SELECT count(*) FROM sqlite_master WHERE type='table'"
+                        ).fetchone()[0],
+                        1,
+                    )
 
     def test_reject_raw_payload_and_bound_notes(self):
         invalid = self.session()
         invalid["transcript"] = "not accepted"
         self.load([invalid], ok=False)
         self.load([self.session()])
-        self.run_cli("record", "--source", "tool:profile", "--session", "s2", "--revision", "r1",
-                     "--status", "partial", "--note", "x" * 513, ok=False)
+        self.run_cli(
+            "record",
+            "--source",
+            "tool:profile",
+            "--session",
+            "s2",
+            "--revision",
+            "r1",
+            "--status",
+            "partial",
+            "--note",
+            "x" * 513,
+            ok=False,
+        )
         self.assertEqual(self.run_cli("pending")[0]["latest_status"], "unreviewed")
 
     def test_concurrent_inventories_preserve_both_sessions(self):
         processes = []
         for index in range(4):
             path = self.root / f"manifest-{index}.json"
-            path.write_text(json.dumps({"source": "tool:profile",
-                                        "sessions": [self.session(f"s{index}")]}), encoding="utf-8")
-            processes.append(subprocess.Popen(
-                [sys.executable, "-B", str(SCRIPT), "--db", str(self.db),
-                 "inventory", "--manifest", str(path)], cwd=self.root,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True))
+            path.write_text(
+                json.dumps({"source": "tool:profile", "sessions": [self.session(f"s{index}")]}),
+                encoding="utf-8",
+            )
+            processes.append(
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-B",
+                        str(SCRIPT),
+                        "--db",
+                        str(self.db),
+                        "inventory",
+                        "--manifest",
+                        str(path),
+                    ],
+                    cwd=self.root,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                )
+            )
         for process in processes:
             stdout, stderr = process.communicate(timeout=35)
             self.assertEqual(process.returncode, 0, stderr)
@@ -168,23 +256,39 @@ class LedgerTest(unittest.TestCase):
     def test_pagination_and_compact_summary(self):
         self.load([self.session(f"s{index}") for index in range(4)])
         self.record(session="s1")
-        self.assertEqual([row["session"] for row in self.run_cli(
-            "pending", "--limit", "1", "--offset", "1")], ["s2"])
+        self.assertEqual(
+            [row["session"] for row in self.run_cli("pending", "--limit", "1", "--offset", "1")],
+            ["s2"],
+        )
         self.assertEqual(len(self.run_cli("pending", "--offset", "2")), 1)
         self.assertEqual(self.run_cli("pending", "--offset", "99"), [])
         full, compact = self.run_cli("show"), self.run_cli("show", "--summary")
-        self.assertEqual(compact, {"schema_version": full["schema_version"], "counts": full["counts"]})
+        self.assertEqual(
+            compact, {"schema_version": full["schema_version"], "counts": full["counts"]}
+        )
         path = self.root / "decisions.json"
         for index in range(3):
-            path.write_text(json.dumps(dict(id=f"d{index}", scope="global:tool", status="proposed",
-                evidence=[dict(source="tool:profile", session="s0", revision="r1")])), encoding="utf-8")
+            path.write_text(
+                json.dumps(
+                    dict(
+                        id=f"d{index}",
+                        scope="global:tool",
+                        status="proposed",
+                        evidence=[dict(source="tool:profile", session="s0", revision="r1")],
+                    )
+                ),
+                encoding="utf-8",
+            )
             self.run_cli("decision", "--file", str(path))
         page = self.run_cli("decisions", "--limit", "1", "--offset", "1")
         self.assertEqual([row["decision"]["id"] for row in page], ["d1"])
-        for command, flag, value in (("pending", "--limit", "0"),
-                                      ("decisions", "--offset", "-1")):
-            result = subprocess.run([sys.executable, "-B", str(SCRIPT), "--db", str(self.db),
-                                     command, flag, value], cwd=self.root, capture_output=True, text=True)
+        for command, flag, value in (("pending", "--limit", "0"), ("decisions", "--offset", "-1")):
+            result = subprocess.run(
+                [sys.executable, "-B", str(SCRIPT), "--db", str(self.db), command, flag, value],
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+            )
             self.assertEqual(result.returncode, 2)
 
     def test_collect_pending_worklist_before_recording_reviews(self):
@@ -209,8 +313,12 @@ class LedgerTest(unittest.TestCase):
         env = dict(os.environ, PYTHONIOENCODING="ascii:strict")
 
         def ascii_cli(*args, ok=True):
-            result = subprocess.run([sys.executable, "-B", str(SCRIPT), "--db", str(self.db), *args],
-                                    cwd=self.root, capture_output=True, env=env)
+            result = subprocess.run(
+                [sys.executable, "-B", str(SCRIPT), "--db", str(self.db), *args],
+                cwd=self.root,
+                capture_output=True,
+                env=env,
+            )
             self.assertEqual(result.returncode, 0 if ok else 1, result.stderr)
             return json.loads((result.stdout if ok else result.stderr).decode("ascii"))
 
@@ -222,8 +330,12 @@ class LedgerTest(unittest.TestCase):
         self.assertEqual((result["source"], result["added"]), ("profile:α", 1))
         before = ascii_cli("show")
         self.assertEqual(before["sessions"][0]["session"], "会話")
-        decision = dict(id="décision", scope="global:profile:α", status="proposed",
-                        evidence=[dict(source="profile:α", session="会話", revision="r1")])
+        decision = dict(
+            id="décision",
+            scope="global:profile:α",
+            status="proposed",
+            evidence=[dict(source="profile:α", session="会話", revision="r1")],
+        )
         path.write_text(json.dumps(decision), encoding="utf-8")
         self.assertEqual(ascii_cli("decision", "--file", str(path))["id"], "décision")
         self.assertEqual(ascii_cli("decisions")[0]["decision"], decision)

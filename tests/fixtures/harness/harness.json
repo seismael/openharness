@@ -1,0 +1,22 @@
+{
+  "schema": "harness.manifest.v1",
+  "name": "fixture",
+  "root": ".",
+  "budget": {
+    "always_on_tokens": 1000,
+    "total_tokens": 5000
+  },
+  "components": [
+    {
+      "id": "agents",
+      "kind": "system_prompt",
+      "paths": ["AGENTS.md"],
+      "always_on": true
+    },
+    {
+      "id": "skills",
+      "kind": "skills",
+      "paths": ["skills/*/SKILL.md"]
+    }
+  ]
+}

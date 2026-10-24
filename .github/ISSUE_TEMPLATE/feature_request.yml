@@ -1,0 +1,51 @@
+name: Feature request
+description: Propose a command, schema, or protocol addition.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        OpenHarness stays local, deterministic, model-free, and standard-library
+        only. Proposals that need a hosted service, a runtime sandbox, or model
+        judgement belong in another layer; say how this one emits or ingests
+        instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: The decision you cannot make today, and the evidence you lack.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The smallest contract that answers the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: artifact
+    attributes:
+      label: Artifact
+      description: What the command prints or writes, and which exit code means what.
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - New command
+        - New schema field or contract
+        - Adapter or host integration
+        - Documentation
+        - Implementation detail
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing standards or tools that already own this concern.
+    validations:
+      required: false

@@ -1,9 +1,9 @@
 """Unit tests for validate_knowledge.py."""
 
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -38,9 +38,7 @@ class TestValidateKnowledge(unittest.TestCase):
         (self.kb_dir / "index.md").write_text(
             "# MOC\n- [Arch](architecture.md)\n- [[data_topology]]", encoding="utf-8"
         )
-        (self.kb_dir / "architecture.md").write_text(
-            "# Architecture\n[[index]]", encoding="utf-8"
-        )
+        (self.kb_dir / "architecture.md").write_text("# Architecture\n[[index]]", encoding="utf-8")
         (self.kb_dir / "data_topology.md").write_text(
             "# Data Topology\n[[index]]", encoding="utf-8"
         )
@@ -67,13 +65,9 @@ class TestValidateKnowledge(unittest.TestCase):
         self.assertTrue(any("leaf.md exceeds leaf byte ceiling" in e for e in errors))
 
     def test_broken_link(self) -> None:
-        (self.kb_dir / "index.md").write_text(
-            "# MOC\n- [[missing_leaf]]", encoding="utf-8"
-        )
+        (self.kb_dir / "index.md").write_text("# MOC\n- [[missing_leaf]]", encoding="utf-8")
         errors = validate_knowledge_base(self.kb_dir)
-        self.assertTrue(
-            any("Broken link" in e and "missing_leaf.md" in e for e in errors)
-        )
+        self.assertTrue(any("Broken link" in e and "missing_leaf.md" in e for e in errors))
 
     def test_orphan_leaf(self) -> None:
         (self.kb_dir / "index.md").write_text("# MOC\n", encoding="utf-8")
@@ -86,9 +80,7 @@ class TestValidateKnowledge(unittest.TestCase):
             "# MOC\n- [Capabilities](capabilities.md)\n- [[architecture]]",
             encoding="utf-8",
         )
-        (self.kb_dir / "architecture.md").write_text(
-            "# Architecture\n[[index]]", encoding="utf-8"
-        )
+        (self.kb_dir / "architecture.md").write_text("# Architecture\n[[index]]", encoding="utf-8")
         (self.kb_dir / "capabilities.md").write_text(
             "# Capabilities\n| Capability | Invoke | Purpose |\n| :--- | :--- | :--- |\n"
             "| app-cli | `app-cli --help` | CLI driver |\n[[index]]",
@@ -119,9 +111,7 @@ class TestValidateKnowledge(unittest.TestCase):
             '{"schema": "loop.coverage.v1", "fronts": {"debug": {"status": "UNEXPLORED"}}}',
             encoding="utf-8",
         )
-        (self.kb_dir / "profile.json").write_text(
-            '{"schema": "loop.profile.v1"}', encoding="utf-8"
-        )
+        (self.kb_dir / "profile.json").write_text('{"schema": "loop.profile.v1"}', encoding="utf-8")
         errors = validate_knowledge_base(self.kb_dir)
         self.assertEqual(errors, [])
 
@@ -142,9 +132,7 @@ class TestValidateKnowledge(unittest.TestCase):
 
     def test_loop_profile_bad_schema(self) -> None:
         (self.kb_dir / "index.md").write_text("# MOC\n", encoding="utf-8")
-        (self.kb_dir / "profile.json").write_text(
-            '{"schema": "nope"}', encoding="utf-8"
-        )
+        (self.kb_dir / "profile.json").write_text('{"schema": "nope"}', encoding="utf-8")
         errors = validate_knowledge_base(self.kb_dir)
         self.assertTrue(any("profile.json schema must be" in e for e in errors))
 

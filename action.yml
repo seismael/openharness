@@ -1,0 +1,136 @@
+name: OpenHarness
+description: Declare, lock, measure, and prove an agent harness in CI.
+author: seismael
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  manifest:
+    description: Path to the harness manifest.
+    required: false
+    default: harness.json
+  lock:
+    description: Path to the harness lockfile.
+    required: false
+    default: harness.lock
+  requirements:
+    description: Optional requirements declaration for the capability inventory.
+    required: false
+    default: ""
+  cases:
+    description: Optional case declaration to validate (never executed).
+    required: false
+    default: ""
+  report-format:
+    description: "Report format: markdown, json, sarif, or junit."
+    required: false
+    default: markdown
+  report-path:
+    description: Where to write the report.
+    required: false
+    default: harness-report.md
+  fail-on-drift:
+    description: Fail the job when the harness differs from the lockfile.
+    required: false
+    default: "true"
+  comment:
+    description: Post or update the report as a pull-request comment.
+    required: false
+    default: "false"
+
+outputs:
+  report:
+    description: Path to the written report.
+    value: ${{ inputs.report-path }}
+  ok:
+    description: "'true' when audit, inventory, and drift checks all passed."
+    value: ${{ steps.measure.outputs.ok }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      with:
+        python-version: '3.13'
+
+    - name: Measure and write the report
+      id: measure
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}/skills/loop/scripts
+        MANIFEST: ${{ inputs.manifest }}
+        LOCK: ${{ inputs.lock }}
+        REQUIREMENTS: ${{ inputs.requirements }}
+        CASES: ${{ inputs.cases }}
+        FORMAT: ${{ inputs.report-format }}
+        REPORT: ${{ inputs.report-path }}
+      run: |
+        set +e
+        args=(report --manifest "$MANIFEST" --lock "$LOCK" --format "$FORMAT" --output "$REPORT")
+        if [ -n "$REQUIREMENTS" ]; then args+=(--requirements "$REQUIREMENTS"); fi
+        if [ -n "$CASES" ]; then args+=(--cases "$CASES"); fi
+        python -m openharness "${args[@]}"
+        status=$?
+        if [ "$status" -eq 0 ]; then
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "ok=false" >> "$GITHUB_OUTPUT"
+        fi
+        exit 0
+
+    - name: Audit gate
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}/skills/loop/scripts
+        MANIFEST: ${{ inputs.manifest }}
+      run: python -m openharness audit --manifest "$MANIFEST"
+
+    - name: Inventory gate
+      if: inputs.requirements != ''
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}/skills/loop/scripts
+        MANIFEST: ${{ inputs.manifest }}
+        REQUIREMENTS: ${{ inputs.requirements }}
+      run: python -m openharness inventory --manifest "$MANIFEST" --requirements "$REQUIREMENTS"
+
+    - name: Drift gate
+      if: inputs.fail-on-drift == 'true'
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}/skills/loop/scripts
+        MANIFEST: ${{ inputs.manifest }}
+        LOCK: ${{ inputs.lock }}
+      run: python -m openharness plan --check --manifest "$MANIFEST" --lock "$LOCK"
+
+    - name: Comment on the pull request
+      if: inputs.comment == 'true' && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = process.env.REPORT_PATH;
+          if (!fs.existsSync(path)) {
+            core.info('No report to comment on.');
+            return;
+          }
+          let body = fs.readFileSync(path, 'utf8');
+          if (body.length > 60000) {
+            body = body.slice(0, 60000) + '\n\n_Report truncated._';
+          }
+          body = '<!-- openharness-report -->\n' + body;
+          const marker = '<!-- openharness-report -->';
+          const { owner, repo } = context.repo;
+          const issue_number = context.issue.number;
+          const comments = await github.paginate(github.rest.issues.listComments, {
+            owner, repo, issue_number, per_page: 100,
+          });
+          const existing = comments.find((item) => item.body && item.body.includes(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+          } else {
+            await github.rest.issues.createComment({ owner, repo, issue_number, body });
+          }
+        env:
+          REPORT_PATH: ${{ inputs.report-path }}

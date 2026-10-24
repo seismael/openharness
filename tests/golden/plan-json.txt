@@ -1,0 +1,1 @@
+{"changes":[],"fingerprint":{"actual":"f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf","locked":"f30bb76f751b5dfd35301b65ad647be2c8da5e5badce60e38eb0d6e0b8fb7edf"},"lock":"harness.lock","manifest":"fixture","ok":true,"schema":"openharness.plan.v1","summary":{"added":0,"changes":0,"declarations":0,"drift":false,"modified":0,"removed":0}}

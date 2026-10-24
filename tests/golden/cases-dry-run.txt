@@ -1,0 +1,1 @@
+{"cases":[{"command":"python -c \"print(1)\"","id":"one","timeout_s":120},{"command":"python -c \"print(2)\"","id":"two","timeout_s":120}],"count":2,"mode":"dry-run","ok":true,"schema":"openharness.cases.v1"}

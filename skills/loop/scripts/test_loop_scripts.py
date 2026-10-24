@@ -2,10 +2,10 @@
 """Unit tests for init_loop and validate_loop scripts."""
 
 import json
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 # Ensure the scripts directory is in sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -32,9 +32,15 @@ class TestLoopScripts(unittest.TestCase):
         self.assertTrue((self.project_dir / ".agents" / "loop" / "env.json").is_file())
         self.assertTrue((self.project_dir / ".agents" / "loop" / "loop.json").is_file())
         self.assertTrue((self.project_dir / ".agents" / "loop" / "coverage.json").is_file())
-        self.assertTrue((self.project_dir / ".agents" / "loop" / "knowledge" / "profile.yaml").is_file())
-        self.assertTrue((self.project_dir / ".agents" / "loop" / "knowledge" / "index.md").is_file())
-        self.assertTrue((self.project_dir / ".agents" / "subagents" / "diagnostician.yaml").is_file())
+        self.assertTrue(
+            (self.project_dir / ".agents" / "loop" / "knowledge" / "profile.yaml").is_file()
+        )
+        self.assertTrue(
+            (self.project_dir / ".agents" / "loop" / "knowledge" / "index.md").is_file()
+        )
+        self.assertTrue(
+            (self.project_dir / ".agents" / "subagents" / "diagnostician.yaml").is_file()
+        )
         self.assertTrue((self.project_dir / ".agents" / "subagents" / "architect.yaml").is_file())
         self.assertTrue((self.project_dir / ".opencode" / "agent" / "diagnostician.md").is_file())
         self.assertTrue((self.project_dir / ".opencode" / "agent" / "architect.md").is_file())
@@ -42,12 +48,19 @@ class TestLoopScripts(unittest.TestCase):
         self.assertTrue((self.project_dir / ".opencode" / "agent" / "synthesizer.md").is_file())
 
         # 3. Check loop.json and env.json content
-        loop_data = json.loads((self.project_dir / ".agents" / "loop" / "loop.json").read_text(encoding="utf-8"))
+        loop_data = json.loads(
+            (self.project_dir / ".agents" / "loop" / "loop.json").read_text(encoding="utf-8")
+        )
         self.assertEqual(loop_data["target"], target)
         self.assertEqual(loop_data["status"], "ACTIVE")
 
-        env_data = json.loads((self.project_dir / ".agents" / "loop" / "env.json").read_text(encoding="utf-8"))
-        self.assertEqual(env_data["loop_dir"], ".agents\\loop" if "\\" in env_data["loop_dir"] else ".agents/loop")
+        env_data = json.loads(
+            (self.project_dir / ".agents" / "loop" / "env.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            env_data["loop_dir"],
+            ".agents\\loop" if "\\" in env_data["loop_dir"] else ".agents/loop",
+        )
 
         # 4. Validate project passes with zero errors
         errors = validate_loop(self.project_dir)
@@ -60,7 +73,9 @@ class TestLoopScripts(unittest.TestCase):
         self.assertEqual(res, 0)
 
         self.assertTrue((self.project_dir / ".loop" / "loop.json").is_file())
-        self.assertTrue((self.project_dir / ".agents" / "subagents" / "diagnostician.yaml").is_file())
+        self.assertTrue(
+            (self.project_dir / ".agents" / "subagents" / "diagnostician.yaml").is_file()
+        )
 
         errors = validate_loop(self.project_dir)
         self.assertEqual(errors, [])

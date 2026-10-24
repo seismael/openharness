@@ -136,9 +136,7 @@ class ProtocolEndToEndTests(unittest.TestCase):
 
     def journal(self, *entries):
         path = self.root / "journal.jsonl"
-        path.write_text(
-            "\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8"
-        )
+        path.write_text("\n".join(json.dumps(item) for item in entries) + "\n", encoding="utf-8")
         return path
 
     def test_full_chain_composes(self):
@@ -157,9 +155,7 @@ class ProtocolEndToEndTests(unittest.TestCase):
             fingerprint,
         )
         self.assertEqual(probe.returncode, 0, probe.stdout)
-        receipt = json.loads(
-            (self.root / "probe.receipt.json").read_text(encoding="utf-8")
-        )
+        receipt = json.loads((self.root / "probe.receipt.json").read_text(encoding="utf-8"))
         self.assertTrue(receipt["ok"])
         self.assertEqual(receipt["harness_fingerprint"], fingerprint)
         self.assertEqual(receipt["passed"], 2)
@@ -205,9 +201,7 @@ class ProtocolEndToEndTests(unittest.TestCase):
         self.assertEqual(verify.returncode, 0, verify.stdout)
 
         telemetry = json.loads(
-            self.run_script(
-                "openharness_telemetry.py", "--journal", str(journal)
-            ).stdout
+            self.run_script("openharness_telemetry.py", "--journal", str(journal)).stdout
         )
         self.assertEqual(telemetry["iterations"], 2)
         self.assertEqual(telemetry["decisions"]["adopted"], 1)

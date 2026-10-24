@@ -28,6 +28,20 @@
       "command": "python -B tools/check_release.py",
       "expect": { "exit_code": 0 },
       "timeout_s": 120
+    },
+    {
+      "id": "lockfile",
+      "description": "The harness matches the committed lockfile",
+      "command": "python -B skills/loop/scripts/openharness_cli.py lock --check",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 120
+    },
+    {
+      "id": "drift",
+      "description": "No unattributed harness change since the lock",
+      "command": "python -B skills/loop/scripts/openharness_cli.py plan --check",
+      "expect": { "exit_code": 0 },
+      "timeout_s": 120
     }
   ]
 }

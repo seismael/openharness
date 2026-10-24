@@ -1,0 +1,1 @@
+{"matched":["declared-verification"],"ok":true,"reason":"declared verification","rule":"declared-verification","schema":"openharness.policy.v1","verdict":"allow"}

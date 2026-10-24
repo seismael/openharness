@@ -9,9 +9,9 @@ Supports Python (native AST) and polyglot fallback (regex-based).
 import argparse
 import ast
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 
 def extract_python_symbol(source_text: str, file_path: str, target_symbol: str) -> dict | None:
@@ -23,22 +23,23 @@ def extract_python_symbol(source_text: str, file_path: str, target_symbol: str) 
     lines = source_text.splitlines()
 
     for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            if node.name == target_symbol:
-                start_line = node.lineno
-                end_line = getattr(node, "end_lineno", start_line)
-                # Slice lines (1-indexed)
-                sliced_lines = lines[start_line - 1 : end_line]
-                kind = "class" if isinstance(node, ast.ClassDef) else "function"
-                return {
-                    "file": file_path,
-                    "symbol": target_symbol,
-                    "kind": kind,
-                    "start_line": start_line,
-                    "end_line": end_line,
-                    "total_lines": len(sliced_lines),
-                    "code": "\n".join(sliced_lines),
-                }
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and (
+            node.name == target_symbol
+        ):
+            start_line = node.lineno
+            end_line = getattr(node, "end_lineno", start_line)
+            # Slice lines (1-indexed)
+            sliced_lines = lines[start_line - 1 : end_line]
+            kind = "class" if isinstance(node, ast.ClassDef) else "function"
+            return {
+                "file": file_path,
+                "symbol": target_symbol,
+                "kind": kind,
+                "start_line": start_line,
+                "end_line": end_line,
+                "total_lines": len(sliced_lines),
+                "code": "\n".join(sliced_lines),
+            }
 
     return None
 
@@ -53,12 +54,14 @@ def list_python_symbols(source_text: str, file_path: str) -> list[dict]:
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             kind = "class" if isinstance(node, ast.ClassDef) else "function"
-            symbols.append({
-                "symbol": node.name,
-                "kind": kind,
-                "start_line": node.lineno,
-                "end_line": getattr(node, "end_lineno", node.lineno),
-            })
+            symbols.append(
+                {
+                    "symbol": node.name,
+                    "kind": kind,
+                    "start_line": node.lineno,
+                    "end_line": getattr(node, "end_lineno", node.lineno),
+                }
+            )
     return symbols
 
 
@@ -89,10 +92,15 @@ def extract_polyglot_symbol(source_text: str, file_path: str, target_symbol: str
             end_line = j + 1
             break
         # For python indentation fallback
-        if not started_braces and j > start_line - 1:
-            if line.strip() and not line.startswith(" ") and not line.startswith("\t"):
-                end_line = j
-                break
+        if (
+            not started_braces
+            and j > start_line - 1
+            and line.strip()
+            and not line.startswith(" ")
+            and not line.startswith("\t")
+        ):
+            end_line = j
+            break
 
     sliced_lines = lines[start_line - 1 : end_line]
     return {
@@ -106,7 +114,9 @@ def extract_polyglot_symbol(source_text: str, file_path: str, target_symbol: str
     }
 
 
-def slice_symbol(file_path: Path, target_symbol: str | None = None, list_symbols: bool = False) -> dict:
+def slice_symbol(
+    file_path: Path, target_symbol: str | None = None, list_symbols: bool = False
+) -> dict:
     if not file_path.exists():
         return {"error": f"File not found: {file_path}"}
 
@@ -142,9 +152,13 @@ def slice_symbol(file_path: Path, target_symbol: str | None = None, list_symbols
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", type=Path, help="Path to source file")
-    parser.add_argument("symbol", nargs="?", default=None, help="Symbol name (function, class, method)")
+    parser.add_argument(
+        "symbol", nargs="?", default=None, help="Symbol name (function, class, method)"
+    )
     parser.add_argument("--list", action="store_true", help="List all top-level symbols in file")
-    parser.add_argument("--raw", action="store_true", help="Print raw code directly instead of JSON")
+    parser.add_argument(
+        "--raw", action="store_true", help="Print raw code directly instead of JSON"
+    )
     args = parser.parse_args(argv)
 
     result = slice_symbol(args.file.resolve(), args.symbol, args.list)

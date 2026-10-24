@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
+# ruff: noqa: RUF001 -- the delimiter class intentionally accepts an en dash
 """Read-only structural checks for an Audit bundle; Python 3.10+."""
 
 import argparse
-from collections import deque
 import ipaddress
 import json
-from pathlib import Path, PurePosixPath
 import re
 import sys
+from collections import deque
+from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
-
 
 LIMIT = 2 * 1024 * 1024
 MAX_ERRORS = 40
 HEADINGS = (
-    "Finding", "Evidence", "Decision", "Implementation plan", "Validation",
+    "Finding",
+    "Evidence",
+    "Decision",
+    "Implementation plan",
+    "Validation",
     "Risks and rollback",
 )
 ENUMS = {
@@ -26,7 +30,9 @@ ENUMS = {
     "plan_status": {"none", "draft", "ready", "blocked", "done"},
 }
 PLACEHOLDER = re.compile(r"\bAUDIT_TODO(?:_[A-Za-z0-9]+)*\b")
-STANDALONE_MARKER = re.compile(r"^[ \t]*(?:[-*+][ \t]+)?(?:TODO|TBD)[ \t]*(?::[^\n]*)?$", re.I | re.M)
+STANDALONE_MARKER = re.compile(
+    r"^[ \t]*(?:[-*+][ \t]+)?(?:TODO|TBD)[ \t]*(?::[^\n]*)?$", re.I | re.M
+)
 
 
 def has_placeholder(value):
@@ -72,7 +78,9 @@ def markdown_content(text):
     fence, comment = None, False
     for line in text.splitlines():
         if fence is not None:
-            if re.fullmatch(r" {0,3}" + re.escape(fence[0]) + "{" + str(len(fence)) + r",}[ \t]*", line):
+            if re.fullmatch(
+                r" {0,3}" + re.escape(fence[0]) + "{" + str(len(fence)) + r",}[ \t]*", line
+            ):
                 fence = None
             else:
                 yield None, line
@@ -99,7 +107,9 @@ def markdown_content(text):
                 visible.append(line[offset:start])
                 offset, comment = start + 4, True
         line = "".join(visible)
-        heading = re.match(r"^ {0,3}(#{1,6})(?:[ \t]+(.*)|[ \t]*)$", line) if heading_allowed else None
+        heading = (
+            re.match(r"^ {0,3}(#{1,6})(?:[ \t]+(.*)|[ \t]*)$", line) if heading_allowed else None
+        )
         if heading:
             value = re.sub(r"[ \t]+#+[ \t]*$", "", heading.group(2) or "").strip()
             yield len(heading.group(1)), value
@@ -124,24 +134,36 @@ def repository_url(value):
     if not nonempty(value) or any(c.isspace() or not c.isprintable() for c in value):
         return False
     # Agnostic: Accept local relative or absolute paths for local workspaces
-    if value == "." or value.startswith("/") or value.startswith("file://") or (len(value) > 1 and value[1] == ":"):
+    if (
+        value == "."
+        or value.startswith("/")
+        or value.startswith("file://")
+        or (len(value) > 1 and value[1] == ":")
+    ):
         return True
     try:
         url = urlsplit(value)
-        if (url.scheme != "https" or not url.hostname or "@" in url.netloc
-                or not re.fullmatch(r"(?:\[[^\]]+\]|[^:\[\]]+)(?::[0-9]+)?", url.netloc)
-                or "?" in value or "#" in value
-                or not re.fullmatch(r"/[^/]+/[^/]+/?", url.path)
-                or not relative_path(url.path.strip("/"))
-                or (url.port is not None and not 0 < url.port < 65536)):
+        if (
+            url.scheme != "https"
+            or not url.hostname
+            or "@" in url.netloc
+            or not re.fullmatch(r"(?:\[[^\]]+\]|[^:\[\]]+)(?::[0-9]+)?", url.netloc)
+            or "?" in value
+            or "#" in value
+            or not re.fullmatch(r"/[^/]+/[^/]+/?", url.path)
+            or not relative_path(url.path.strip("/"))
+            or (url.port is not None and not 0 < url.port < 65536)
+        ):
             return False
         host = url.hostname
         try:
             ipaddress.ip_address(host)
         except ValueError:
             host = host.encode("idna").decode("ascii").rstrip(".")
-            if len(host) > 253 or not all(re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?", label)
-                                        for label in host.split(".")):
+            if len(host) > 253 or not all(
+                re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?", label)
+                for label in host.split(".")
+            ):
                 return False
         return True
     except (ValueError, UnicodeError):
@@ -200,10 +222,19 @@ class Validator:
                 self.error(f"{label}: evidence entry must be an object")
                 continue
             kind = item.get("kind")
-            if not isinstance(kind, str) or kind not in {"source", "test", "observation", "external"}:
+            if not isinstance(kind, str) or kind not in {
+                "source",
+                "test",
+                "observation",
+                "external",
+            }:
                 self.error(f"{label}: invalid evidence kind")
             self.text_fields(item, ("reference", "summary"), label + " evidence")
-            if kind == "source" and nonempty(item.get("reference")) and nonempty(item.get("summary")):
+            if (
+                kind == "source"
+                and nonempty(item.get("reference"))
+                and nonempty(item.get("summary"))
+            ):
                 has_source = True
         return has_source
 
@@ -224,7 +255,13 @@ class Validator:
                     self.error(f"{label}: duplicate coverage id")
                 ids.add(identity)
             status = item.get("status")
-            if not isinstance(status, str) or status not in {"reviewed", "partial", "unreviewed", "not_applicable", "blocked"}:
+            if not isinstance(status, str) or status not in {
+                "reviewed",
+                "partial",
+                "unreviewed",
+                "not_applicable",
+                "blocked",
+            }:
                 self.error(f"{label}: invalid status")
             self.evidence(item.get("evidence"), label)
             if status in ("partial", "unreviewed", "blocked"):
@@ -249,12 +286,20 @@ class Validator:
         for heading in HEADINGS:
             if heading not in blocks:
                 self.error(f"{label}: packet missing heading '## {heading}'")
-            elif ready and not any(level in (None, 0) and line.strip() for level, line in blocks[heading]):
+            elif ready and not any(
+                level in (None, 0) and line.strip() for level, line in blocks[heading]
+            ):
                 self.error(f"{label}: ready packet has empty '{heading}' section")
-        task_pattern = re.escape(str(finding.get("id"))) + r"-T[0-9]+(?:[ \t]*[:—–-][ \t]*|[ \t]+)\S"
-        if ready and not any(level == 3 and re.match(task_pattern, line)
-                             for level, line in blocks.get("Implementation plan", [])):
-            self.error(f"{label}: ready/done packet requires a task heading '### {finding.get('id')}-T1 — ...' in Implementation plan")
+        task_pattern = (
+            re.escape(str(finding.get("id"))) + r"-T[0-9]+(?:[ \t]*[:—–-][ \t]*|[ \t]+)\S"
+        )
+        if ready and not any(
+            level == 3 and re.match(task_pattern, line)
+            for level, line in blocks.get("Implementation plan", [])
+        ):
+            self.error(
+                f"{label}: ready/done packet requires a task heading '### {finding.get('id')}-T1 — ...' in Implementation plan"
+            )
         if ready and has_placeholder(content):
             self.error(f"{label}: ready packet contains an unresolved placeholder")
 
@@ -273,7 +318,10 @@ class Validator:
                 self.error(f"{label}: completion check must be an object")
                 continue
             self.text_fields(check, ("reference", "summary"), label + " completion check")
-            if not isinstance(check.get("result"), str) or check["result"] not in {"passed", "not_applicable"}:
+            if not isinstance(check.get("result"), str) or check["result"] not in {
+                "passed",
+                "not_applicable",
+            }:
                 self.error(f"{label}: completion check result must be passed or not_applicable")
 
     def finding(self, finding, label):
@@ -298,12 +346,16 @@ class Validator:
         if not isinstance(decision, dict):
             self.error(f"{label}: decision must be an object")
         elif status == "undecided":
-            if any(not isinstance(decision.get(field), str) for field in ("by", "summary", "reference")):
+            if any(
+                not isinstance(decision.get(field), str) for field in ("by", "summary", "reference")
+            ):
                 self.error(f"{label}: undecided decision fields must be strings (empty allowed)")
         else:
             self.text_fields(decision, ("by", "summary", "reference"), label + " decision")
         if status in ("rejected", "superseded", "withdrawn") and plan != "none":
-            self.error(f"{label}: rejected/superseded/withdrawn findings must have plan_status=none")
+            self.error(
+                f"{label}: rejected/superseded/withdrawn findings must have plan_status=none"
+            )
         if status == "deferred":
             self.text_fields(finding, ("revisit_trigger",), label)
         if status == "superseded":
@@ -321,7 +373,9 @@ class Validator:
         has_source = self.evidence(finding.get("evidence"), label)
         if ready:
             if status != "accepted" or finding.get("confidence") not in ("confirmed", "supported"):
-                self.error(f"{label}: ready/done requires accepted status and confirmed/supported confidence")
+                self.error(
+                    f"{label}: ready/done requires accepted status and confirmed/supported confidence"
+                )
             if not has_source:
                 self.error(f"{label}: ready/done requires source evidence")
             if has_placeholder(finding):
@@ -343,7 +397,8 @@ class Validator:
                 edges[identity].append(dep)
                 target = findings[dep]
                 if finding.get("plan_status") in ("ready", "done") and (
-                    target.get("status") != "accepted" or target.get("plan_status") not in ("ready", "done")
+                    target.get("status") != "accepted"
+                    or target.get("plan_status") not in ("ready", "done")
                 ):
                     self.error(f"{identity}: dependency {dep} blocks readiness")
                 if finding.get("plan_status") == "done" and target.get("plan_status") != "done":
@@ -382,7 +437,9 @@ class Validator:
             self.error("audit.json: root must be an object")
             return self.errors
         if type(data.get("version")) is not int or data["version"] != 2:
-            self.error("version must be integer 2; version 1 bundles require explicit revalidation before conversion")
+            self.error(
+                "version must be integer 2; version 1 bundles require explicit revalidation before conversion"
+            )
         if not repository_url(data.get("repository")):
             self.error("repository must be an HTTPS repository URL or a valid local path")
         commit = data.get("baseline_commit")
@@ -434,7 +491,9 @@ def main(argv=None):
         if validator.omitted:
             print(f"... {validator.omitted} additional errors omitted", file=sys.stderr)
         return 1
-    print("VALID: artifact structure checked; evidence, decisions, and implementation remain unverified.")
+    print(
+        "VALID: artifact structure checked; evidence, decisions, and implementation remain unverified."
+    )
     return 0
 
 

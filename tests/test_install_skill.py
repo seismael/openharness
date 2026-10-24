@@ -2,13 +2,12 @@
 
 import errno
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
-
+from pathlib import Path
 
 INSTALLER = Path(__file__).resolve().parents[1] / "tools" / "install_skill.py"
 
@@ -24,15 +23,29 @@ class InstallSkillTests(unittest.TestCase):
         shutil.copy2(INSTALLER, self.cli)
         self.source = self.repository / "skills" / "enhance"
         (self.source / "references").mkdir(parents=True)
-        (self.source / "SKILL.md").write_text("---\nname: enhance\ndescription: Example skill\n---\nBody\n")
+        (self.source / "SKILL.md").write_text(
+            "---\nname: enhance\ndescription: Example skill\n---\nBody\n"
+        )
         (self.source / "references" / "guide.md").write_text("Example reference\n")
         self.destination = self.root / "new-parent" / "installed-skill"
 
     def run_cli(self, *extra, skill="enhance", destination=None, env=None):
         return subprocess.run(
-            [sys.executable, "-B", str(self.cli), "--skill", skill,
-             "--to", str(destination or self.destination), *extra],
-            cwd=self.root, text=True, capture_output=True, check=False, env=env,
+            [
+                sys.executable,
+                "-B",
+                str(self.cli),
+                "--skill",
+                skill,
+                "--to",
+                str(destination or self.destination),
+                *extra,
+            ],
+            cwd=self.root,
+            text=True,
+            capture_output=True,
+            check=False,
+            env=env,
         )
 
     def symlink(self, target, link, directory=False):
@@ -41,7 +54,10 @@ class InstallSkillTests(unittest.TestCase):
         except NotImplementedError:
             self.skipTest("Platform does not support symlinks")
         except OSError as error:
-            if error.errno in {errno.ENOSYS, errno.ENOTSUP} or getattr(error, "winerror", None) == 1314:
+            if (
+                error.errno in {errno.ENOSYS, errno.ENOTSUP}
+                or getattr(error, "winerror", None) == 1314
+            ):
                 self.skipTest("Platform does not permit symlink creation")
             raise
 
@@ -50,17 +66,28 @@ class InstallSkillTests(unittest.TestCase):
         self.assertIn("Error:", result.stderr)
 
     def test_copies_bundle_and_excludes_runtime_files(self):
-        for name in ("cache.pyc", "activity.log", "history.sqlite", "history.sqlite-wal", "history.db-shm"):
+        for name in (
+            "cache.pyc",
+            "activity.log",
+            "history.sqlite",
+            "history.sqlite-wal",
+            "history.db-shm",
+        ):
             (self.source / name).write_text("local state")
         for name in ("__pycache__", ".pytest_cache", "logs", "state"):
             (self.source / name).mkdir()
             (self.source / name / "data.txt").write_text("local state")
         result = self.run_cli()
         self.assertEqual(result.returncode, 0, result.stderr)
-        copied = sorted(path.relative_to(self.destination).as_posix()
-                        for path in self.destination.rglob("*") if path.is_file())
+        copied = sorted(
+            path.relative_to(self.destination).as_posix()
+            for path in self.destination.rglob("*")
+            if path.is_file()
+        )
         self.assertEqual(copied, ["SKILL.md", "references/guide.md"])
-        self.assertEqual((self.destination / "references/guide.md").read_text(), "Example reference\n")
+        self.assertEqual(
+            (self.destination / "references/guide.md").read_text(), "Example reference\n"
+        )
 
     def test_check_reports_plan_without_creating_parent(self):
         before = sorted(str(path.relative_to(self.root)) for path in self.root.rglob("*"))
@@ -68,7 +95,9 @@ class InstallSkillTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("would copy 2 files", result.stdout)
         self.assertFalse(self.destination.parent.exists())
-        self.assertEqual(before, sorted(str(path.relative_to(self.root)) for path in self.root.rglob("*")))
+        self.assertEqual(
+            before, sorted(str(path.relative_to(self.root)) for path in self.root.rglob("*"))
+        )
 
     def test_unicode_destination_with_ascii_output(self):
         destination = self.root / "caf\u00e9" / "\u6280\u80fd"
