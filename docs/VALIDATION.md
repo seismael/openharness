@@ -43,6 +43,13 @@ the given path is not this repository.
 A configured workflow is not evidence that its remote run passed; inspect the actual run
 after publishing. The latest evidence for this repository is recorded below.
 
+The latest remote evidence is
+[run 40129394974](https://github.com/seismael/openharness/actions/runs/40129394974) for
+commit `b8fd8dfadc0624105f6735d90483b002766b3938`. The Validate workflow passed the `e2e`
+job (97 quick checks), the composite `action` job, the `package` job, and the full matrix:
+Ubuntu/Python 3.10, Ubuntu/Python 3.13, Windows/Python 3.13, and macOS/Python 3.13, each
+with 322 passing tests, zero skips, and the protocol gates on the committed tree.
+
 ## What 0.2.0 adds
 
 - **Behavior freeze.** `tests/golden/` holds the byte-exact output of every command on a
