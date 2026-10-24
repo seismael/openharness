@@ -124,7 +124,7 @@ Scaffolding tools (such as `skills/loop/scripts/init_loop.py`) MUST generate bot
 | :--- | :--- | :--- |
 | `diagnose` | `entry-gate-diagnosis` (missed opportunities) | Diagnostician |
 | `diagnose` | `exit-quality-diagnosis` (peak vs realized metric give-back) | Diagnostician |
-| `improve` | `cross-cell-generalization` (multi-asset evaluation) | Verifier |
+| `improve` | `cross-case-generalization` (multi-asset evaluation) | Verifier |
 | `improve` | `experiment-design` (combinatorial matrix testing) | Architect |
 | `research` | `oracle-divergence-diagnosis` (theoretical limit analysis) | Synthesizer |
 | `harden` | `validation-holdout-discipline` (overfitting prevention) | Verifier |

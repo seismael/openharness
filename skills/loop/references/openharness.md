@@ -40,13 +40,13 @@ unchanged tree are byte-identical.
 Every harness change MUST be declared before it is tested:
 
 - `invariant` — should hold for any task in this project. It must be probed on at least
-  two different cells before adoption; a single-cell win is not evidence.
+  two different cases before adoption; a single-case win is not evidence.
 - `local` — fits one task family or one runtime condition. It may be adopted for that
   scope only, and MUST NOT be promoted to a global default on the strength of the same
   probe.
 
 Never present a `local` win as a general improvement, and never average an `invariant`
-change over cells where it silently regressed a required invariant.
+change over cases where it silently regressed a required invariant.
 
 ## 3. Probe receipts
 
@@ -55,6 +55,16 @@ needs at least one execution receipt: the evaluation actually run on that exact 
 state, with the metric and the invariant result recorded. When a required metric exists,
 the metric decides; behavioral comparison is a tiebreaker for changes whose effect is not
 expressible as a scalar, not a replacement for the metric.
+
+Record the state identity with the receipt:
+
+```sh
+python skills/loop/scripts/openharness_audit.py --manifest harness.json --fingerprint-only
+```
+
+The fingerprint is a SHA-256 digest over the sorted component paths and contents. A receipt
+for one fingerprint says nothing about a different harness state; recording an adoption
+against a stale one is a contract violation, not a rounding error.
 
 ## 4. Composition and budget
 
@@ -77,7 +87,28 @@ Orphan findings deserve attention on their own: a skill or subagent that no alwa
 component ever mentions is loaded into the harness but can never trigger, which costs
 maintenance and buys nothing.
 
-## 6. Scope limits
+## 6. The rest of the mechanism set
+
+The audit is the first of eight deterministic helpers. Each is a local script, bounded at
+2500 bytes, and each answers one question:
+
+| Script | Question | Contract |
+| :--- | :--- | :--- |
+| `openharness_audit.py` | What is the surface, and does it hold together? | RFC-0009 |
+| `openharness_verify.py` | Is this journal entry coherent? | RFC-0010 |
+| `openharness_select.py` | Which output wins, without knowing its author? | RFC-0010 |
+| `openharness_cases.py` | Did the declared cases behave as expected? | RFC-0012 |
+| `openharness_telemetry.py` | What did the effort cost and what did it buy? | RFC-0011 |
+| `openharness_inventory.py` | Which declared capabilities actually exist? | RFC-0013 |
+| `openharness_failures.py` | Why did iterations fail, and is a class recurring? | RFC-0014 |
+| `openharness_policy.py` | Is this action allowed, denied, or undecided? | RFC-0015 |
+
+Read [contrastive iteration](contrastive-iteration.md) for the adoption contract,
+[measurement](measurement.md) for cases and cost, and
+[capability and failure](capability-and-failure.md) for inventory and taxonomy. Use the
+audit before proposing, the cases before claiming, and the taxonomy before diagnosing.
+
+## 7. Scope limits
 
 The audit measures declared text and declared structure. It cannot prove that an
 instruction is obeyed, that a permission is enforced, or that a behavior transfers to

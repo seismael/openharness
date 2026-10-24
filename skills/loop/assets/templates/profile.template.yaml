@@ -23,7 +23,7 @@ fronts:                 # coverage surface; names below are examples — use the
   orient:   {required: true}
   discover: {required: true}
   audit:    {required: true}
-  diagnose: {required: true, sub_axes: [<cell-or-metric>]}
+  diagnose: {required: true, sub_axes: [<case-or-metric>]}
   research: {required: false}
   debug:    {required: true, sub_axes: [<axis-a>, <axis-b>]}
   improve:  {required: true, sub_axes: [<axis-a>, <axis-b>]}
@@ -37,6 +37,15 @@ pipeline:               # canonical ordered stages (see references/pipeline-cont
   - {id: evaluate, kind: evaluate, command: "<cli>", artifact: "<path>"}
   - {id: diagnose, kind: diagnose, command: "<cli>", artifact: "<path>"}
   # ... acquire / evidence / experiment / record / view
+
+cases:                  # declared evaluation inputs; the same objects may live in cases.json
+  - id: "<case-id>"
+    command: "<deterministic command>"
+    expect: {exit_code: 0}
+    timeout_s: 300
+  # - id: "<second-case-id>"     # an invariant claim needs at least two distinct cases
+  #   command: "<deterministic command>"
+  #   expect: {stdout_contains: "<observable text>"}
 
 gates:
   objective: "<how a candidate is shown to advance the target>"

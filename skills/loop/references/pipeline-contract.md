@@ -25,7 +25,7 @@ pipeline:
 | `evidence` | Produce ground-truth comparison data | oracle / reference evidence |
 | `evaluate` | Run the system under test deterministically | eval / benchmark |
 | `diagnose` | Localize the gap from artifacts | gap / funnel / profile |
-| `experiment` | Apply a bounded candidate and evaluate it across cells | batch eval |
+| `experiment` | Apply a bounded candidate and evaluate it across cases | batch eval |
 | `record` | Persist the decision and lineage | record / decision log |
 | `view` | Read-only rollups over recorded evidence | matrix / report |
 

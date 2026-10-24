@@ -18,7 +18,7 @@ condition.
 | `orient` | Where are we? What is the true baseline and current state? | reproduced baseline metric + clean/pushed state | baseline reproduced once; refreshed on drift |
 | `discover` | What can this project *do* that we have not used? | updated `capabilities.md` | every declared surface inventoried; gaps explicit |
 | `audit` | Where does the project diverge from its stated contracts, targets, or risks? | findings with source evidence | all findings decided or deferred with a trigger |
-| `diagnose` | Why is the target metric where it is? What is the dominant drag/opportunity? | bounded diagnostic artifact (gap/funnel/profile) | the dominant component per cell is localized |
+| `diagnose` | Why is the target metric where it is? What is the dominant drag/opportunity? | bounded diagnostic artifact (gap/funnel/profile) | the dominant component per case is localized |
 | `research` | What do we not yet know that blocks a decision? | a bounded synthesis with citations | open questions answered or marked UNKNOWN |
 | `debug` | What is incorrect, unsafe, or inconsistent? | a fixed defect + regression test, or counter-evidence | each sub-axis VERIFIED-SOUND or defect resolved |
 | `improve` | What bounded change raises the target metric without regression? | a dual-gated adoption (commit + push) | candidates tried until the frontier is exhausted |

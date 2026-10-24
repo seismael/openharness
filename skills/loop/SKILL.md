@@ -32,6 +32,8 @@ arbitrarily. See the [in-session loop](references/in-session-loop.md),
 [front taxonomy](references/front-taxonomy.md),
 [dispatch policy](references/dispatch-policy.md),
 [coverage ledger](references/coverage-ledger.md),
+[measurement](references/measurement.md),
+[capability and failure](references/capability-and-failure.md),
 [pipeline contract](references/pipeline-contract.md),
 and [project profile](references/project-profile.md).
 
@@ -115,9 +117,16 @@ and [project profile](references/project-profile.md).
   — defect > uncovered front > largest diagnosed gap > structural candidate > parameter
   (last) > hygiene. Reason from data, code, wiki, and prior outcomes; never act without grounds.
 - **Harness Discipline**: Treat the harness as a measured surface, not free text. Audit it
-  [deterministically](references/openharness.md) before proposing a change, declare every
-  change `invariant` or `local`, and adopt only with a probe receipt for that exact harness
-  state. An `invariant` change needs more than one cell; a `local` win is never a global one.
+  [deterministically](references/openharness.md) before proposing a change, then run a
+  [contrastive iteration](references/contrastive-iteration.md): declare `scope` and the
+  targeted deficiency, probe the declared cases under matched conditions, classify the
+  contrast, and adopt only with a receipt for that exact harness fingerprint. An `invariant`
+  change needs more than one case; a `local` win is never a global one; evidence that is not
+  recorded is not evidence. Read [case declarations and telemetry](references/measurement.md)
+  before comparing anything: unmeasured cost is not zero, and a gain is never netted against
+  a regression. Inventory the surface and classify failures with
+  [capability and failure](references/capability-and-failure.md): a recurring failure class is
+  a harness defect, not an incident.
 - **Pipeline Only**: Execute the project's declared canonical [pipeline](references/pipeline-contract.md)
   stages. Never hand-roll analysis or produce numbers the pipeline cannot reproduce from a
   committed snapshot.

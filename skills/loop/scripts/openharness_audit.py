@@ -9,6 +9,7 @@ produces the same bytes.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -42,6 +43,26 @@ FRONTMATTER_NAME = re.compile(r"^name:\s*([^\s#]+)", re.MULTILINE)
 def estimate_tokens(text):
     """Deterministic character-based estimate; never a model tokenizer."""
     return (len(text) + CHARS_PER_TOKEN - 1) // CHARS_PER_TOKEN
+
+
+def state_fingerprint(files, root):
+    """Identity of the exact harness state: sha256 over sorted (relative path, content hash).
+
+    Duplicate paths are hashed once, so the identity depends on harness content and not on
+    how components happen to overlap.
+    """
+    digest = hashlib.sha256()
+    seen = set()
+    for path in sorted(
+        files, key=lambda p: str(p.relative_to(root)).replace("\\", "/")
+    ):
+        relative = str(path.relative_to(root)).replace("\\", "/")
+        if relative in seen:
+            continue
+        seen.add(relative)
+        content = hashlib.sha256(path.read_bytes()).hexdigest()
+        digest.update(f"{relative}\0{content}\n".encode("utf-8"))
+    return digest.hexdigest()
 
 
 def normalize(line):
@@ -156,6 +177,7 @@ def audit(manifest, manifest_path):
     manifest_file = Path(manifest_path).resolve()
     root = (manifest_file.parent / manifest.get("root", ".")).resolve()
     always_on_text = []
+    state_files = []
     rows = []
     findings = []
     normalized_index = {}
@@ -166,6 +188,7 @@ def audit(manifest, manifest_path):
         enabled = component.get("enabled", True)
         always_on = bool(component.get("always_on", False))
         files = matched_files(root, component["paths"]) if enabled else []
+        state_files.extend(files)
         tokens = 0
         texts = []
 
@@ -300,6 +323,7 @@ def audit(manifest, manifest_path):
         "schema": RECEIPT_SCHEMA,
         "manifest": manifest.get("name", manifest_file.stem),
         "root": str(root),
+        "fingerprint": state_fingerprint(state_files, root),
         "components": rows,
         "totals": {
             "always_on_tokens": always_on_tokens,
@@ -331,6 +355,7 @@ def serialize(receipt):
     minimal = {
         "schema": receipt["schema"],
         "manifest": receipt["manifest"],
+        "fingerprint": receipt["fingerprint"],
         "totals": receipt["totals"],
         "counts": receipt["counts"],
         "truncated": True,
@@ -345,6 +370,11 @@ def main(argv=None):
     parser.add_argument(
         "--manifest", required=True, help="Path to a harness.manifest.v1 JSON file"
     )
+    parser.add_argument(
+        "--fingerprint-only",
+        action="store_true",
+        help="Print only the harness state fingerprint (cheap identity check)",
+    )
     args = parser.parse_args(argv)
 
     manifest, error = load_manifest(args.manifest)
@@ -356,10 +386,15 @@ def main(argv=None):
         )
         return 2
 
-    payload = serialize(audit(manifest, args.manifest))
+    receipt = audit(manifest, args.manifest)
+    if args.fingerprint_only:
+        print(json.dumps({"fingerprint": receipt["fingerprint"]}, sort_keys=True))
+        return 0
+
+    payload = serialize(receipt)
     print(payload)
-    receipt = json.loads(payload)
-    return 0 if receipt.get("ok") else 1
+    parsed = json.loads(payload)
+    return 0 if parsed.get("ok") else 1
 
 
 if __name__ == "__main__":

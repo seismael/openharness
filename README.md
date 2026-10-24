@@ -99,7 +99,7 @@ OpenHarness is designed to integrate natively with **zero repository lock-in** a
 
 ---
 
-## Harness Optimization (RFC-0009)
+## Harness Optimization (RFC-0009 through RFC-0015)
 
 The harness is the part of the agent a loop iteration can actually change: instructions,
 guardrails, memory, tool guidance, subagents, skills, scripts, and plugins. OpenHarness
@@ -108,7 +108,7 @@ measures it instead of describing it.
 ```bash
 # 1. Declare the surface once, in harness.json (schema: harness.manifest.v1)
 # 2. Audit it: deterministic, no model calls, no writes, byte-identical on an unchanged tree
-python skills/loop/scripts/openharness_audit.py --manifest harness.json
+python skills/loop/scripts/openharness_audit.py --manifest harness.json --fingerprint-only
 ```
 
 The audit reports per-component token estimates, always-on and total budget violations,
@@ -116,11 +116,29 @@ unreachable skills or subagents, duplicated instruction lines, and broken local 
 emits a receipt capped at 2,500 bytes and exits non-zero on any error-severity finding.
 
 Adoption is scoped. Every harness change is declared `invariant` (must be probed on at
-least two cells) or `local` (may not become a global default), and no change is adopted
+least two cases) or `local` (may not become a global default), and no change is adopted
 without a probe receipt for that exact harness state. A clean audit is necessary, never
 sufficient: it cannot prove that an instruction is obeyed or that a behavior transfers to
-another model. See **[RFC-0009](docs/standards/rfc-0009-openharness.md)** and the
-[operating reference](skills/loop/references/openharness.md).
+another model.
+
+Eight deterministic helpers implement the series. All are stdlib-only, local, model-free,
+and bounded at 2,500 bytes:
+
+| Script | Question | RFC |
+| :--- | :--- | :--- |
+| `openharness_audit.py` | What is the surface, and does it hold together? | [0009](docs/standards/rfc-0009-openharness.md) |
+| `openharness_verify.py` | Is this journal entry coherent? | [0010](docs/standards/rfc-0010-contrastive-iteration.md) |
+| `openharness_select.py` | Which output wins, without knowing its author? | [0010](docs/standards/rfc-0010-contrastive-iteration.md) |
+| `openharness_cases.py` | Did the declared cases behave as expected? | [0012](docs/standards/rfc-0012-declared-evaluation-cases.md) |
+| `openharness_telemetry.py` | What did the effort cost and what did it buy? | [0011](docs/standards/rfc-0011-iteration-telemetry.md) |
+| `openharness_inventory.py` | Which declared capabilities actually exist? | [0013](docs/standards/rfc-0013-capability-inventory.md) |
+| `openharness_failures.py` | Why did iterations fail, and is a class recurring? | [0014](docs/standards/rfc-0014-failure-taxonomy.md) |
+| `openharness_policy.py` | Is this action allowed, denied, or undecided? | [0015](docs/standards/rfc-0015-portable-policy-and-enforcement.md) |
+
+Operating references: [harness optimization](skills/loop/references/openharness.md),
+[contrastive iteration](skills/loop/references/contrastive-iteration.md),
+[measurement](skills/loop/references/measurement.md), and
+[capability and failure](skills/loop/references/capability-and-failure.md).
 
 ---
 

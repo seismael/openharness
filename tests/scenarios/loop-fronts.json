@@ -19,7 +19,7 @@
   ],
   "anti_expected": [
     "Asking the user where the project files are.",
-    "Adopting an execution-identical (inert) change or a per-cell regression.",
+    "Adopting an execution-identical (inert) change or a per-case regression.",
     "Declaring completion while a required front is Unexplored or a defect is open.",
     "Weakening determinism, no-lookahead, or a safety boundary."
   ],

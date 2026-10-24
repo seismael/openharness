@@ -39,6 +39,12 @@ The standard is organized as a modular series of Request for Comments (RFCs):
 | **[RFC-0007](rfc-0007-cognitive-depth-ladder.md)** | **Cognitive Depth Ladder & First-Principles Escalation** | 4-tier abstraction hierarchy, mandatory depth escalation, local minima saturation rules | **Proposed Standard** |
 | **[RFC-0008](rfc-0008-dynamic-tool-synthesis.md)** | **Dynamic Tool & Capability Synthesis Protocol** | Just-in-time tool authoring, scratch-to-helper promotion, environment manifest registration | **Proposed Standard** |
 | **[RFC-0009](rfc-0009-openharness.md)** | **OpenHarness Harness Optimization Protocol** | Harness component taxonomy, deterministic audit receipts, proposal scopes, probe evidence, composition budget | **Proposed Standard** |
+| **[RFC-0010](rfc-0010-contrastive-iteration.md)** | **Contrastive Iteration** | Scope declaration, deficiency-targeted contrast verdicts, anonymous adoption, evidence-gated retention, preservation | **Proposed Standard** |
+| **[RFC-0011](rfc-0011-iteration-telemetry.md)** | **Iteration Telemetry** | Recorded-only cost aggregation, separated gain and regression totals, cost per gain, missing-data honesty | **Proposed Standard** |
+| **[RFC-0012](rfc-0012-declared-evaluation-cases.md)** | **Declared Evaluation Cases** | Deterministic case declarations, failure/timeout/error distinction, probe receipts, matched conditions | **Proposed Standard** |
+| **[RFC-0013](rfc-0013-capability-inventory.md)** | **Capability Inventory and Gap Analysis** | Per-kind inventory from the audited manifest, declared requirements, blocking and optional gaps | **Proposed Standard** |
+| **[RFC-0014](rfc-0014-failure-taxonomy.md)** | **Failure Taxonomy** | Closed nine-class cause vocabulary, recurrence as harness gap, separated failure rate | **Proposed Standard** |
+| **[RFC-0015](rfc-0015-portable-policy-and-enforcement.md)** | **Portable Action Policy and Adapter Enforcement** | Last-match-wins policy evaluation, allow/ask/deny verdicts, adapter enforcement matrix | **Proposed Standard** |
 
 ---
 
@@ -51,6 +57,8 @@ Formal machine-readable JSON schemas validating OHP compliant repositories:
 - [`schemas/journal.schema.json`](schemas/journal.schema.json): Schema for the append-only chronological audit ledger (`journal.jsonl`).
 - [`schemas/coverage.schema.json`](schemas/coverage.schema.json): Schema for the 12-front breadth coverage ledger (`coverage.json`).
 - [`schemas/openharness.schema.json`](schemas/openharness.schema.json): Schema for the audited harness manifest (`harness.json`) and its bounded audit receipt.
+- [`schemas/cases.schema.json`](schemas/cases.schema.json): Schema for a declared evaluation case set consumed by a deterministic runner.
+- [`schemas/policy.schema.json`](schemas/policy.schema.json): Schema for a portable, last-match-wins action policy.
 
 ---
 

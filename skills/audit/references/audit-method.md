@@ -62,7 +62,7 @@ Add domain-specific areas as needed; do not force irrelevant categories into fin
 ## Investigation passes
 
 1. Map repository and end-to-end flows; comprehensively scan local project environments including `code` directories, `docs`, and `data`/output folders to note unknown boundaries, external systems, and generated evidence.
-2. Cross-reference code logic against generated local data (e.g., logs, matrix cell outputs, telemetry) to mathematically or empirically prove failure hypotheses. A finding is only "significant" if it is consistently verifiable across both the codebase and the actual data outputs.
+2. Cross-reference code logic against generated local data (e.g., logs, matrix case outputs, telemetry) to mathematically or empirically prove failure hypotheses. A finding is only "significant" if it is consistently verifiable across both the codebase and the actual data outputs.
 3. Inspect component contracts, edge cases and cross-cutting behavior. Look for related occurrences of confirmed root causes.
 4. Check tests, examples, docs, packaging and low-level alignment against actual behavior.
 5. Reconcile alternatives, dependent findings, risk tradeoffs and coverage gaps. Do not re-run broad checks without a concrete remaining question.

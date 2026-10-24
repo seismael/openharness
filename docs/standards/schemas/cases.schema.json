@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/cases.schema.json",
+  "title": "Open Harness Protocol - Declared Evaluation Cases Schema",
+  "description": "Schema for a standalone case declaration consumed by a deterministic runner (RFC-0012). The same case objects may appear under the profile seam's 'cases' array.",
+  "type": "object",
+  "required": ["schema", "cases"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["openharness.cases.v1"]
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "case": {
+      "type": "object",
+      "required": ["id", "command"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique identifier within the case set."
+        },
+        "description": {
+          "type": "string",
+          "description": "What this case is intended to observe."
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deterministic command executed in the declared working directory."
+        },
+        "expect": {
+          "type": "object",
+          "description": "Observable predicates. A case passes when every declared predicate holds.",
+          "properties": {
+            "exit_code": {
+              "type": "integer",
+              "description": "Required process exit code."
+            },
+            "stdout_contains": {
+              "type": "string",
+              "description": "Substring that must appear in combined stdout and stderr."
+            },
+            "artifact": {
+              "type": "string",
+              "description": "Path, relative to the working directory, that must exist afterwards."
+            }
+          },
+          "additionalProperties": false
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "default": 120,
+          "description": "Wall-clock limit. Exceeding it is reported as timeout, not failure."
+        },
+        "budget_tokens": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Declared invocation ceiling, never a measurement."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

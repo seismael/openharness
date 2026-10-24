@@ -38,6 +38,8 @@ class OHPConformanceTests(unittest.TestCase):
             "journal.schema.json",
             "coverage.schema.json",
             "openharness.schema.json",
+            "cases.schema.json",
+            "policy.schema.json",
         ]
         for s_name in schemas:
             schema_file = SCHEMAS_DIR / s_name
@@ -380,6 +382,101 @@ class HarnessOptimizationConformanceTests(unittest.TestCase):
             "plugins",
         ):
             self.assertIn(f"`{kind}`", readme)
+
+
+class ProtocolSeriesConformanceTests(unittest.TestCase):
+    """RFC-0010 through RFC-0015: every declared mechanism has a contract and an artifact."""
+
+    def read(self, relative):
+        return (ROOT / relative).read_text(encoding="utf-8")
+
+    def test_rfc_series_is_complete_and_indexed(self):
+        index = self.read("docs/standards/README.md")
+        for number in range(1, 16):
+            label = f"rfc-{number:04d}"
+            self.assertEqual(
+                len(list((ROOT / "docs" / "standards").glob(f"{label}-*.md"))),
+                1,
+                f"missing or duplicated {label}",
+            )
+            self.assertIn(f"({label}-", index, f"{label} is not indexed")
+
+    def test_journal_schema_declares_iteration_contract(self):
+        schema = json.loads(self.read("docs/standards/schemas/journal.schema.json"))
+        properties = schema["properties"]
+        self.assertIn("preserved", properties["decision"]["enum"])
+        self.assertEqual(properties["scope"]["enum"], ["invariant", "local"])
+        self.assertEqual(
+            properties["contrast"]["enum"],
+            ["mitigated", "unchanged", "regressed", "unproven"],
+        )
+        self.assertEqual(properties["cases"]["type"], "array")
+        self.assertEqual(
+            set(properties["cost"]["properties"]),
+            {"tokens_in", "tokens_out", "tool_calls", "retries", "wall_steps", "usd"},
+        )
+        self.assertEqual(properties["promote_global"]["type"], "boolean")
+        self.assertIn("harness_fingerprint", properties)
+        self.assertEqual(len(properties["failure"]["properties"]["class"]["enum"]), 9)
+
+    def test_profile_and_cases_schema_agree_on_the_case_object(self):
+        profile = json.loads(self.read("docs/standards/schemas/profile.schema.json"))
+        cases = json.loads(self.read("docs/standards/schemas/cases.schema.json"))
+        profile_case = profile["properties"]["cases"]["items"]
+        standalone = cases["$defs"]["case"]
+        self.assertEqual(set(profile_case["properties"]), set(standalone["properties"]))
+        self.assertEqual(set(profile_case["required"]), {"id"})
+        self.assertEqual(set(standalone["required"]), {"id", "command"})
+        self.assertEqual(
+            set(standalone["properties"]["expect"]["properties"]),
+            {"exit_code", "stdout_contains", "artifact"},
+        )
+        self.assertFalse(standalone["properties"]["expect"]["additionalProperties"])
+
+    def test_policy_schema_matches_the_evaluator_contract(self):
+        schema = json.loads(self.read("docs/standards/schemas/policy.schema.json"))
+        script = self.read("skills/loop/scripts/openharness_policy.py")
+        self.assertEqual(
+            schema["properties"]["schema"]["enum"], ["openharness.policy.v1"]
+        )
+        self.assertIn('CONTRACT = "openharness.policy.v1"', script)
+        self.assertEqual(schema["properties"]["default"]["default"], "ask")
+        match = schema["$defs"]["rule"]["properties"]["match"]
+        self.assertEqual(
+            set(match["properties"]), {"tool", "path_glob", "command_regex"}
+        )
+        self.assertEqual(match["minProperties"], 1)
+
+    def test_every_protocol_script_has_a_regression_suite(self):
+        scripts = ROOT / "skills" / "loop" / "scripts"
+        for name in (
+            "openharness_audit",
+            "openharness_verify",
+            "openharness_select",
+            "openharness_cases",
+            "openharness_telemetry",
+            "openharness_inventory",
+            "openharness_failures",
+            "openharness_policy",
+        ):
+            self.assertTrue((scripts / f"{name}.py").is_file(), f"missing {name}.py")
+            self.assertTrue(
+                (scripts / f"test_{name}.py").is_file(), f"missing test_{name}.py"
+            )
+
+    def test_references_are_linked_from_the_skill(self):
+        skill = self.read("skills/loop/SKILL.md")
+        for reference in (
+            "contrastive-iteration.md",
+            "measurement.md",
+            "capability-and-failure.md",
+            "openharness.md",
+        ):
+            self.assertTrue(
+                (ROOT / "skills" / "loop" / "references" / reference).is_file(),
+                f"missing reference {reference}",
+            )
+            self.assertIn(reference, skill)
 
 
 if __name__ == "__main__":

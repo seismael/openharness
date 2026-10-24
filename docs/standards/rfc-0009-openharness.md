@@ -82,9 +82,12 @@ A conforming implementation MUST accept `harness.manifest.v1` as defined in
 - **HOP-05 Integrity.** An audit MUST report a declared path that matches no file, and a markdown link inside a component that resolves to nothing.
 - **HOP-06 Bounded Output.** A receipt MUST NOT exceed 2500 bytes. When detail must be dropped to respect the cap, the verdict, totals, and counts MUST survive, and the receipt MUST declare `truncated` and the number of dropped findings.
 - **HOP-07 Severity Contract.** Budget, reachability, missing-component, and unknown-kind findings are errors; duplication, stale links, and empty files are warnings. An implementation MUST exit non-zero when at least one error is present.
-- **HOP-08 Scope Declaration.** Before evaluation, every harness change MUST be declared `invariant` or `local`. An `invariant` change MUST be probed on at least two distinct evaluation cells before adoption; a `local` change MUST NOT be promoted to a global default on the same evidence.
+- **HOP-08 Scope Declaration.** Before evaluation, every harness change MUST be declared `invariant` or `local`. An `invariant` change MUST be probed on at least two distinct evaluation cases before adoption; a `local` change MUST NOT be promoted to a global default on the same evidence.
 - **HOP-09 Probe Evidence.** No harness change may be adopted without a probe receipt for that exact harness state. Where the project declares a primary metric, that metric decides; behavioral comparison is a tiebreaker only.
 - **HOP-10 Composition Budget.** A composed harness MUST be re-audited. A composition that exceeds the declared budget MUST be rejected rather than adopted.
+- **HOP-11 State Fingerprint.** An audit MUST report a `fingerprint`: the SHA-256 digest of the sorted sequence of matched component paths and their content hashes. The fingerprint identifies the exact harness state a receipt describes. An adoption decision recorded against a different fingerprint MUST be treated as `fingerprint.stale` and MUST NOT be adopted on that evidence.
+
+The series continues with [RFC-0010](rfc-0010-contrastive-iteration.md) (scope, contrast, anonymous adoption, evidence-gated retention), [RFC-0011](rfc-0011-iteration-telemetry.md) (recorded-only cost and gain projection), [RFC-0012](rfc-0012-declared-evaluation-cases.md) (declared cases and probe receipts), [RFC-0013](rfc-0013-capability-inventory.md) (inventory and gap analysis), [RFC-0014](rfc-0014-failure-taxonomy.md) (failure taxonomy), and [RFC-0015](rfc-0015-portable-policy-and-enforcement.md) (portable policy and adapter enforcement).
 
 ---
 
@@ -93,7 +96,7 @@ A conforming implementation MUST accept `harness.manifest.v1` as defined in
 ```
 1. Audit       -- current manifest -> receipt; store it beside the decision record
 2. Declare     -- candidate change + scope (invariant | local)
-3. Probe       -- execute the candidate on the required cells; capture receipts
+3. Probe       -- execute the candidate on the required cases; capture receipts
 4. Compose     -- only from probed candidates; re-audit the composition
 5. Gate        -- primary metric first, invariant soundness second
 6. Compound    -- adopt with receipts, or revert and record the failure mode
@@ -116,4 +119,4 @@ The normative reference implementation of this RFC is maintained with the loop e
 
 ## 8. Conformance
 
-An implementation is conforming when it (a) validates `harness.manifest.v1`, (b) satisfies HOP-01 through HOP-07 on the normative fixtures, (c) rejects an invalid manifest without emitting a partial receipt, and (d) respects the 2500-byte cap under adversarial input. HOP-08 through HOP-10 are procedural obligations on the loop engine and are evidenced by decision records rather than by a single process invocation.
+An implementation is conforming when it (a) validates `harness.manifest.v1`, (b) satisfies HOP-01 through HOP-07 and HOP-11 on the normative fixtures, (c) rejects an invalid manifest without emitting a partial receipt, and (d) respects the 2500-byte cap under adversarial input. HOP-08 through HOP-10 are procedural obligations on the loop engine and are evidenced by decision records rather than by a single process invocation.

@@ -14,7 +14,7 @@ next step" the policy forbids.
 2. **Uncovered front.** An `UNEXPLORED` front (breadth guarantee) — examine it enough to
    reach a terminal status, then return to value work.
 3. **Largest diagnosed opportunity.** The single biggest localized gap on the target
-   metric, per cell, from a real diagnostic artifact — never from a hunch.
+   metric, per case, from a real diagnostic artifact — never from a hunch.
 4. **Structural candidate.** A bounded change to *mechanism* (not a constant) that the
    diagnosis indicates; verified against the target metric and invariants.
 5. **Parameter candidate — last.** A constant/config change, and only when a diagnosis
@@ -75,7 +75,7 @@ next step" the policy forbids.
 ## Anti-patterns (explicitly rejected)
 
 - Random or ungrounded parameter sweeps; "try things and see".
-- Adopting a change that is execution-identical (inert) or that regresses any cell.
+- Adopting a change that is execution-identical (inert) or that regresses any case.
 - Declaring success, or blaming the target metric, while a front is unexamined.
 - Weakening an invariant, gate, or safety limit to make a metric look better.
 - Producing numbers the pipeline cannot reproduce from a committed snapshot.

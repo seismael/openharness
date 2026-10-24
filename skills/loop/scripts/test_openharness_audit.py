@@ -206,6 +206,48 @@ class HarnessAuditTests(unittest.TestCase):
         self.assertTrue(receipt["truncated"])
         self.assertGreater(receipt["dropped_findings"], 0)
 
+    def test_receipt_carries_state_fingerprint(self):
+        receipt = json.loads(self.run_audit(self.manifest(self.surface())).stdout)
+        self.assertRegex(receipt["fingerprint"], r"^[a-f0-9]{64}$")
+
+    def test_fingerprint_only_prints_identity(self):
+        path = self.manifest(self.surface())
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                str(SCRIPT),
+                "--manifest",
+                str(path),
+                "--fingerprint-only",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout)
+        payload = json.loads(result.stdout)
+        self.assertEqual(set(payload), {"fingerprint"})
+        self.assertEqual(len(payload["fingerprint"]), 64)
+
+    def test_fingerprint_tracks_content_not_component_layout(self):
+        path = self.manifest(self.surface())
+        original = json.loads(self.run_audit(path).stdout)["fingerprint"]
+        relabeled = self.surface()
+        relabeled[0]["id"] = "prompt-renamed"
+        relabeled.insert(
+            0, {"id": "overlap", "kind": "system_prompt", "paths": ["AGENTS.md"]}
+        )
+        self.assertEqual(
+            original,
+            json.loads(self.run_audit(self.manifest(relabeled)).stdout)["fingerprint"],
+        )
+        self.write("AGENTS.md", "When building, load the `build` skill twice.\n")
+        self.assertNotEqual(
+            original,
+            json.loads(self.run_audit(self.manifest(relabeled)).stdout)["fingerprint"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

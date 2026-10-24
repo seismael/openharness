@@ -23,13 +23,14 @@ FORBIDDEN_DOMAIN_PATTERNS = [
     r"\bbuy-the-dip\b",
     r"\bexit-quality\b",
     r"\bentry-gate-diagnosis\b",
+    r"\bcell\b",
+    r"\bcampaign\b",
 ]
 
 REGEX = re.compile("|".join(FORBIDDEN_DOMAIN_PATTERNS), re.IGNORECASE)
 
 
 class GenericPurityTests(unittest.TestCase):
-
     def test_skills_directory_is_100_percent_generic(self):
         """Verify that skills/ contains ZERO domain-specific vocabulary."""
         skills_dir = ROOT / "skills"
@@ -44,7 +45,9 @@ class GenericPurityTests(unittest.TestCase):
                         matches = REGEX.findall(line)
                         if matches:
                             rel_path = filepath.relative_to(ROOT)
-                            violations.append(f"{rel_path}:{line_no}: found {matches} -> {line.strip()}")
+                            violations.append(
+                                f"{rel_path}:{line_no}: found {matches} -> {line.strip()}"
+                            )
 
         self.assertEqual(
             violations,
@@ -54,7 +57,7 @@ class GenericPurityTests(unittest.TestCase):
 
     def test_normative_standards_are_domain_agnostic(self):
         """Verify that normative sections of docs/standards/ contain NO domain tokens.
-        
+
         Domain tokens are only permitted inside explicitly designated non-normative case study sections.
         """
         standards_dir = ROOT / "docs" / "standards"
@@ -69,9 +72,16 @@ class GenericPurityTests(unittest.TestCase):
 
                     for line_no, line in enumerate(content.splitlines(), 1):
                         # Detect non-normative section headers
-                        if re.match(r"^#{1,3}\s+.*Non-Normative\s+Case\s+Study", line, re.IGNORECASE):
+                        if re.match(
+                            r"^#{1,3}\s+.*Non-Normative\s+Case\s+Study",
+                            line,
+                            re.IGNORECASE,
+                        ):
                             in_non_normative = True
-                        elif re.match(r"^#{1,3}\s+\d+", line) and "non-normative" not in line.lower():
+                        elif (
+                            re.match(r"^#{1,3}\s+\d+", line)
+                            and "non-normative" not in line.lower()
+                        ):
                             in_non_normative = False
 
                         if in_non_normative:
@@ -80,12 +90,15 @@ class GenericPurityTests(unittest.TestCase):
                         matches = REGEX.findall(line)
                         if matches:
                             rel_path = filepath.relative_to(ROOT)
-                            violations.append(f"{rel_path}:{line_no}: found {matches} -> {line.strip()}")
+                            violations.append(
+                                f"{rel_path}:{line_no}: found {matches} -> {line.strip()}"
+                            )
 
         self.assertEqual(
             violations,
             [],
-            f"Domain leakage detected in normative RFC specifications:\n" + "\n".join(violations),
+            f"Domain leakage detected in normative RFC specifications:\n"
+            + "\n".join(violations),
         )
 
     def test_starter_templates_are_domain_agnostic(self):
@@ -99,7 +112,9 @@ class GenericPurityTests(unittest.TestCase):
                 for line_no, line in enumerate(content.splitlines(), 1):
                     matches = REGEX.findall(line)
                     if matches:
-                        violations.append(f"{t_file.name}:{line_no}: found {matches} -> {line.strip()}")
+                        violations.append(
+                            f"{t_file.name}:{line_no}: found {matches} -> {line.strip()}"
+                        )
 
         self.assertEqual(
             violations,

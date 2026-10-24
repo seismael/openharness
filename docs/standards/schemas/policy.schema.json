@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openharness.org/schemas/ohp/v1/policy.schema.json",
+  "title": "Open Harness Protocol - Portable Action Policy Schema",
+  "description": "Schema for a deterministic, last-match-wins action policy (RFC-0015). Evaluation is local and synchronous, so every adapter can enforce the same rules.",
+  "type": "object",
+  "required": ["schema", "rules"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["openharness.policy.v1"]
+    },
+    "description": {
+      "type": "string"
+    },
+    "default": {
+      "type": "string",
+      "enum": ["allow", "ask", "deny"],
+      "default": "ask",
+      "description": "Verdict when no rule matches. Defaults to ask: an unclassified action is not pre-approved."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      },
+      "description": "Ordered rules. Later matches override earlier ones."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": ["id", "match", "verdict"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique identifier, reported with the verdict."
+        },
+        "match": {
+          "type": "object",
+          "description": "All declared conditions must hold. A condition whose input is absent makes the rule not match.",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Tool surface name, compared case-insensitively."
+            },
+            "path_glob": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Shell-style glob against the forward-slash normalized target path."
+            },
+            "command_regex": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Python regular expression searched against the command text."
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["allow", "ask", "deny"]
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why this verdict exists; surfaced to the caller on denial."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

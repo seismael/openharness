@@ -55,7 +55,7 @@ Limits: ordinary single-link UTF-8 files, no symlink/reparse paths, no deletion 
 3. **Behavior:** run a small representative task against acceptance criteria; test the intended workflow/handoff and action boundaries. Use harmless probes or a sandbox/policy dry-run for permissions. Never attempt real publication, deletion, or spending merely to test a deny rule.
 4. **Efficiency:** compare representative before/after usage if accessible and within the user's authorized test budget. Count all attempts. If usage evidence is unavailable, report qualitative rationale and measurement pending, not a savings percentage.
 
-Existing approval to implement generally covers bounded in-scope local tests and repairs. Do not introduce new paid routes or large benchmark campaigns implicitly. If runtime is inaccessible, deliver static results and precise commands/actions for local continuation with runtime status pending.
+Existing approval to implement generally covers bounded in-scope local tests and repairs. Do not introduce new paid routes or large benchmark workloads implicitly. If runtime is inaccessible, deliver static results and precise commands/actions for local continuation with runtime status pending.
 
 Check an ordinary successful task and a meaningful difficult case where feasible: an ambiguous requirement should trigger the right question, an analysis stage should respect its actual action limits, and execution should complete approved work without unnecessary gates. Include an output-quality check appropriate to the domain. Stop after required evidence is sufficient.
 

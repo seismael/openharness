@@ -53,7 +53,80 @@
     },
     "decision": {
       "type": "string",
-      "enum": ["adopted", "rejected", "inconclusive", "informational"]
+      "enum": ["adopted", "rejected", "inconclusive", "informational", "preserved"]
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["invariant", "local"],
+      "description": "Declared reach of the change: invariant (must hold for every case) or local (valid only for the declared cases)."
+    },
+    "deficiency": {
+      "type": "string",
+      "description": "Named behavior class the candidate targeted, e.g. planning, tool-use, context-management, delegation, knowledge, procedure, constraint, reliability, cost."
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Declared evaluation inputs this iteration was probed against."
+    },
+    "harness_fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact harness state that produced this result (RFC-0009 HOP-11)."
+    },
+    "contrast": {
+      "type": "string",
+      "enum": ["mitigated", "unchanged", "regressed", "unproven"],
+      "description": "Behavioral verdict against the target deficiency, relative to the reference execution."
+    },
+    "cost": {
+      "type": "object",
+      "description": "Measured cost of this iteration, when available.",
+      "properties": {
+        "tokens_in": {"type": "integer", "minimum": 0},
+        "tokens_out": {"type": "integer", "minimum": 0},
+        "tool_calls": {"type": "integer", "minimum": 0},
+        "retries": {"type": "integer", "minimum": 0},
+        "wall_steps": {"type": "integer", "minimum": 0},
+        "usd": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "evidence_ref": {
+      "type": "string",
+      "description": "Reference to the receipt or artifact supporting the decision."
+    },
+    "promote_global": {
+      "type": "boolean",
+      "description": "Declares intent to treat local evidence as a global default. A conforming validator rejects this, because local evidence does not establish a global claim."
+    },
+    "failure": {
+      "type": "object",
+      "description": "Diagnosis of why this iteration did not achieve its declared effect (RFC-0014).",
+      "required": ["class"],
+      "properties": {
+        "class": {
+          "type": "string",
+          "enum": [
+            "tool-misuse",
+            "context-loss",
+            "wrong-premise",
+            "dead-end",
+            "unsafe-action",
+            "spec-ambiguity",
+            "environment",
+            "data-quality",
+            "unclassified"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "description": "The observation that supports the class."
+        }
+      },
+      "additionalProperties": false
     },
     "decision_ref": {
       "type": "string",
